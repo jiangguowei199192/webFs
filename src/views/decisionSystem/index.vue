@@ -1,5 +1,5 @@
 <template>
-  <div class="decision">
+  <div class="decision" style="padding-top:20px">
     <gMap ref="gduMap" handleType="search_route" :bShowBasic="true" :bShowMeasure="true"></gMap>
   </div>
 </template>
