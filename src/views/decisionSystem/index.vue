@@ -26,6 +26,6 @@ export default {
 
 <style lang="scss" scoped>
 .decision {
-  height: 899px;
+  height: 940px;
 }
 </style>
