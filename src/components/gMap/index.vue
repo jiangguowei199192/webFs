@@ -105,6 +105,7 @@
       </div>
     </div>
     <plan v-show="bShowPaln" ref="plan"></plan>
+    <RealtimeDataMenu></RealtimeDataMenu>
     <div class="measureTools" v-if="bShowAllTools && bShowMeasure">
       <div
         class="lineBtn"
@@ -241,11 +242,13 @@
 <script>
 import AMapHelper from '../../axios/amapapis'
 import Plan from '../../views/decisionSystem/components/Plan.vue'
+import RealtimeDataMenu from '../../views/decisionSystem/components/RealtimeDataMenu.vue'
 import { settingApi } from '@/api/setting'
 export default {
   name: 'gMap',
   components: {
-    Plan
+    Plan,
+    RealtimeDataMenu
   },
   data () {
     return {
