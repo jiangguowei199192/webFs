@@ -23,9 +23,21 @@ service.interceptors.request.use((config) => {
     token = sessionStorage.getItem('token')
     config.headers.Authorization = token
   }
-  if (config.url !== '/cloud-fms/sysuser/updateHeadImg' && config.url !== '/cloud-fms/sysuser/updateUser') {
+  if (config.url !== '/cloud-fms/sysuser/updateHeadImg' &&
+    config.url !== '/cloud-fms/sysuser/updateUser' &&
+    config.url !== '/cloud-fms/sysuser/addUser' &&
+    config.url !== '/cloud-video/prePlan/enterprise/baseInfoPicUpload' &&
+    config.url !== '/cloud-video/prePlan/enterprise/jzpmtPicUpload' &&
+    config.url !== '/cloud-fms/sysuser/batchUpdateUserRole' &&
+    config.url !== '/cloud-fms/role/add' &&
+    config.url !== '/cloud-fms/sysuser/batchUpdateUserDeptCode' &&
+    config.url !== '/cloud-video/prePlan/enterprise/add' &&
+    config.url !== '/cloud-fms/dept/add' &&
+    config.url !== '/cloud-fms/dept/update') {
     // 判断请求方式是否为POST，进行转换格式
-    config.method === 'post' ? config.data = qs.stringify({ ...config.data }) : config.params = { ...config.params }// 请求发送前进行处理
+    config.method === 'post' ? config.data = qs.stringify({ ...config.data }) : config.paramsSerializer = function (params) {
+      return qs.stringify(params, { arrayFormat: 'repeat' })
+    }// 请求发送前进行处理
   }
   return config
 },
@@ -53,7 +65,7 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+    if (error.response && (error.response.status === 403 || error.response.status === 401 || error.response.data.code === 401)) {
       Notification({
         title: '错误',
         message: '权限过期，请先登录后再访问！',
