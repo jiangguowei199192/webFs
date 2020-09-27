@@ -74,7 +74,7 @@ export default {
       isActive: 1, // 默认激活视频侦查系统
       systems: [
         {
-          content: '智慧决策系统'
+          content: '指挥决策'
         },
         {
           content: '视频侦查'
@@ -87,7 +87,7 @@ export default {
         },
 
         {
-          content: '数字化单兵'
+          content: '战评系统'
         },
         {
           content: '数字化装备'
@@ -128,6 +128,14 @@ export default {
     // 飞机实时信息
     EventBus.$on('droneInfos', info => {
       this.parseDroneRealtimeInfo(info)
+    })
+    // 人员识别提示
+    EventBus.$on('video/people/found', info => {
+      this.$notify.warning({ title: '提示', message: '发现可疑人员!' })
+    })
+    // 人员显示
+    EventBus.$on('video/people/real', info => {
+      EventBus.$emit('peopleRealChange', info)
     })
   },
   mounted () {
@@ -260,7 +268,7 @@ export default {
         z-index: 999;
         width: 300px;
          // 临时显示菜单
-        // left: -30px;
+        // left: -40px;
         // padding-top: 30px;
         left: -75px;
         padding-top: 33px;
@@ -295,7 +303,7 @@ export default {
       line-height: 66px;
       text-align: center;
        // 临时显示菜单 添加
-      margin:0 43px;
+      margin:0 44px;
       font-size: 36px;
       font-weight: bold;
       margin-top: -13px;
@@ -311,12 +319,11 @@ export default {
     div.list:nth-child(n + 5) .active {
       background: url(../assets/images/selected-right.png) no-repeat !important;
     }
-    // 临时显示菜单
-    div.list{
-      display: none;
+    div.list:nth-child(3),div.list:nth-child(6){
+      display: none
     }
-    div.list:nth-child(2),div.list:nth-child(4),div.list:nth-child(7){
-      display: block;
+    div.list:nth-child(1),div.list:nth-child(5){
+     margin-right:40px;
     }
   }
   .cur {
