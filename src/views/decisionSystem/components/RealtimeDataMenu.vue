@@ -26,7 +26,7 @@
     <div class="policeRankingStyle">
       <div class="realtimeIconStyle"></div>
       <div class="realtimeTitleStyle">各区警情数量排行</div>
-      <PoliceRankingMenu class="rankingTableStyle"></PoliceRankingMenu>
+      <PoliceRankingMenu></PoliceRankingMenu>
     </div>
     <div class="thisWeekStyle">
       <div class="realtimeIconStyle"></div>
@@ -116,11 +116,6 @@ export default {
   height: 300px;
   margin-left: 20px;
   margin-right: 24px;
-  .rankingTableStyle {
-    height: 250px;
-    margin-top: 22px;
-    overflow: hidden;
-  }
 }
 .thisWeekStyle {
   margin-left: 20px;

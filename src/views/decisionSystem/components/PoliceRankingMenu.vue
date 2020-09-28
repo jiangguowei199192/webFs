@@ -1,24 +1,36 @@
 <template>
-  <div>
-    <div class="rankingItemStyle" v-for="(item, index) in data" :key="index">
-      <span class="itemLeftTitleStyle">{{ "NO." + item.No + ' ' + item.title }}</span>
-      <span class="itemRightTitleStyle">{{ item.count }}</span>
-      <!-- <div class="itemProgressStyle" :style="{ width: progress + 'px' }"></div> -->
-      <el-progress :show-text="false" color="#00ccff" :percentage="50" style="margin-top: 8px;"></el-progress>
+  <div style="height: 250px; margin-top: 22px;">
+    <div ref="rankingRef" style="height: 250px; overflow: hidden;">
+      <div class="rankingItemStyle" v-for="(item, index) in data" :key="index">
+        <span class="itemLeftTitleStyle">{{
+          "NO." + item.No + " " + item.title
+        }}</span>
+        <span class="itemRightTitleStyle">{{ item.count }}</span>
+        <el-progress
+          :show-text="false"
+          color="#00ccff"
+          :percentage="item.count"
+          style="margin-top: 8px"
+        ></el-progress>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  created () {
-    this.show()
+  mounted () {
+    const p = this
+    this.timer = setInterval(() => {
+      p.scroll()
+    }, 2000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   },
   data () {
     return {
-      total: 100,
-      count: 44,
-      progress: 0,
+      timer: null,
       data: [
         { No: 1, title: '江夏区渔政', count: 90 },
         { No: 2, title: '洪山区渔政', count: 77 },
@@ -34,8 +46,11 @@ export default {
     }
   },
   methods: {
-    show () {
-      this.progress = (350 / this.total) * this.count
+    scroll () {
+      this.$refs.rankingRef.scrollTop = this.$refs.rankingRef.scrollTop + 50
+      if (this.$refs.rankingRef.scrollTop === 250) {
+        this.$refs.rankingRef.scrollTop = 0
+      }
     }
   }
 }
@@ -51,10 +66,6 @@ export default {
   .itemRightTitleStyle {
     float: right;
     color: white;
-  }
-  .itemProgressStyle {
-    background: blue;
-    height: 5px;
   }
 }
 </style>
