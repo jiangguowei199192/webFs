@@ -1,6 +1,6 @@
 <template>
   <div class="decision" style="padding-top:20px">
-    <gMap ref="gduMap" handleType="search_route" :bShowBasic="false" :bShowMeasure="false" :bShowLonLat="false"></gMap>
+    <gMap ref="gduMap" handleType="search_route" :bShowBasic="false" :bShowMeasure="false" :bShowLonLat="false" :bShowPoliceStatistics="true"></gMap>
   </div>
 </template>
 

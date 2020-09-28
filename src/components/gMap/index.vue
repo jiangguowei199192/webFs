@@ -105,7 +105,7 @@
       </div>
     </div>
     <plan v-show="bShowPaln" ref="plan"></plan>
-    <RealtimeDataMenu></RealtimeDataMenu>
+    <RealtimeDataMenu v-show="bShowPoliceStatistics"></RealtimeDataMenu>
     <div class="measureTools" v-if="bShowAllTools && bShowMeasure">
       <div
         class="lineBtn"
@@ -393,6 +393,11 @@ export default {
     doLocator: {
       type: Boolean,
       default: true
+    },
+    // 是否显示警情统计
+    bShowPoliceStatistics: {
+      type: Boolean,
+      default: false
     }
   },
 
