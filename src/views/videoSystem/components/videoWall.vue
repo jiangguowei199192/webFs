@@ -1412,6 +1412,7 @@ export default {
       }
       div.footer {
         position: absolute;
+        z-index: 20;
         left: 0;
         bottom: 0;
         width: 1920px;
@@ -1776,6 +1777,7 @@ export default {
   }
   .fullScreenOperate {
     position: absolute;
+    z-index: 20;
     right: 30px;
     top: 50%;
     transform: translateY(-50%);
@@ -2196,6 +2198,7 @@ export default {
   }
   div.operate {
     position: absolute;
+    z-index: 20;
     right: 90px;
     bottom: 85px;
     cursor: text;
