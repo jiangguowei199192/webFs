@@ -951,9 +951,11 @@ export default {
       // 1.添加
       if (type === 1) {
         // 开启人员识别
-        new MqttService().client.send('video/start/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
-        // // 开启
-        // new MqttService().client.send('video/start/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
+        if (curTreeData.deviceTypeCode === 'GDJK') {
+          new MqttService().client.send('video/start/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
+        }
+        // 开启AR
+        new MqttService().client.send('video/start/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
         this.refreshMap(curTreeData)
@@ -1028,7 +1030,12 @@ export default {
           )
         }
       } else {
-        new MqttService().client.send('video/stop/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
+        if (curTreeData.deviceTypeCode === 'GDJK') {
+        // 关闭人员识别
+          new MqttService().client.send('video/stop/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
+        }
+        // // 关闭AR
+        // new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
         this.curSelectedVideo = {}
@@ -1538,6 +1545,7 @@ export default {
   mounted () {
     this.getPlayerStyle()
     EventBus.$on('peopleRealChange', info => {
+      console.log(info)
       this.totalVideosArray.forEach((item, index) => {
         if (item.deviceCode === info.deviceCode && item.streamType === info.channelId) {
           this.$set(this.totalVideosArray[index], 'positionList', info.positionList)

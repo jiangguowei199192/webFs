@@ -274,6 +274,7 @@
           v-for="(item,index) in videoInfo.positionList"
           :key="index"
           :style="{left:item.left/1280*(videoInfo.isShowOperate?1920:playerWidth)+'px',top:item.top/720*(videoInfo.isShowOperate?1080:playerHeight)+'px',width:item.width/1280*(videoInfo.isShowOperate?1920:playerWidth)+'px',height:item.height/720*(videoInfo.isShowOperate?1080:playerHeight)+'px'}"
+          :class="{ship:item.label===1}"
         ></span>
       </div>
       <!-- 新版云台操作 -->
@@ -1528,6 +1529,7 @@ export default {
       }
       .picStorage {
         position: absolute;
+        z-index:20;
         top: 94px;
         left: 50%;
         transform: translateX(-50%);
@@ -1761,9 +1763,16 @@ export default {
   .fullScreenFace {
     span {
       position: absolute;
-      // background: url(../../../assets/images/person.png) no-repeat;
-      border: 2px solid green;
+      z-index:10;
+      // background: url(../../../assets/images/person.png) no-repeat center center;
+      // background-size:100% 100%;
+      border: 2px solid #00ff00;
+      background:rgba(0,255,0,.3)
+
     }
+    // span.ship{
+    //    background: url(../../../assets/images/ship.png) no-repeat center center;
+    // }
   }
   .fullScreenOperate {
     position: absolute;
