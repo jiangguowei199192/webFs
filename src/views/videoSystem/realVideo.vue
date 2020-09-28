@@ -16,36 +16,36 @@
           <!-- 默认展示在线设备 -->
           <template v-if="isOnline">
             <div class="onlineList webFsScroll">
-            <div
-              class="list"
-              v-for="(item,index1) in onlineArray"
-              :key="index1"
-              :class="{selected:selectedIndex==index1,unman:item.deviceTypeCode==='WRJ'}"
-            >
-              <p>
-                <span class="area">{{item.label}}</span>
-                <i
-                  v-show="item.children&&item.children.some(child=>{return child.isSelected==true})"
-                ></i>
-              </p>
-              <div class="btns" >
-                <!-- <div > -->
-                <el-button
-                  v-for="(list,index2) in item.children"
-                  :key="index2"
-                  :class="{visible:!list.isSelected,visibleSelected:list.isSelected}"
-                  :style="{backgroundColor:list.isSelected?'rgba(0,212,15,1)':'',color:list.isSelected?'#fff':'#1EB0FC'}"
-                  @click.stop="playDeviceVideo(item,list,index1,index2)"
-                  :title="list.label"
-                >{{list.label&&list.label.length>3?list.label.slice(0,3)+'..':list.label?list.label:'-'}}</el-button>
-                <!-- <el-button
+              <div
+                class="list"
+                v-for="(item,index1) in onlineArray"
+                :key="index1"
+                :class="{selected:selectedIndex==index1,unman:item.deviceTypeCode==='WRJ'}"
+              >
+                <p>
+                  <span class="area">{{item.label}}</span>
+                  <i
+                    v-show="item.children&&item.children.some(child=>{return child.isSelected==true})"
+                  ></i>
+                </p>
+                <div class="btns">
+                  <!-- <div > -->
+                  <el-button
+                    v-for="(list,index2) in item.children"
+                    :key="index2"
+                    :class="{visible:!list.isSelected,visibleSelected:list.isSelected}"
+                    :style="{backgroundColor:list.isSelected?'rgba(0,212,15,1)':'',color:list.isSelected?'#fff':'#1EB0FC'}"
+                    @click.stop="playDeviceVideo(item,list,index1,index2)"
+                    :title="list.label"
+                  >{{list.label&&list.label.length>3?list.label.slice(0,3)+'..':list.label?list.label:'-'}}</el-button>
+                  <!-- <el-button
                     :class="{infrared:list.label==='可见光'}"
                     :style="{backgroundColor:item.infraredIsclick?'rgba(0,212,15,1)':''}"
                     @click.stop="changeStatus(2,index)"
-                >{{list.label}}</el-button>-->
-                <!-- </div> -->
+                  >{{list.label}}</el-button>-->
+                  <!-- </div> -->
+                </div>
               </div>
-            </div>
             </div>
           </template>
           <!-- 全部部分 -->
@@ -281,7 +281,7 @@
         </div>
       </div>
     </VideoMain>
-  <!-- 弃用 -->
+    <!-- 弃用 -->
     <!-- <div class="fullContainer" v-if="dialogVisible" id="d1" ref="fullContainer">
       <div
         :style="machineStatusStyle1(showVideoPageSize)"
@@ -301,7 +301,7 @@
           ></VideoWall>
         </div>
       </div>
-    </div> -->
+    </div>-->
 
     <el-dialog
       :visible.sync="cutDialogVisible"
@@ -385,7 +385,6 @@ export default {
         focusMinus: 0,
         lrisAdd: 0,
         lrisMinus: 0
-
       },
       isPlayAll: false, // 是否播放所有 控制预览全部
       curSelectedVideo: {}, // 当前选中
@@ -929,11 +928,13 @@ export default {
     }, 500),
     // 云台操作
     changeViewVideo (params) {
-      this.$axios.post('/video-service2/index/api/ptzConrol', params).then(res => {
-        if (res && res.data && res.data.code === 0) {
-          console.log('操作成功了！')
-        }
-      })
+      this.$axios
+        .post('/video-service2/index/api/ptzConrol', params)
+        .then(res => {
+          if (res && res.data && res.data.code === 0) {
+            console.log('操作成功了！')
+          }
+        })
     },
     refreshMap (video) {
       if (video !== undefined && video !== null) {
@@ -952,10 +953,26 @@ export default {
       if (type === 1) {
         // 开启人员识别
         if (curTreeData.deviceTypeCode === 'GDJK') {
-          new MqttService().client.send('video/start/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
+          new MqttService().client.send(
+            'video/start/algorithm',
+            JSON.stringify({
+              deviceCode: curTreeData.deviceCode,
+              channelId: curTreeData.streamType,
+              streamUrl: curTreeData.streamUrl,
+              isOpen: 1
+            })
+          )
+          // 开启AR
+          new MqttService().client.send(
+            'video/start/arAlgorithm',
+            JSON.stringify({
+              deviceCode: curTreeData.deviceCode,
+              channelId: curTreeData.streamType,
+              streamUrl: curTreeData.streamUrl,
+              isOpen: 1
+            })
+          )
         }
-        // 开启AR
-        new MqttService().client.send('video/start/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
         this.refreshMap(curTreeData)
@@ -984,7 +1001,9 @@ export default {
             //   this.showVideoPageSize
             // )
             // 防止当前播放不在最后一页
-            this.currentPage = Math.ceil(this.totalVideosArray.length / this.showVideoPageSize)
+            this.currentPage = Math.ceil(
+              this.totalVideosArray.length / this.showVideoPageSize
+            )
             this.next(this.currentPage)
           }
         } else {
@@ -1031,11 +1050,19 @@ export default {
         }
       } else {
         if (curTreeData.deviceTypeCode === 'GDJK') {
-        // 关闭人员识别
-          new MqttService().client.send('video/stop/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
+          // 关闭人员识别
+          new MqttService().client.send(
+            'video/stop/algorithm',
+            JSON.stringify({
+              deviceCode: curTreeData.deviceCode,
+              channelId: curTreeData.streamType,
+              streamUrl: curTreeData.streamUrl,
+              isOpen: 0
+            })
+          )
+          // 关闭AR
+          new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         }
-        // // 关闭AR
-        // new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
         this.curSelectedVideo = {}
@@ -1510,12 +1537,16 @@ export default {
         const prevBtn = document.querySelector('.el-pagination > .btn-prev')
         const nextBtn = document.querySelector('.el-pagination > .btn-next')
         if (!prevBtn.getAttribute('disabled')) {
-          prevBtn.title = `当前页${this.currentPage} / ${(Math.ceil(this.totalVideosArray.length / this.showVideoPageSize))}`
+          prevBtn.title = `当前页${this.currentPage} / ${Math.ceil(
+            this.totalVideosArray.length / this.showVideoPageSize
+          )}`
         } else {
           prevBtn.removeAttribute('title')
         }
         if (!nextBtn.getAttribute('disabled')) {
-          nextBtn.title = `当前页${this.currentPage} / ${(Math.ceil(this.totalVideosArray.length / this.showVideoPageSize))}`
+          nextBtn.title = `当前页${this.currentPage} / ${Math.ceil(
+            this.totalVideosArray.length / this.showVideoPageSize
+          )}`
         } else {
           nextBtn.removeAttribute('title')
         }
@@ -1547,13 +1578,27 @@ export default {
     EventBus.$on('peopleRealChange', info => {
       console.log(info)
       this.totalVideosArray.forEach((item, index) => {
-        if (item.deviceCode === info.deviceCode && item.streamType === info.channelId) {
-          this.$set(this.totalVideosArray[index], 'positionList', info.positionList)
+        if (
+          item.deviceCode === info.deviceCode &&
+          item.streamType === info.channelId
+        ) {
+          this.$set(
+            this.totalVideosArray[index],
+            'positionList',
+            info.positionList
+          )
         }
       })
       this.curVideosArray.forEach((item, index) => {
-        if (item.deviceCode === info.deviceCode && item.streamType === info.channelId) {
-          this.$set(this.curVideosArray[index], 'positionList', info.positionList)
+        if (
+          item.deviceCode === info.deviceCode &&
+          item.streamType === info.channelId
+        ) {
+          this.$set(
+            this.curVideosArray[index],
+            'positionList',
+            info.positionList
+          )
         }
       })
     })
@@ -1564,7 +1609,7 @@ export default {
 <style lang="less" scoped>
 .videoContainer {
   box-sizing: border-box;
-  padding:20px;
+  padding: 20px;
   .leftContainer {
     box-sizing: border-box;
     padding: 27px 0 0 28px;
@@ -1579,7 +1624,7 @@ export default {
       line-height: 34px;
       width: 230px;
       color: #23cefd;
-      background: #062C5D;
+      background: #062c5d;
       // text-align: center;
       div {
         width: 104px;
@@ -1619,10 +1664,10 @@ export default {
         color: #1eb0fc;
       }
     }
-    div.onlineList{
-      max-height:800px;
+    div.onlineList {
+      max-height: 800px;
       overflow-y: auto;
-      margin-right:8px;
+      margin-right: 8px;
     }
     div.list {
       margin-top: 20px;
@@ -1693,7 +1738,7 @@ export default {
     font-family: Source Han Sans CN;
     color: rgba(255, 255, 255, 1);
     line-height: 14px;
-    padding:21px 13px 0px 23px;
+    padding: 21px 13px 0px 23px;
     .baseInfo,
     .deviceInfo {
       .info {
@@ -1818,7 +1863,7 @@ export default {
             height: 37px;
             line-height: 35px;
             text-align: center;
-            margin-left:10px;
+            margin-left: 10px;
             background: rgba(46, 108, 147, 1);
             border: 1px solid rgba(28, 161, 220, 1);
             color: #84ddff;
@@ -1854,16 +1899,16 @@ export default {
               );
             }
             span:nth-child(1):hover:after {
-              display:none
+              display: none;
             }
             span:nth-child(3):hover:before {
-               display:none
+              display: none;
             }
           }
         }
         .slider {
           display: flex;
-          padding-left:10px;
+          padding-left: 10px;
 
           span {
             line-height: 38px;
@@ -1890,16 +1935,16 @@ export default {
           /deep/.el-slider__button {
             background-color: #84ddff;
           }
-          /deep/.el-slider__button-wrapper{
-            z-index:100
+          /deep/.el-slider__button-wrapper {
+            z-index: 100;
           }
         }
-        .sliderTip{
-          font-size:14px;
+        .sliderTip {
+          font-size: 14px;
           margin-top: 2px;
-          padding-left:42px;
-          color:#fff;
-          opacity: .5;
+          padding-left: 42px;
+          color: #fff;
+          opacity: 0.5;
         }
       }
       .mapBox {
@@ -1917,7 +1962,7 @@ export default {
       display: flex;
       justify-content: space-between;
       margin-right: 10px;
-       margin-bottom: 20px;
+      margin-bottom: 20px;
       .title {
         width: 196px;
         height: 34px;
@@ -1954,14 +1999,14 @@ export default {
       flex-wrap: wrap;
       height: 710px;
       > div {
-        >div {
+        > div {
           box-sizing: border-box;
           // height: 223px;
 
           margin-right: 10px;
           margin-bottom: 10px;
-          width:calc(100% - 10px);
-          height:calc(100% - 10px);
+          width: calc(100% - 10px);
+          height: calc(100% - 10px);
           background: url(../../assets/images/video.png) no-repeat center center;
           background-color: #00497c;
           cursor: pointer;
@@ -1973,13 +2018,13 @@ export default {
     }
     .tools {
       position: relative;
-      width:calc(100% - 10px);
+      width: calc(100% - 10px);
       height: 60px;
       background: url(../../assets/images/tool-bar.png) round;
       background-size: 100% 100%;
       display: flex;
       justify-content: space-between;
-      margin-top:20px;
+      margin-top: 20px;
       .leftTool,
       .rightTool {
         position: relative;
@@ -2081,17 +2126,17 @@ export default {
   // }
 }
 .videolistFullscreen {
-  position:fixed;
+  position: fixed;
   top: 0;
   right: 0;
   width: 100%;
-  height:100% !important;
+  height: 100% !important;
   z-index: 1000;
   background: #fff;
   display: flex;
   flex-wrap: wrap;
   overflow: visible;
-  background-image: url('../../assets/images/bg.png');
+  background-image: url("../../assets/images/bg.png");
 }
 .cutDialog {
   background: rgba(0, 0, 0, 0.6);
