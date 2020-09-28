@@ -41,6 +41,10 @@ var mqttService;
       instance.client.subscribe('video/device/offline')
       // 订阅火情火点
       instance.client.subscribe('video/deviceIid/channleID/datalink/firewarning')
+      // 订阅人员识别
+      instance.client.subscribe('video/people/found')
+      // 订阅人员识别数据
+      instance.client.subscribe('video/people/real')
       // 飞机实时信息
       instance.client.subscribe('gdu/#')
     }

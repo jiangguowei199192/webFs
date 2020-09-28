@@ -28,7 +28,7 @@
                   v-show="item.children&&item.children.some(child=>{return child.isSelected==true})"
                 ></i>
               </p>
-              <div class="btns">
+              <div class="btns" >
                 <!-- <div > -->
                 <el-button
                   v-for="(list,index2) in item.children"
@@ -92,6 +92,7 @@
               <div
                 @click.stop="operateCurVideo(item,index)"
                 :class="{active:curVideoIndex===index}"
+                ref="video"
               >
                 <VideoWall
                   :videoInfo.sync="item"
@@ -99,6 +100,8 @@
                   v-if="item.streamUrl"
                   ref="videoCtrl"
                   @fullscreenvideo="fullscreenvideo"
+                  :playerWidth="playerWidth"
+                  :playerHeight="playerHeight"
                 ></VideoWall>
               </div>
             </div>
@@ -333,6 +336,8 @@ import VideoWall from './components/videoWall'
 import { api } from '@/api/videoSystem/realVideo'
 import globalApi from '../../utils/globalApi'
 import { throttle, debounce } from '../../utils/public.js'
+import { EventBus } from '@/utils/eventBus.js'
+import MqttService from '@/utils/mqttService'
 
 export default {
   name: 'videoContainer',
@@ -343,6 +348,8 @@ export default {
   },
   data () {
     return {
+      playerWidth: '',
+      playerHeight: '',
       picUrl: globalApi.baseUrl + '/video-service2', // 图片前缀
       curScreenInfo: {}, // 保存当前双击的视频信息
       firePic: require('@/assets/images/fire.png'),
@@ -943,6 +950,7 @@ export default {
     playOrClose (type, curTreeData) {
       // 1.添加
       if (type === 1) {
+        new MqttService().client.send('video/start/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
         this.refreshMap(curTreeData)
@@ -1017,6 +1025,7 @@ export default {
           )
         }
       } else {
+        new MqttService().client.send('video/stop/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
         this.curSelectedVideo = {}
@@ -1501,6 +1510,12 @@ export default {
           nextBtn.removeAttribute('title')
         }
       })
+    },
+    getPlayerStyle () {
+      this.$nextTick(() => {
+        this.playerWidth = this.$refs.video[0].clientWidth
+        this.playerHeight = this.$refs.video[0].clientHeight
+      })
     }
   },
   created () {
@@ -1518,6 +1533,19 @@ export default {
     })
   },
   mounted () {
+    this.getPlayerStyle()
+    EventBus.$on('peopleRealChange', info => {
+      this.totalVideosArray.forEach((item, index) => {
+        if (item.deviceCode === info.deviceCode && item.streamType === info.channelId) {
+          this.$set(this.totalVideosArray[index], 'positionList', info.positionList)
+        }
+      })
+      this.curVideosArray.forEach((item, index) => {
+        if (item.deviceCode === info.deviceCode && item.streamType === info.channelId) {
+          this.$set(this.curVideosArray[index], 'positionList', info.positionList)
+        }
+      })
+    })
     this.bSaveMultiDroneInfos = true
   }
 }
@@ -1525,7 +1553,6 @@ export default {
 <style lang="less" scoped>
 .videoContainer {
   box-sizing: border-box;
-  padding:20px;
   .leftContainer {
     box-sizing: border-box;
     padding: 27px 0 0 28px;
