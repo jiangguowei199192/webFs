@@ -950,7 +950,10 @@ export default {
     playOrClose (type, curTreeData) {
       // 1.添加
       if (type === 1) {
+        // 开启人员识别
         new MqttService().client.send('video/start/algorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
+        // // 开启
+        // new MqttService().client.send('video/start/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 1 }))
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
         this.refreshMap(curTreeData)
@@ -1553,6 +1556,7 @@ export default {
 <style lang="less" scoped>
 .videoContainer {
   box-sizing: border-box;
+  padding:20px;
   .leftContainer {
     box-sizing: border-box;
     padding: 27px 0 0 28px;
