@@ -34,7 +34,7 @@
               <img :src="arPic" alt title="AR" />
               <img v-show="active === 1" class="hide_tab" :src="arSelectedPic" />
             </a>
-            <a
+            <!-- <a
               @mouseenter="showActive(2)"
               @mouseleave="showActive(0)"
               @click="showCurindex=1"
@@ -42,7 +42,7 @@
             >
               <img :src="alarmPic" alt />
               <img v-show="active === 2" class="hide_tab" :src="alarmSelectedPic" />
-            </a>
+            </a> -->
             <a
               @mouseenter="showActive(3)"
               @mouseleave="showActive(0)"
@@ -79,7 +79,7 @@
                 <img :src="tagPic" alt />
                 <img v-show="active === 5" class="hide_tab" :src="tagSelectedPic" />
               </a>
-              <a @mouseenter="showActive(6)" @mouseleave="showActive(0)" title="搜索">
+              <!-- <a @mouseenter="showActive(6)" @mouseleave="showActive(0)" title="搜索">
                 <img :src="searchPic" alt />
                 <img v-show="active === 6" class="hide_tab" :src="searchSelectedPic" />
               </a>
@@ -91,7 +91,7 @@
               >
                 <img :src="settingPic" title="设置" alt />
                 <img v-show="active === 7" class="hide_tab" :src="settingSelectedPic" />
-              </a>
+              </a> -->
             </template>
           </div>
           <!-- 实时警情弹框 -->
@@ -312,22 +312,23 @@
         </div>
         <div class="bottom stretchIMG"></div>
         <div class="menu stretchIMG">
-          <div class="itemBtn"
-              :class="{detectBtn:!bDetectStatus,detectBtnActive:bDetectStatus}"
-              @click.stop="switchDetectStatus"
+          <div
+            class="itemBtn"
+            :class="{detectBtn:!bDetectStatus,detectBtnActive:bDetectStatus}"
+            @click.stop="switchDetectStatus"
           ></div>
-          <div class="itemBtn puzzleBtn"
-              @click.stop="switchPuzzlingStatus"
-          >
+          <div class="itemBtn puzzleBtn" @click.stop="switchPuzzlingStatus">
             <div class="scanningStyle" v-show="bPuzzlingStatus"></div>
           </div>
-          <div class="itemBtn"
-              :class="{pointBtn:!bSetPointStatus,pointBtnActive:bSetPointStatus}"
-              @click.stop="switchSetPointStatus"
+          <div
+            class="itemBtn"
+            :class="{pointBtn:!bSetPointStatus,pointBtnActive:bSetPointStatus}"
+            @click.stop="switchSetPointStatus"
           ></div>
-          <div class="itemBtn"
-              :class="{routeBtn:!bShowRouteStatus,routeBtnActive:bShowRouteStatus}"
-              @click.stop="switchShowRouteStatus"
+          <div
+            class="itemBtn"
+            :class="{routeBtn:!bShowRouteStatus,routeBtnActive:bShowRouteStatus}"
+            @click.stop="switchShowRouteStatus"
           ></div>
         </div>
         <div class="mapOuterBox" :class="{mapOuterBoxFullScreen:bIsFullscreenMap}">
@@ -791,21 +792,23 @@ export default {
     },
     // 删除当前图片
     deleteCurPic (item) {
-      this.$axios.get(api.deleteSnapList, { params: { id: item.id } }).then(res => {
-        if (res && res.data && res.data.code === 0) {
-          this.showNotification = true
-          this.infoObj.isWarning = false
-          this.infoObj.isError = false
-          this.infoObj.isSuccess = true
-          this.infoObj.title = '成功'
-          this.infoObj.msg = '删除成功'
-          setTimeout(() => {
-            this.showNotification = false
-          }, 3000)
-          this.pageInfo.currentPage = 1
-          this.getSnapList()
-        }
-      })
+      this.$axios
+        .get(api.deleteSnapList, { params: { id: item.id } })
+        .then(res => {
+          if (res && res.data && res.data.code === 0) {
+            this.showNotification = true
+            this.infoObj.isWarning = false
+            this.infoObj.isError = false
+            this.infoObj.isSuccess = true
+            this.infoObj.title = '成功'
+            this.infoObj.msg = '删除成功'
+            setTimeout(() => {
+              this.showNotification = false
+            }, 3000)
+            this.pageInfo.currentPage = 1
+            this.getSnapList()
+          }
+        })
     },
     setPlayerSizeListener () {
       var me = this
@@ -832,7 +835,14 @@ export default {
     // 获取位置信息
     getPosition (curPosition) {
       if (curPosition.width > 0) {
-        this.curPositionObj = JSON.parse(JSON.stringify(curPosition))
+        const curArea = JSON.parse(JSON.stringify(curPosition))
+        this.curPositionObj = {
+          x: Math.round((curArea.x / 1920) * 1280 * 100) / 100,
+          y: Math.round((curArea.y / 1080) * 720 * 100) / 100,
+          width: (Math.round((curArea.width / 1920) * 100) / 100) * 1280,
+          height: (Math.round((curArea.height / 1080) * 100) / 100) * 720
+        }
+        console.log(this.curPositionObj)
         this.showMarkForm = true
       }
     },
@@ -2040,12 +2050,13 @@ export default {
         background-image: url("../../../assets/images/drone/puzzle-active.png");
       }
       .scanningStyle {
-        background: url("../../../assets/images/drone/scanning.png") center center no-repeat;
+        background: url("../../../assets/images/drone/scanning.png") center
+          center no-repeat;
         width: 40px;
-        height:40px;
-        animation: scanning 4s steps(32) infinite
+        height: 40px;
+        animation: scanning 4s steps(32) infinite;
       }
-      @keyframes scanning{
+      @keyframes scanning {
         0% {
           transform: rotateX(0deg);
           background-position: 0px -10px;
@@ -2059,7 +2070,7 @@ export default {
           background-position: 0px -10px;
         }
         100% {
-        transform: rotateX(180deg);
+          transform: rotateX(180deg);
           background-position: 0px 40px;
         }
       }
