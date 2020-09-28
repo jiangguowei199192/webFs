@@ -17,6 +17,9 @@ import './style/element.less'
 
 import md5 from 'js-md5'
 
+import VCharts from 'v-charts'
+Vue.use(VCharts)
+
 Vue.use(ElementUI)
 Vue.component('gMap', gMap)
 Vue.use(VueClipboard)

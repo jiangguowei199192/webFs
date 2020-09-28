@@ -5,19 +5,26 @@
       <div class="realtimeTitleStyle">实时数据统计</div>
       <div class="newPoliceStyle">新建警情</div>
       <div class="countBaseStyle">
-        <div style="width: 132px; height: 90px; display: inline-block;">
+        <div style="width: 132px; height: 90px; display: inline-block">
           <div class="countTitleStyle">警情数量</div>
           <div class="countNumberStyle">66</div>
         </div>
-        <div style="width: 132px; height: 90px; float: right;">
+        <div style="width: 132px; height: 90px; float: right">
           <div class="countTitleStyle">人员数量</div>
           <div class="countNumberStyle">66</div>
         </div>
-        <div style="width: 132px; height: 90px; display: inline-block; margin-top: 10px;">
+        <div
+          style="
+            width: 132px;
+            height: 90px;
+            display: inline-block;
+            margin-top: 10px;
+          "
+        >
           <div class="countNumberStyle">66</div>
           <div class="countTitleStyle">红外设备</div>
         </div>
-        <div style="width: 132px; height: 90px; float: right; margin-top: 10px;">
+        <div style="width: 132px; height: 90px; float: right; margin-top: 10px">
           <div class="countNumberStyle">66</div>
           <div class="countTitleStyle">无人机</div>
         </div>
@@ -31,6 +38,15 @@
     <div class="thisWeekStyle">
       <div class="realtimeIconStyle"></div>
       <div class="realtimeTitleStyle">本周报警趋势</div>
+      <ve-line
+        :data="chartData"
+        :settings="chartSettings"
+        height="300px"
+        :legend-visible="false"
+        :extend="chartExtend"
+        :colors="chartColors"
+        style="margin-top: -30px"
+      ></ve-line>
     </div>
   </div>
 </template>
@@ -43,8 +59,31 @@ export default {
     PoliceRankingMenu
   },
   data () {
-    return {}
-  }
+    return {
+      chartData: {
+        columns: ['日期', '访问用户'],
+        rows: [
+          { 日期: '1/1', 访问用户: 15 },
+          { 日期: '1/2', 访问用户: 3 },
+          { 日期: '1/3', 访问用户: 12 },
+          { 日期: '1/4', 访问用户: 7 },
+          { 日期: '1/5', 访问用户: 17 },
+          { 日期: '1/6', 访问用户: 18 },
+          { 日期: '1/7', 访问用户: 13 }
+        ]
+      },
+      chartSettings: {
+        area: true
+      },
+      chartColors: ['#4dd5e7'],
+      chartExtend: {
+        'xAxis.0.axisLabel.color': '#27BBE5',
+        'yAxis.0.axisLabel.color': '#27BBE5',
+        'yAxis.0.splitLine.lineStyle.color': '#27BBE5'
+      }
+    }
+  },
+  mounted () {}
 }
 </script>
 
