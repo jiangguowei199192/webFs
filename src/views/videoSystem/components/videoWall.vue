@@ -118,7 +118,7 @@
           <!-- 标签弹框 -->
           <div class="tagInfo" @dblclick.stop="stopEvent" v-show="showCurindex==4">
             <div>
-              <img src="../../../assets/images/AR/high.png" alt />
+              <img src="../../../assets/images/AR/high2.png" alt />
               <p>高点监控</p>
             </div>
             <div>
@@ -126,7 +126,7 @@
               <p>建筑大厦</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/river.png" alt />
+              <img src="../../../assets/images/AR/river2.png" alt />
               <p>河流</p>
             </div>
             <img src="../../../assets/images/AR/X.png" alt @click="showCurindex=1000" />
