@@ -280,7 +280,7 @@
       <!-- 显示AR标签 -->
       <div class="fullScreenAr"  v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0">
         <div
-          v-for="(item,index) in arPositionList"
+          v-for="(item,index) in videoInfo.arPositionList"
           :class="{high:item.label==0,build:item.label==1,river:item.label==2}"
           :key="index"
           :style="{left:((item.left+item.width/2)/1280)*1920+'px',top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
