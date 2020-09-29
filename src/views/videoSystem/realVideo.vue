@@ -963,15 +963,15 @@ export default {
             })
           )
           // 开启AR
-          new MqttService().client.send(
-            'video/start/arAlgorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 1
-            })
-          )
+          // new MqttService().client.send(
+          //   'video/start/arAlgorithm',
+          //   JSON.stringify({
+          //     deviceCode: curTreeData.deviceCode,
+          //     channelId: curTreeData.streamType,
+          //     streamUrl: curTreeData.streamUrl,
+          //     isOpen: 1
+          //   })
+          // )
         }
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
@@ -1598,6 +1598,33 @@ export default {
             this.curVideosArray[index],
             'positionList',
             info.positionList
+          )
+        }
+      })
+    })
+    // AR数据
+    EventBus.$on('video/aRAiResult', info => {
+      this.totalVideosArray.forEach((item, index) => {
+        if (
+          item.deviceCode === info.deviceCode &&
+          item.streamType === info.channelId
+        ) {
+          this.$set(
+            this.totalVideosArray[index],
+            'arPositionList',
+            info.arPositionList
+          )
+        }
+      })
+      this.curVideosArray.forEach((item, index) => {
+        if (
+          item.deviceCode === info.deviceCode &&
+          item.streamType === info.channelId
+        ) {
+          this.$set(
+            this.curVideosArray[index],
+            'arPositionList',
+            info.arPositionList
           )
         }
       })

@@ -45,6 +45,8 @@ var mqttService;
       instance.client.subscribe('video/people/found')
       // 订阅人员识别数据
       instance.client.subscribe('video/people/real')
+      // 订阅AR数据
+      instance.client.subscribe('video/aRAiResult')
       // 飞机实时信息
       instance.client.subscribe('gdu/#')
     }

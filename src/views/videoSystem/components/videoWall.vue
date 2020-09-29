@@ -42,7 +42,7 @@
             >
               <img :src="alarmPic" alt />
               <img v-show="active === 2" class="hide_tab" :src="alarmSelectedPic" />
-            </a> -->
+            </a>-->
             <a
               @mouseenter="showActive(3)"
               @mouseleave="showActive(0)"
@@ -91,7 +91,7 @@
               >
                 <img :src="settingPic" title="设置" alt />
                 <img v-show="active === 7" class="hide_tab" :src="settingSelectedPic" />
-              </a> -->
+              </a>-->
             </template>
           </div>
           <!-- 实时警情弹框 -->
@@ -277,6 +277,17 @@
           :class="{ship:item.label===1}"
         ></span>
       </div>
+      <!-- 显示AR标签 -->
+      <div class="fullScreenAr"  v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0">
+        <div
+          v-for="(item,index) in arPositionList"
+          :class="{high:item.label==0,build:item.label==1,river:item.label==2}"
+          :key="index"
+          :style="{left:((item.left+item.width/2)/1280)*1920+'px',top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
+        >
+          <div >{{item.labelName}}</div>
+        </div>
+      </div>
       <!-- 新版云台操作 -->
       <div
         class="operate"
@@ -448,6 +459,7 @@ import { debounce, throttle } from '../../../utils/public.js'
 import globalApi from '../../../utils/globalApi'
 import { api } from '@/api/videoSystem/realVideo'
 import { timeFormat } from '@/utils/date'
+import MqttService from '@/utils/mqttService'
 export default {
   data () {
     return {
@@ -563,15 +575,15 @@ export default {
       },
       tageTypeArray: [
         {
-          id: '01',
+          id: '0',
           name: '高点监控'
         },
         {
-          id: '02',
+          id: '1',
           name: '建筑大厦'
         },
         {
-          id: '03',
+          id: '2',
           name: '河流'
         }
       ],
@@ -840,8 +852,8 @@ export default {
         this.curPositionObj = {
           x: Math.round((curArea.x / 1920) * 1280 * 100) / 100,
           y: Math.round((curArea.y / 1080) * 720 * 100) / 100,
-          width: (Math.round((curArea.width / 1920) * 100) / 100) * 1280,
-          height: (Math.round((curArea.height / 1080) * 100) / 100) * 720
+          width: Math.round((curArea.width / 1920) * 1280 * 100) / 100,
+          height: Math.round((curArea.height / 1080) * 720 * 100) / 100
         }
         console.log(this.curPositionObj)
         this.showMarkForm = true
@@ -881,15 +893,41 @@ export default {
           // 成功之后调用该方法获取坐标信息
           // this.$refs.drawArea.customQuery(this.ruleForm)
           // 标签名称和标签类型校验成功之后 调接口  获取数据  无需手动创建dom结构
-          this.showNotification = true
-          this.infoObj.isSuccess = true
-          this.infoObj.isError = false
-          this.infoObj.msg = 'SDFSDFSDF'
-          setTimeout(() => {
-            this.showNotification = false
-          }, 3000)
+          // this.showNotification = true
+          // this.infoObj.isSuccess = true
+          // this.infoObj.isError = false
+          // this.infoObj.msg = 'SDFSDFSDF'
+          // setTimeout(() => {
+          //   this.showNotification = false
+          // }, 3000)
 
-          this.createTag(this.ruleForm, this.curPositionObj)
+          // this.createTag(this.ruleForm, this.curPositionObj)
+          new MqttService().client.send(
+            'video/add/arAlgorithm',
+            JSON.stringify({
+              deviceCode: this.videoInfo.deviceCode,
+              channelId: this.videoInfo.streamType,
+              streamUrl: this.videoInfo.streamUrl,
+              label: this.ruleForm.tagType,
+              labelName: this.ruleForm.tagName,
+              x: this.curPositionObj.x,
+              y: this.curPositionObj.y,
+              width: this.curPositionObj.width,
+              height: this.curPositionObj.height,
+              isOpen: 1
+            })
+          )
+          console.log({
+            deviceCode: this.videoInfo.deviceCode,
+            channelId: this.videoInfo.streamType,
+            streamUrl: this.videoInfo.streamUrl,
+            label: this.ruleForm.tagType,
+            labelName: this.ruleForm.tagName,
+            x: this.curPositionObj.x,
+            y: this.curPositionObj.y,
+            width: this.curPositionObj.width,
+            height: this.curPositionObj.height
+          })
           this.resetForm('ruleForm')
         } else {
           console.log('error submit!!')
@@ -1530,7 +1568,7 @@ export default {
       }
       .picStorage {
         position: absolute;
-        z-index:20;
+        z-index: 20;
         top: 94px;
         left: 50%;
         transform: translateX(-50%);
@@ -1764,16 +1802,43 @@ export default {
   .fullScreenFace {
     span {
       position: absolute;
-      z-index:10;
+      z-index: 10;
       // background: url(../../../assets/images/person.png) no-repeat center center;
       // background-size:100% 100%;
       border: 2px solid #00ff00;
-      background:rgba(0,255,0,.3)
-
+      background: rgba(0, 255, 0, 0.3);
     }
     // span.ship{
     //    background: url(../../../assets/images/ship.png) no-repeat center center;
     // }
+  }
+  .fullScreenAr {
+    > div {
+      position: absolute;
+      box-sizing: border-box;
+      height:103px;
+      width:102px;
+      div {
+        font-size:12px;
+        text-align: center;
+        line-height: 44px;
+      }
+    }
+    > div.river,
+    div.build {
+      width: 145px;
+      height: 59px;
+      padding-left: 48px;
+    }
+    div.river {
+      background: url(../../../assets/images/AR/river.png) no-repeat;
+    }
+    div.build {
+      background: url(../../../assets/images/AR/build.png) no-repeat;
+    }
+    div.high {
+      background: url(../../../assets/images/AR/high.png) no-repeat;
+    }
   }
   .fullScreenOperate {
     position: absolute;
@@ -2156,7 +2221,7 @@ export default {
   }
   .fullScreenMark {
     position: absolute;
-    z-index:20;
+    z-index: 20;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
