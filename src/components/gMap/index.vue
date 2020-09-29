@@ -309,7 +309,7 @@ export default {
     // 默认底图序号
     baseMapIndex: {
       type: Number,
-      default: 0
+      default: 2
     },
     // 地图圆角样式
     bRadiusCorner: {
