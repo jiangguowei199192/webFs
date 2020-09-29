@@ -1808,9 +1808,10 @@ export default {
       border: 2px solid #00ff00;
       background: rgba(0, 255, 0, 0.3);
     }
-    // span.ship{
-    //    background: url(../../../assets/images/ship.png) no-repeat center center;
-    // }
+    span.ship{
+       border: 2px solid #00e4ff;
+       background: rgba(0, 228, 255);
+    }
   }
   .fullScreenAr {
     > div {

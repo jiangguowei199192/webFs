@@ -953,15 +953,15 @@ export default {
       if (type === 1) {
         // 开启人员识别
         if (curTreeData.deviceTypeCode === 'GDJK') {
-          new MqttService().client.send(
-            'video/start/algorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 1
-            })
-          )
+          // new MqttService().client.send(
+          //   'video/start/algorithm',
+          //   JSON.stringify({
+          //     deviceCode: curTreeData.deviceCode,
+          //     channelId: curTreeData.streamType,
+          //     streamUrl: curTreeData.streamUrl,
+          //     isOpen: 1
+          //   })
+          // )
           // 开启AR
           new MqttService().client.send(
             'video/start/arAlgorithm',
