@@ -1,5 +1,8 @@
 import { api } from '@/api/videoSystem/realVideo'
 import { EventBus } from '@/utils/eventBus.js'
+import {
+  Notification
+} from 'element-ui'
 const videoMixin = {
   data () {
     return {
@@ -316,6 +319,10 @@ const videoMixin = {
           } else if (info.deviceTypeCode === 'GDJK') {
             this.cameraDevArray.push(info)
           }
+          // For Rp
+          if (this.addDeviceCallback !== undefined) {
+            this.addDeviceCallback(info)
+          }
         }
       }
     },
@@ -450,6 +457,34 @@ const videoMixin = {
           // console.log(this.cameraDevArray)
           // console.log(this.droneDevArray)
           EventBus.$emit('GetAllDeptDevices_Done', true)
+          // For Rp
+          if (this.getAllDeviceDoneCallback !== undefined) {
+            this.getAllDeviceDoneCallback(this.cameraDevArray, this.droneDevArray)
+          }
+          if (localStorage.gotoVideoId !== '') {
+            const tmpId = localStorage.gotoVideoId
+            localStorage.gotoVideoId = ''
+            let bFoundVideo = false
+            for (let i = 0; i < this.onlineArray.length; i++) {
+              if (this.onlineArray[i].id === tmpId) {
+                for (let j = 0; j < this.onlineArray[i].children.length; j++) {
+                  if (this.playDeviceVideo !== undefined) {
+                    bFoundVideo = true
+                    this.playDeviceVideo(this.onlineArray[i], this.onlineArray[i].children[j], i, j)
+                  }
+                }
+                break
+              }
+            }
+            if (!bFoundVideo) {
+              Notification({
+                title: '提示',
+                message: '视频设备不在线!',
+                type: 'warning',
+                duration: 5 * 1000
+              })
+            }
+          }
         }
       })
     },
