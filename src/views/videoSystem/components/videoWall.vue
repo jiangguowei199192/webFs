@@ -274,18 +274,25 @@
           v-for="(item,index) in videoInfo.positionList"
           :key="index"
           :style="{left:item.left/1280*(videoInfo.isShowOperate?1920:playerWidth)+'px',top:item.top/720*(videoInfo.isShowOperate?1080:playerHeight)+'px',width:item.width/1280*(videoInfo.isShowOperate?1920:playerWidth)+'px',height:item.height/720*(videoInfo.isShowOperate?1080:playerHeight)+'px'}"
-          :class="{ship:item.label===1}"
+          :class="{ship:item.label==1}"
         ></span>
       </div>
       <!-- 显示AR标签 -->
-      <div class="fullScreenAr"  v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0">
+      <div
+        class="fullScreenAr"
+        v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0"
+      >
         <div
           v-for="(item,index) in videoInfo.arPositionList"
           :class="{high:item.label==0,build:item.label==1,river:item.label==2}"
           :key="index"
-          :style="{left:((Number(item.left)+item.label!=0?Number(item.width/2):0)/1280)*1920+(item.label==0?-25:0)+'px',top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
+          :title="(Number(item.left)+Number(item.width/2)/1280)*1920"
+          :style="{
+          left:item.label=='0'?((Number(item.left)+Number(item.width/2))/1280*1920-51.5)+'px':(Number(item.left)+Number(item.width/2))/720*1920+'px',
+         top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
         >
-          <div >{{item.labelName}}</div>
+          <div>{{item.labelName}}</div>
+          <!-- Number(item.left)+Number(item.width/2))/720)*1080-25+'px' -->
         </div>
       </div>
       <!-- 新版云台操作 -->
@@ -463,6 +470,16 @@ import MqttService from '@/utils/mqttService'
 export default {
   data () {
     return {
+      arPositionList: [
+        {
+          top: '144.67',
+          left: '834.67',
+          width: '66.67',
+          label: '0',
+          labelName: '标签名称',
+          height: '79.33'
+        }
+      ],
       picUrl: globalApi.baseUrl + '/video-service2', // 图片前缀
       showCutImg: false, // 是否显示抓拍的图片 默认不显示
       cutImgUrl: '', // 显示抓取的图片
@@ -1808,19 +1825,19 @@ export default {
       border: 2px solid #00ff00;
       background: rgba(0, 255, 0, 0.3);
     }
-    span.ship{
-       border: 2px solid #00e4ff;
-       background: rgba(0, 228, 255);
+    span.ship {
+      border: 2px solid #00e4ff;
+      background: rgba(0, 228, 255, 0.3);
     }
   }
   .fullScreenAr {
     > div {
       position: absolute;
       box-sizing: border-box;
-      height:103px;
-      width:102px;
+      height: 103px;
+      width: 102px;
       div {
-        font-size:12px;
+        font-size: 12px;
         text-align: center;
         line-height: 44px;
       }
