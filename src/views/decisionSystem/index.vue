@@ -8,6 +8,27 @@
       :bShowLonLat="false"
       :bShowPoliceStatistics="true"
       :bShowBottomMenu="true"></gMap>
+    <el-select class="searchCombo" placeholder="请选择类型" v-model="selMenuType">
+      <el-option
+        v-for="(item, index) in menuOptions"
+        :key="index"
+        :label="item.label"
+        :value="item.value"
+      ></el-option>
+    </el-select>
+    <div class="searchInputBox">
+      <input
+        class="inputText"
+        v-model="searchText"
+        type="text"
+        autocomplete="off"
+        value
+        v-on:keyup.enter="searchRpDatas(searchText)"
+        placeholder="请输入筛选内容"/>
+        <div class="searchBtn" @click.stop="searchRpDatas(searchText)">
+          <div class="btnImg"></div>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -16,10 +37,21 @@ import { EventBus } from '@/utils/eventBus.js'
 import videoMixin from '../videoSystem/mixins/videoMixin'
 import regionMixin from './regionMixin'
 import riverMixin from './riverMixin'
+import {
+  Notification
+} from 'element-ui'
 export default {
   name: 'decision',
   data () {
     return {
+      selMenuType: '1',
+      searchText: '',
+      menuOptions: [
+        { label: '组织机构', value: '1' },
+        { label: '在线警力', value: '2' },
+        { label: '无人机', value: '3' },
+        { label: '红外设备', value: '4' }
+      ]
     }
   },
   mixins: [videoMixin, regionMixin, riverMixin],
@@ -64,8 +96,67 @@ export default {
     },
     // 显示船只实时位置
     showRpShips (tmpDatas) {
-      this.$refs.gduMap.map2D.riverProtectionManager.removeAllShpis()
-      this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas(tmpDatas)
+      if (this.$refs.gduMap !== undefined) {
+        this.$refs.gduMap.map2D.riverProtectionManager.removeAllShpis()
+        this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas(tmpDatas)
+      }
+    },
+    // 搜索大保护数据结果
+    searchRpDatas (_searchText) {
+      if (_searchText === '') {
+        Notification({
+          title: '提示',
+          message: '请输入筛选内容!',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        return
+      }
+      let tmpData = null
+      if (this.selMenuType === '1') { // 组织机构
+        const len = this.deptList.length
+        for (let i = 0; i < len; i++) {
+          if (this.deptList[i].name.search(_searchText) !== -1) {
+            tmpData = this.deptList[i]
+            break
+          }
+        }
+      } else if (this.selMenuType === '2') { // 在线警力
+        const len = this.policeList.length
+        for (let i = 0; i < len; i++) {
+          if (this.policeList[i].name.search(_searchText) !== -1) {
+            tmpData = this.policeList[i]
+            break
+          }
+        }
+      } else if (this.selMenuType === '3') { // 无人机
+        const len = this.droneDevArray.length
+        for (let i = 0; i < len; i++) {
+          if (this.droneDevArray[i].name.search(_searchText) !== -1) {
+            tmpData = this.droneDevArray[i]
+            break
+          }
+        }
+      } else if (this.selMenuType === '4') { // 红外设备
+        const len = this.cameraDevArray.length
+        for (let i = 0; i < len; i++) {
+          if (this.cameraDevArray[i].name.search(_searchText) !== -1) {
+            tmpData = this.cameraDevArray[i]
+            break
+          }
+        }
+      }
+      if (tmpData !== null) {
+        this.$refs.gduMap.map2D.riverProtectionManager.findAndShowData(tmpData)
+        this.$refs.gduMap.map2D.zoomToCenter(tmpData.longitude, tmpData.latitude)
+      } else {
+        Notification({
+          title: '提示',
+          message: '搜索不到:' + _searchText + '!',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+      }
     }
   },
   created () {
@@ -148,6 +239,52 @@ export default {
 
 <style lang="scss" scoped>
 .decision {
+  position: relative;
   height: 940px;
+  .searchCombo {
+    position: absolute;
+    top: 40px;
+    left: 20px;
+    width: 200px;
+    height: 35px;
+  }
+  .searchInputBox {
+    position: absolute;
+    top: 41px;
+    left: 240px;
+    width: 240px;
+    height: 32px;
+    background-color: white;
+    .inputText {
+      width: 200px;
+      height: 32px;
+      border-width: 0px;
+      padding-left: 5px;
+      background-color: white;
+      outline: none;
+    }
+    .searchBtn {
+      cursor: pointer;
+      position: absolute;
+      width: 40px;
+      height: 32px;
+      right: 0px;
+      top: 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .btnImg {
+        width: 21px;
+        height: 22px;
+        background-image: url('../../assets/images/map/search.png');
+      }
+    }
+    .searchBtn:hover {
+      opacity: 0.5;
+    }
+    .searchBtn:active {
+      opacity: 0.75;
+    }
+  }
 }
 </style>
