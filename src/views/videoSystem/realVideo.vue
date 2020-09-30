@@ -1051,15 +1051,15 @@ export default {
       } else {
         if (curTreeData.deviceTypeCode === 'GDJK') {
           // 关闭人员识别
-          new MqttService().client.send(
-            'video/stop/algorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 0
-            })
-          )
+          // new MqttService().client.send(
+          //   'video/stop/algorithm',
+          //   JSON.stringify({
+          //     deviceCode: curTreeData.deviceCode,
+          //     channelId: curTreeData.streamType,
+          //     streamUrl: curTreeData.streamUrl,
+          //     isOpen: 0
+          //   })
+          // )
           // 关闭AR
           new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         }
@@ -1603,7 +1603,9 @@ export default {
       })
     })
     // AR数据
-    EventBus.$on('video/aRAiResult', info => {
+    EventBus.$on('getArChange', info => {
+      debugger
+      console.log(info)
       this.totalVideosArray.forEach((item, index) => {
         if (
           item.deviceCode === info.deviceCode &&

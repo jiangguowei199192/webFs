@@ -283,7 +283,7 @@
           v-for="(item,index) in videoInfo.arPositionList"
           :class="{high:item.label==0,build:item.label==1,river:item.label==2}"
           :key="index"
-          :style="{left:((item.left+item.width/2)/1280)*1920+'px',top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
+          :style="{left:((Number(item.left)+item.label!=0?Number(item.width/2):0)/1280)*1920+(item.label==0?-25:0)+'px',top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
         >
           <div >{{item.labelName}}</div>
         </div>

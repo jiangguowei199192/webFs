@@ -137,6 +137,10 @@ export default {
     EventBus.$on('video/people/real', info => {
       EventBus.$emit('peopleRealChange', info)
     })
+    // AR显示
+    EventBus.$on('video/aRAiResult', info => {
+      EventBus.$emit('getArChange', info)
+    })
   },
   mounted () {
     this.jumpTo(this.isActive)
