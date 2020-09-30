@@ -1576,7 +1576,6 @@ export default {
   mounted () {
     this.getPlayerStyle()
     EventBus.$on('peopleRealChange', info => {
-      console.log(info)
       this.totalVideosArray.forEach((item, index) => {
         if (
           item.deviceCode === info.deviceCode &&
@@ -1604,7 +1603,6 @@ export default {
     })
     // AR数据
     EventBus.$on('getArChange', info => {
-      debugger
       console.log(info)
       this.totalVideosArray.forEach((item, index) => {
         if (
