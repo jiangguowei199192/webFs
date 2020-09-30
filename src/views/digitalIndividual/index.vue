@@ -82,7 +82,24 @@
             align="center"
             label="案件编号"
             prop="bianHao"
-          ></el-table-column>
+          >
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="danger"
+                @click="showDetailClick(scope.$index, scope.row)"
+                style="
+                  width: 200px;
+                  background-color: transparent;
+                  border: none;
+                  font-size: 16px;
+                  color: #1eb0fc;
+                "
+              >
+                {{ scope.row.bianHao }}
+              </el-button>
+            </template>
+          </el-table-column>
           <el-table-column
             align="center"
             label="信息来源"
@@ -134,13 +151,21 @@
                 size="mini"
                 type="danger"
                 @click="resolve(scope.$index, scope.row)"
-                style="width: 74px; height: 26px; background: #1EB0FC; font-size: 16px; border: none;"
+                style="
+                  width: 74px;
+                  height: 26px;
+                  background: #1eb0fc;
+                  font-size: 16px;
+                  border: none;
+                "
                 >未处置</el-button
               >
             </template>
           </el-table-column>
         </el-table>
-        <!-- <el-pagination
+      </div>
+      <div style="margin-right: 32px; text-align: right">
+        <el-pagination
           class="tablePagination"
           popper-class="pageSelect"
           :total="pageData.total"
@@ -148,9 +173,47 @@
           :current-page.sync="pageData.currentPage"
           layout="total, prev, pager, next, jumper"
           @current-change="currentPageChange"
-        ></el-pagination> -->
+        ></el-pagination>
       </div>
     </div>
+
+    <el-dialog :visible.sync="showDetail" width="852px" class="detailDlg">
+      <div>
+        <div class="detailTitle">案件信息</div>
+        <div class="detailTitleLine"></div>
+        <div>
+          <div class="detailText1 detailText2">
+            案件编号：888888888888888888
+          </div>
+          <div class="detailText1">信息来源：888888888888888888</div>
+        </div>
+        <div>
+          <div class="detailText1 detailText2">举报人：举报人</div>
+          <div class="detailText1">举报电话：888888888888888888</div>
+        </div>
+        <div class="detailText3">举报地址：888888888888888888</div>
+        <div>
+          <div class="detailText1 detailText2">
+            举报时间：888888888888888888
+          </div>
+          <div class="detailText1">案件所属：888888888888888888</div>
+        </div>
+        <div class="detailText3">简要描述：888888888888888888</div>
+        <div class="detailText3">重点记录：888888888888888888</div>
+
+        <div class="detailTitle" style="margin-top: 33px">处置信息</div>
+        <div class="detailTitleLine"></div>
+        <div class="detailText3">处置结果：888888888888888888</div>
+        <div>
+          <div class="detailText1 detailText2">
+            处置时间：888888888888888888
+          </div>
+          <div class="detailText1">处置人：888888888888888888</div>
+        </div>
+
+        <div class="npdCancel" @click="detailCancelClick">关闭</div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -234,7 +297,14 @@ export default {
           status: '未处置'
         }
       ],
-      multipleSelection: []
+      multipleSelection: [],
+      pageData: {
+        total: 100,
+        pageSize: 10,
+        currentPage: 1
+      },
+
+      showDetail: false
     }
   },
   methods: {
@@ -246,6 +316,11 @@ export default {
     // 处置
     resolve (index, row) {
       console.log(index, row)
+    },
+    // 显示案件详情
+    showDetailClick (index, row) {
+      console.log(index, row)
+      this.showDetail = true
     },
     // 日期搜索
     dateSearch () {
@@ -296,6 +371,14 @@ export default {
       //   })
       //   tmpMap.setZoom(16)
       // }, 500)
+    },
+    // 分页页数改变
+    currentPageChange () {
+      // this.getFirePoliceList()
+    },
+    // 关闭详情
+    detailCancelClick () {
+      this.showDetail = false
     }
   },
   created () {}
@@ -304,20 +387,18 @@ export default {
 
 <style lang="scss" scoped>
 .individual {
-  // min-width: 1600px;
+  min-width: 1700px;
   height: 899px;
   padding-top: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
+  // background: white;
 }
 .container {
-  min-width: 1560px;
+  margin: 0px 20px 10px 20px;
+  // min-width: 1560px;
   height: 800px;
   padding: 40px 48px 48px 48px;
   background: url(../../assets/images/policeHistory/box.png) no-repeat;
   background-size: 100%;
-  // margin-right: 20px;
-  // margin-left: 20px;
 }
 
 .belongSel {
@@ -409,15 +490,12 @@ export default {
 
 .tableBox {
   margin-top: 20px;
-  // width: 1729px;
   height: 690px;
   background: #183258;
-  // margin: 30px 0 0 18px;
   overflow: hidden;
-  .tablePagination {
-    padding-top: 30px;
-    text-align: center;
-  }
+}
+.el-table::before {
+  height: 0px;
 }
 .el-table {
   color: white;
@@ -464,7 +542,61 @@ export default {
     border-color: #c5f3ff;
   }
 }
-// /deep/.el-table .cell {
-//   white-space: pre-line;
-// }
+
+.detailDlg.el-dialog__wrapper {
+  /deep/.el-dialog {
+    .el-dialog__header {
+      display: none;
+    }
+    background: transparent;
+    .el-dialog__body {
+      display: inline-block;
+      // padding: 0px;
+      padding: 45px 54px 41px 59px;
+      width: 100%;
+      height: 569px;
+      background: url(../../assets/images/policeHistory/detailBox.png) no-repeat;
+      background-size: 100%;
+    }
+  }
+}
+.npdCancel {
+  float: right;
+  width: 87px;
+  height: 32px;
+  background: transparent;
+  color: #1eb0fc;
+  font-size: 18px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 4px;
+  border: solid 1px #1eb0fc;
+  cursor: pointer;
+  margin-top: 44px;
+}
+
+.detailTitle {
+  color: #1eb0fc;
+  font-size: 18px;
+  font-style: italic;
+}
+.detailTitleLine {
+  height: 3px;
+  background: url(../../assets/images/policeHistory/detailLine.png) no-repeat;
+  background-size: 100%;
+}
+.detailText1 {
+  display: inline-block;
+  color: white;
+  font-size: 16px;
+  margin-top: 25px;
+}
+.detailText2 {
+  width: 450px;
+}
+.detailText3 {
+  color: white;
+  font-size: 16px;
+  margin-top: 25px;
+}
 </style>
