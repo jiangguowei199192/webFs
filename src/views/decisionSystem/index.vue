@@ -34,6 +34,7 @@
 
 <script>
 import { EventBus } from '@/utils/eventBus.js'
+import MqttService from '@/utils/mqttService'
 import videoMixin from '../videoSystem/mixins/videoMixin'
 import regionMixin from './regionMixin'
 import riverMixin from './riverMixin'
@@ -166,22 +167,24 @@ export default {
     // this.$refs.gduMap.map2D.setZoom(16)
     // Test Code
     {
-      const tmpShips = [{
-        type: 'RP_Ship',
-        id: '1',
-        name: '江上船只1',
-        address: '长江二桥河段',
-        longitude: 114.65811872631607,
-        latitude: 30.68961010828556
-      },
-      {
-        type: 'RP_Ship',
-        id: '2',
-        name: '江上船只2',
-        address: '长江二桥河段',
-        longitude: 114.65411872631607,
-        latitude: 30.68961010828556
-      }]
+      const tmpShips = {
+        realRadarInfos: [{
+          type: 'RP_Ship',
+          id: '1',
+          name: '江上船只1',
+          address: '长江二桥河段',
+          longitude: 114.65811872631607,
+          latitude: 30.68961010828556
+        },
+        {
+          type: 'RP_Ship',
+          id: '2',
+          name: '江上船只2',
+          address: '长江二桥河段',
+          longitude: 114.65411872631607,
+          latitude: 30.68961010828556
+        }]
+      }
       const tmpWarn = {
         id: '6dddef0f25758f86db0b7281b0c2efa8',
         caseNo: '2020092922678',
@@ -193,28 +196,30 @@ export default {
         latitude: 30.68961010828556
       }
       setTimeout(() => {
-        EventBus.$emit('radar/realTimeInfo', tmpShips)
+        new MqttService().client.send('radar/realTimeInfo', JSON.stringify(tmpShips))
         EventBus.$emit('addNewWarningSuccess', tmpWarn)
       }, 5000)
 
-      const tmpShips2 = [{
-        type: 'RP_Ship',
-        id: '12',
-        name: '江上船只12',
-        address: '长江二桥河段',
-        longitude: 114.65811872631607,
-        latitude: 30.67961010828556
-      },
-      {
-        type: 'RP_Ship',
-        id: '22',
-        name: '江上船只22',
-        address: '长江二桥河段',
-        longitude: 114.65411872631607,
-        latitude: 30.67961010828556
-      }]
+      const tmpShips2 = {
+        realRadarInfos: [{
+          type: 'RP_Ship',
+          id: '12',
+          name: '江上船只1222',
+          address: '长江二桥河段',
+          longitude: 114.65811872631607,
+          latitude: 30.67961010828556
+        },
+        {
+          type: 'RP_Ship',
+          id: '22',
+          name: '江上船只22',
+          address: '长江二桥河段',
+          longitude: 114.65611872631607,
+          latitude: 30.68061010828556
+        }]
+      }
       setTimeout(() => {
-        EventBus.$emit('radar/realTimeInfo', tmpShips2)
+        new MqttService().client.send('radar/realTimeInfo', JSON.stringify(tmpShips2))
       }, 10000)
     }
 

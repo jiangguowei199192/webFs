@@ -10,8 +10,8 @@ const riverMixin = {
   },
 
   mounted () {
-    EventBus.$on('radar/realTimeInfo', datas => {
-      this.handerShipDatas(datas)
+    EventBus.$on('radar/realTimeInfo', info => {
+      this.handerShipDatas(info.realRadarInfos)
     })
     EventBus.$on('addNewWarningSuccess', data => {
       this.handerWarningData(data)
