@@ -8,7 +8,7 @@
       :bShowLonLat="false"
       :bShowPoliceStatistics="true"
       :bShowBottomMenu="true"></gMap>
-    <el-select class="searchCombo" placeholder="ÇëÑ¡ÔñÀàĞÍ" v-model="selMenuType">
+    <el-select class="searchCombo" placeholder="è¯·é€‰æ‹©ç±»å‹" v-model="selMenuType">
       <el-option
         v-for="(item, index) in menuOptions"
         :key="index"
@@ -24,7 +24,7 @@
         autocomplete="off"
         value
         v-on:keyup.enter="searchRpDatas(searchText)"
-        placeholder="ÇëÊäÈëÉ¸Ñ¡ÄÚÈİ"/>
+        placeholder="è¯·è¾“å…¥ç­›é€‰å†…å®¹"/>
         <div class="searchBtn" @click.stop="searchRpDatas(searchText)">
           <div class="btnImg"></div>
         </div>
@@ -48,16 +48,16 @@ export default {
       selMenuType: '1',
       searchText: '',
       menuOptions: [
-        { label: '×éÖ¯»ú¹¹', value: '1' },
-        { label: 'ÔÚÏß¾¯Á¦', value: '2' },
-        { label: 'ÎŞÈË»ú', value: '3' },
-        { label: 'ºìÍâÉè±¸', value: '4' }
+        { label: 'ç»„ç»‡æœºæ„', value: '1' },
+        { label: 'åœ¨çº¿è­¦åŠ›', value: '2' },
+        { label: 'æ— äººæœº', value: '3' },
+        { label: 'çº¢å¤–è®¾å¤‡', value: '4' }
       ]
     }
   },
   mixins: [videoMixin, regionMixin, riverMixin],
   methods: {
-    // ´¦ÀíÊı¾İ£¬±ãÓÚµØÍ¼×é¼ş¼ÓÔØÏÔÊ¾
+    // å¤„ç†æ•°æ®ï¼Œä¾¿äºåœ°å›¾ç»„ä»¶åŠ è½½æ˜¾ç¤º
     handerVideoDevice (dev) {
       if (dev.deviceTypeCode === 'GDJK') {
         dev.type = 'RP_Camera'
@@ -70,12 +70,12 @@ export default {
       dev.longitude = dev.deviceLongitude
       dev.latitude = dev.deviceLatitude
     },
-    // ĞÂÔöÏÔÊ¾¸ßµã»òÎŞÈË»úÉè±¸
+    // æ–°å¢æ˜¾ç¤ºé«˜ç‚¹æˆ–æ— äººæœºè®¾å¤‡
     addDeviceCallback (devInfo) {
       this.handerVideoDevice(devInfo)
       this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas([devInfo])
     },
-    // ÏÔÊ¾¸ßµãÉè±¸ºÍÎŞÈË»úÉè±¸
+    // æ˜¾ç¤ºé«˜ç‚¹è®¾å¤‡å’Œæ— äººæœºè®¾å¤‡
     getAllDeviceDoneCallback (cameraDevs, droneDevs) {
       cameraDevs.forEach(dev => {
         this.handerVideoDevice(dev)
@@ -86,7 +86,7 @@ export default {
       })
       this.showRpDatas(droneDevs)
     },
-    // ÏÔÊ¾³¤½­´ó±£»¤Êı¾İ²ãĞÅÏ¢
+    // æ˜¾ç¤ºé•¿æ±Ÿå¤§ä¿æŠ¤æ•°æ®å±‚ä¿¡æ¯
     showRpDatas (tmpDatas) {
       this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas(tmpDatas)
       if (tmpDatas.length > 0) {
@@ -95,26 +95,26 @@ export default {
         }
       }
     },
-    // ÏÔÊ¾´¬Ö»ÊµÊ±Î»ÖÃ
+    // æ˜¾ç¤ºèˆ¹åªå®æ—¶ä½ç½®
     showRpShips (tmpDatas) {
       if (this.$refs.gduMap !== undefined) {
         this.$refs.gduMap.map2D.riverProtectionManager.removeAllShpis()
         this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas(tmpDatas)
       }
     },
-    // ËÑË÷´ó±£»¤Êı¾İ½á¹û
+    // æœç´¢å¤§ä¿æŠ¤æ•°æ®ç»“æœ
     searchRpDatas (_searchText) {
       if (_searchText === '') {
         Notification({
-          title: 'ÌáÊ¾',
-          message: 'ÇëÊäÈëÉ¸Ñ¡ÄÚÈİ!',
+          title: 'æç¤º',
+          message: 'è¯·è¾“å…¥ç­›é€‰å†…å®¹!',
           type: 'warning',
           duration: 5 * 1000
         })
         return
       }
       let tmpData = null
-      if (this.selMenuType === '1') { // ×éÖ¯»ú¹¹
+      if (this.selMenuType === '1') { // ç»„ç»‡æœºæ„
         const len = this.deptList.length
         for (let i = 0; i < len; i++) {
           if (this.deptList[i].name.search(_searchText) !== -1) {
@@ -122,7 +122,7 @@ export default {
             break
           }
         }
-      } else if (this.selMenuType === '2') { // ÔÚÏß¾¯Á¦
+      } else if (this.selMenuType === '2') { // åœ¨çº¿è­¦åŠ›
         const len = this.policeList.length
         for (let i = 0; i < len; i++) {
           if (this.policeList[i].name.search(_searchText) !== -1) {
@@ -130,7 +130,7 @@ export default {
             break
           }
         }
-      } else if (this.selMenuType === '3') { // ÎŞÈË»ú
+      } else if (this.selMenuType === '3') { // æ— äººæœº
         const len = this.droneDevArray.length
         for (let i = 0; i < len; i++) {
           if (this.droneDevArray[i].name.search(_searchText) !== -1) {
@@ -138,7 +138,7 @@ export default {
             break
           }
         }
-      } else if (this.selMenuType === '4') { // ºìÍâÉè±¸
+      } else if (this.selMenuType === '4') { // çº¢å¤–è®¾å¤‡
         const len = this.cameraDevArray.length
         for (let i = 0; i < len; i++) {
           if (this.cameraDevArray[i].name.search(_searchText) !== -1) {
@@ -152,8 +152,8 @@ export default {
         this.$refs.gduMap.map2D.zoomToCenter(tmpData.longitude, tmpData.latitude)
       } else {
         Notification({
-          title: 'ÌáÊ¾',
-          message: 'ËÑË÷²»µ½:' + _searchText + '!',
+          title: 'æç¤º',
+          message: 'æœç´¢ä¸åˆ°:' + _searchText + '!',
           type: 'warning',
           duration: 5 * 1000
         })
@@ -171,16 +171,16 @@ export default {
         realRadarInfos: [{
           type: 'RP_Ship',
           id: '1',
-          name: '½­ÉÏ´¬Ö»1',
-          address: '³¤½­¶şÇÅºÓ¶Î',
+          name: 'æ±Ÿä¸Šèˆ¹åª1',
+          address: 'é•¿æ±ŸäºŒæ¡¥æ²³æ®µ',
           longitude: 114.65811872631607,
           latitude: 30.68961010828556
         },
         {
           type: 'RP_Ship',
           id: '2',
-          name: '½­ÉÏ´¬Ö»2',
-          address: '³¤½­¶şÇÅºÓ¶Î',
+          name: 'æ±Ÿä¸Šèˆ¹åª2',
+          address: 'é•¿æ±ŸäºŒæ¡¥æ²³æ®µ',
           longitude: 114.65411872631607,
           latitude: 30.68961010828556
         }]
@@ -189,7 +189,7 @@ export default {
         id: '6dddef0f25758f86db0b7281b0c2efa8',
         caseNo: '2020092922678',
         reportTel: '1111',
-        reportAddr: 'çóè¤Â·',
+        reportAddr: 'çç‘œè·¯',
         reportTime: '2020-09-30 11:00:00',
         caseDesc: null,
         longitude: 114.66811872631607,
@@ -204,16 +204,16 @@ export default {
         realRadarInfos: [{
           type: 'RP_Ship',
           id: '12',
-          name: '½­ÉÏ´¬Ö»1222',
-          address: '³¤½­¶şÇÅºÓ¶Î',
+          name: 'æ±Ÿä¸Šèˆ¹åª1222',
+          address: 'é•¿æ±ŸäºŒæ¡¥æ²³æ®µ',
           longitude: 114.65811872631607,
           latitude: 30.67961010828556
         },
         {
           type: 'RP_Ship',
           id: '22',
-          name: '½­ÉÏ´¬Ö»22',
-          address: '³¤½­¶şÇÅºÓ¶Î',
+          name: 'æ±Ÿä¸Šèˆ¹åª22',
+          address: 'é•¿æ±ŸäºŒæ¡¥æ²³æ®µ',
           longitude: 114.65611872631607,
           latitude: 30.68061010828556
         }]
