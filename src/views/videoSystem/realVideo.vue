@@ -963,15 +963,15 @@ export default {
           //   })
           // )
           // 开启AR
-          new MqttService().client.send(
-            'video/start/arAlgorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 1
-            })
-          )
+          // new MqttService().client.send(
+          //   'video/start/arAlgorithm',
+          //   JSON.stringify({
+          //     deviceCode: curTreeData.deviceCode,
+          //     channelId: curTreeData.streamType,
+          //     streamUrl: curTreeData.streamUrl,
+          //     isOpen: 1
+          //   })
+          // )
         }
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
@@ -1051,15 +1051,15 @@ export default {
       } else {
         if (curTreeData.deviceTypeCode === 'GDJK') {
           // 关闭人员识别
-          // new MqttService().client.send(
-          //   'video/stop/algorithm',
-          //   JSON.stringify({
-          //     deviceCode: curTreeData.deviceCode,
-          //     channelId: curTreeData.streamType,
-          //     streamUrl: curTreeData.streamUrl,
-          //     isOpen: 0
-          //   })
-          // )
+          new MqttService().client.send(
+            'video/stop/algorithm',
+            JSON.stringify({
+              deviceCode: curTreeData.deviceCode,
+              channelId: curTreeData.streamType,
+              streamUrl: curTreeData.streamUrl,
+              isOpen: 0
+            })
+          )
           // 关闭AR
           new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         }
