@@ -92,7 +92,7 @@ export default {
       if (tmpDatas.length > 0) {
         if (this.$refs.gduMap !== undefined) {
           this.$refs.gduMap.map2D.zoomToCenter(tmpDatas[0].longitude, tmpDatas[0].latitude)
-          this.$refs.gduMap.map2D.setZoom(10)
+          this.$refs.gduMap.map2D.setZoom(12)
         }
       }
     },
@@ -189,12 +189,14 @@ export default {
       const tmpWarn = {
         id: '6dddef0f25758f86db0b7281b0c2efa8',
         caseNo: '2020092922678',
-        reportTel: '1111',
+        reportTel: '15672675664',
         reportAddr: '珞瑜路',
         reportTime: '2020-09-30 11:00:00',
         caseDesc: null,
-        longitude: 114.66811872631607,
-        latitude: 30.68961010828556
+        longitude: 114.316317,
+        latitude: 30.606778
+        // longitude: 114.66811872631607,
+        // latitude: 30.68961010828556
       }
       setTimeout(() => {
         new MqttService().client.send('radar/realTimeInfo', JSON.stringify(tmpShips))
