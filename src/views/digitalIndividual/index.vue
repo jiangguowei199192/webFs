@@ -276,12 +276,12 @@ export default {
         policeListItem: {
           selected: false,
           xuHao: '1',
-          bianHao: 'YZ63718FFB7380BL89',
+          bianHao: 'YZ63718FFB7380BL81',
           source: '群众举报',
-          people: '三儿',
-          phone: '88888888888',
-          address: '江夏区江夏区江夏区江夏区',
-          time: '8888-88-88 88:88:88',
+          people: '李',
+          phone: '15910678970',
+          address: '江夏区文化大道',
+          time: '2020-09-28 15:23:20',
           belong: '武汉市渔政',
           description: '疑似有非法捕捞船只',
           status: '未处置'
@@ -290,45 +290,142 @@ export default {
           {
             selected: false,
             xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL89',
+            bianHao: 'YZ63718FFB7380BL82',
             source: '群众举报',
-            people: '三儿',
-            phone: '88888888888',
-            address: '江夏区江夏区江夏区江夏区',
-            time: '8888-88-88 88:88:88',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
             belong: '武汉市渔政',
             description: '疑似有非法捕捞船只',
-            status: '已处置'
+            status: '未处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
+          },
+          {
+            selected: false,
+            xuHao: '1',
+            bianHao: 'YZ63718FFB7380BL83',
+            source: '群众举报',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
+            belong: '武汉市渔政',
+            description: '疑似有非法捕捞船只',
+            status: '未处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
+          },
+          {
+            selected: false,
+            xuHao: '1',
+            bianHao: 'YZ63718FFB7380BL84',
+            source: '群众举报',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
+            belong: '武汉市渔政',
+            description: '疑似有非法捕捞船只',
+            status: '已处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
+          },
+          {
+            selected: false,
+            xuHao: '1',
+            bianHao: 'YZ63718FFB7380BL85',
+            source: '群众举报',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
+            belong: '武汉市渔政',
+            description: '疑似有非法捕捞船只',
+            status: '已处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
+          },
+          {
+            selected: false,
+            xuHao: '1',
+            bianHao: 'YZ63718FFB7380BL86',
+            source: '群众举报',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
+            belong: '武汉市渔政',
+            description: '疑似有非法捕捞船只',
+            status: '已处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
+          },
+          {
+            selected: false,
+            xuHao: '1',
+            bianHao: 'YZ63718FFB7380BL87',
+            source: '群众举报',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
+            belong: '武汉市渔政',
+            description: '疑似有非法捕捞船只',
+            status: '已处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
+          },
+          {
+            selected: false,
+            xuHao: '1',
+            bianHao: 'YZ63718FFB7380BL88',
+            source: '群众举报',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
+            belong: '武汉市渔政',
+            description: '疑似有非法捕捞船只',
+            status: '已处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
           },
           {
             selected: false,
             xuHao: '1',
             bianHao: 'YZ63718FFB7380BL89',
             source: '群众举报',
-            people: '三儿',
-            phone: '88888888888',
-            address: '江夏区江夏区江夏区江夏区',
-            time: '8888-88-88 88:88:88',
+            people: '李',
+            phone: '15910678970',
+            address: '江夏区文化大道',
+            time: '2020-09-28 15:23:20',
             belong: '武汉市渔政',
             description: '疑似有非法捕捞船只',
-            status: '未处置'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL89',
-            source: '群众举报',
-            people: '三儿',
-            phone: '88888888888',
-            address: '江夏区江夏区江夏区江夏区',
-            time: '8888-88-88 88:88:88',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '未处置'
+            status: '已处置',
+            mainRecord: '无',
+            handleResult: '已处置',
+            handleTime: '2020/10/3',
+            handlePeople: '周'
           }
         ],
         pageData: {
-          total: 100,
+          total: 8,
           pageSize: 10,
           currentPage: 1
         },
@@ -399,6 +496,20 @@ export default {
     // 显示案件详情
     showDetailClick (index, row) {
       // console.log(index, row)
+      this.currentIndex = index
+
+      this.detailDlg.bianHao = this.policeList[index].bianHao
+      this.detailDlg.source = this.policeList[index].source
+      this.detailDlg.people = this.policeList[index].people
+      this.detailDlg.phone = this.policeList[index].phone
+      this.detailDlg.address = this.policeList[index].address
+      this.detailDlg.time = this.policeList[index].time
+      this.detailDlg.belong = this.policeList[index].belong
+      this.detailDlg.description = this.policeList[index].description
+      this.detailDlg.mainRecord = this.policeList[index].mainRecord
+      this.detailDlg.handleResult = this.policeList[index].handleResult
+      this.detailDlg.handleTime = this.policeList[index].handleTime
+      this.detailDlg.handlePeople = this.policeList[index].handlePeople
 
       this.showDetail = true
     },

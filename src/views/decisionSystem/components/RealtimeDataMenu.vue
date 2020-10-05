@@ -8,11 +8,11 @@
         <div class="countBaseStyle">
           <div style="width: 132px; height: 90px; display: inline-block">
             <div class="countTitleStyle">警情数量</div>
-            <div class="countNumberStyle">66</div>
+            <div class="countNumberStyle">59</div>
           </div>
           <div style="width: 132px; height: 90px; float: right">
             <div class="countTitleStyle">人员数量</div>
-            <div class="countNumberStyle">66</div>
+            <div class="countNumberStyle">182</div>
           </div>
           <div
             style="
@@ -22,13 +22,13 @@
               margin-top: 10px;
             "
           >
-            <div class="countNumberStyle">66</div>
+            <div class="countNumberStyle">54</div>
             <div class="countTitleStyle">红外设备</div>
           </div>
           <div
             style="width: 132px; height: 90px; float: right; margin-top: 10px"
           >
-            <div class="countNumberStyle">66</div>
+            <div class="countNumberStyle">9</div>
             <div class="countTitleStyle">无人机</div>
           </div>
         </div>
@@ -138,8 +138,8 @@
           </el-form-item>
         </el-form>
         <div style="height: 32px">
-          <div class="npdConfirm">确定</div>
-          <div class="npdCancel">取消</div>
+          <div class="npdConfirm" @click="newPoliceConfirm">确定</div>
+          <div class="npdCancel" @click="newPoliceCancel">取消</div>
         </div>
       </div>
     </el-dialog>
@@ -158,13 +158,13 @@ export default {
       chartData: {
         columns: ['日期', '访问用户'],
         rows: [
-          { 日期: '1/1', 访问用户: 15 },
-          { 日期: '1/2', 访问用户: 3 },
-          { 日期: '1/3', 访问用户: 12 },
-          { 日期: '1/4', 访问用户: 7 },
-          { 日期: '1/5', 访问用户: 17 },
-          { 日期: '1/6', 访问用户: 18 },
-          { 日期: '1/7', 访问用户: 13 }
+          { 日期: '9/29', 访问用户: 15 },
+          { 日期: '9/30', 访问用户: 3 },
+          { 日期: '10/1', 访问用户: 12 },
+          { 日期: '10/2', 访问用户: 7 },
+          { 日期: '10/3', 访问用户: 17 },
+          { 日期: '10/4', 访问用户: 18 },
+          { 日期: '10/5', 访问用户: 13 }
         ]
       },
       chartSettings: {
@@ -230,6 +230,12 @@ export default {
         tmpMap.zoomToCenter(114.31667, 30.51667)
         tmpMap.setZoom(10)
       }, 500)
+    },
+    newPoliceConfirm () {
+      this.showNewPolice = false
+    },
+    newPoliceCancel () {
+      this.showNewPolice = false
     },
     getSelectedLocation () {
       const tmpMap = this.$refs.gduMap
