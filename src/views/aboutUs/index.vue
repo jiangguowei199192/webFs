@@ -349,13 +349,14 @@ export default {
 .cutDialog {
   background: rgba(0, 0, 0, 0.6);
   img {
-    width: 743px;
-    height: 428px;
+    width: 943px;
+    height: 648px;
   }
   /deep/.el-dialog {
-    width: 803px;
-    height: 549px;
+    width: 1003px;
+    height: 749px;
     background: url("../../assets/images/dialog-bg.png") no-repeat;
+     background-size:100% 100%;
     .el-dialog__header {
       display: none;
     }
