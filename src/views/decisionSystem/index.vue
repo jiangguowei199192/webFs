@@ -92,6 +92,7 @@ export default {
       if (tmpDatas.length > 0) {
         if (this.$refs.gduMap !== undefined) {
           this.$refs.gduMap.map2D.zoomToCenter(tmpDatas[0].longitude, tmpDatas[0].latitude)
+          this.$refs.gduMap.map2D.setZoom(10)
         }
       }
     },
