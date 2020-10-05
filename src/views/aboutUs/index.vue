@@ -61,7 +61,7 @@
                 :show-custom-button="false"
                 :muted="false"
                 :controls="true"
-                :autoplay="true"
+                :autoplay="false"
                 oncontextmenu="return false"
                 fluent
                 :stretch="true"
@@ -143,23 +143,23 @@ export default {
       videoList: [
         {
           id: 0,
-          videoTitle: '禁捕政策文件01.mp4',
-          videlUrl: 'rtmp://58.200.131.2:1935/livetv/hunantv'
+          videoTitle: '江滩-无人机巡航.mp4',
+          videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/aaa.mp4'
         },
         {
           id: 1,
-          videoTitle: '禁捕政策文件02.mp4',
-          videlUrl: 'rtmp://58.200.131.2:1935/livetv/hunantv'
+          videoTitle: '梁子湖-无人机禁捕.mp4',
+          videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/bbb.mp4'
         },
         {
           id: 2,
-          videoTitle: '禁捕政策文件03.mp4',
-          videlUrl: 'rtmp://58.200.131.2:1935/livetv/hunantv'
+          videoTitle: '石咀长江段-无人机禁捕.mp4',
+          videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/ccc.mp4'
         },
         {
           id: 3,
-          videoTitle: '禁捕政策文件04.mp4',
-          videlUrl: 'rtmp://58.200.131.2:1935/livetv/hunantv'
+          videoTitle: '武湖-红外监控禁捕.mp4',
+          videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/ddd.mp4'
         }
       ],
       imgList: [
