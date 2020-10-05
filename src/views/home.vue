@@ -32,13 +32,13 @@
               </div>
             </template>
           </div>
-          <div
-            :class="this.isChecked ? 'activeClass' : 'about'"
-            @click.stop="goToAboutUs()"
-          >
-            <img :src="this.isChecked ? aboutImgCkSrc : aboutImgSrc" alt="" />
-            <p>关于我们</p>
-          </div>
+        </div>
+        <div
+          :class="this.isChecked ? 'activeClass' : 'about'"
+          @click.stop="goToAboutUs()"
+        >
+          <img :src="this.isChecked ? aboutImgCkSrc : aboutImgSrc" alt="" />
+          <p>关于我们</p>
         </div>
 
         <div class="cur">
@@ -282,6 +282,7 @@ export default {
     margin-top: 36px;
     height: auto !important;
     padding: 0 20px 0 20px;
+    position: relative;
   }
   .el-main {
     padding: 0;
@@ -365,26 +366,32 @@ export default {
     }
   }
   .about {
-    width: 100px;
-    height: 50px;
+    // width: 100px;
+    // height: 50px;
     font-size: 18px;
     color: #86d0e8;
     text-align: center;
-    margin: -10px 0 0 110px;
+    margin: -10px 0 0 100px;
     cursor: pointer;
+    position: absolute;
+    top: 3px;
+    right: 15px;
     img {
       width: 40px;
       height: 40px;
     }
   }
   .activeClass {
-    width: 100px;
-    height: 50px;
+    // width: 100px;
+    // height: 50px;
     font-size: 18px;
     color: #fff;
     text-align: center;
-    margin: -10px 0 0 110px;
+    margin: -10px 0 0 100px;
     cursor: pointer;
+    position: absolute;
+    top: 3px;
+    right: 15px;
   }
   .cur {
     position: relative;

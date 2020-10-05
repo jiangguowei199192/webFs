@@ -26,37 +26,75 @@
         </div>
         <!-- 视频容器 -->
         <div class="content">
-          <div class="fl video_wrap">
+          <!-- 回放图片 -->
+          <div class="fl img_wrap" v-show="this.selectedId == 0">
+            <div class="imgList" ref="imgList">
+              <div
+                v-for="(img_item, img_index) in imgList"
+                :key="img_index"
+                :style="imgListStyle(9)"
+              >
+                <div
+                  style="text-align: center"
+                  @dblclick.stop="scaleImg(img_index)"
+                >
+                  <img :src="img_item.imgSrc" alt="" />
+                  <div>{{ img_item.imgTitle }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 回放视频 -->
+          <div class="fl video_wrap" v-show="this.selectedId == 1">
             <div
               class="fl video_list"
               v-for="(video_item, video_index) in videoList"
               :key="video_index"
               @click="listChecked(video_item.id)"
             >
-              <div
+              <!-- <div
                 style="padding: 1px"
                 :class="{ active: selectClass == video_index }"
-              >
-                <LivePlayer
-                  :videoUrl="video_item.videlUrl"
-                  :show-custom-button="false"
-                  :muted="false"
-                  :controls="true"
-                  :autoplay="true"
-                  oncontextmenu="return false"
-                  fluent
-                  :stretch="true"
-                  :live="true"
-                  aspect="fullscreen"
-                  class="playerStyle"
-                ></LivePlayer>
-                <span>{{ video_item.videoTitle }}</span>
-              </div>
+              > -->
+              <LivePlayer
+                :videoUrl="video_item.videlUrl"
+                :show-custom-button="false"
+                :muted="false"
+                :controls="true"
+                :autoplay="true"
+                oncontextmenu="return false"
+                fluent
+                :stretch="true"
+                :live="true"
+                aspect="fullscreen"
+                class="playerStyle"
+              ></LivePlayer>
+              <span>{{ video_item.videoTitle }}</span>
+              <!-- </div> -->
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 双击图片放大弹框 -->
+    <el-dialog
+      :visible.sync="cutDialogVisible"
+      class="cutDialog"
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
+      <img :src="clickImgUrl" alt />
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          size="mini"
+          @click="cutDialogVisible = false"
+          style="width: 87px"
+          >关闭</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -74,6 +112,8 @@ export default {
 
   data () {
     return {
+      cutDialogVisible: false,
+      clickImgUrl: '',
       leftItemData: [
         {
           info: [
@@ -94,30 +134,6 @@ export default {
               title: '禁捕区域',
               normalImgPath: require('../../assets/images/about/area.png'),
               selectedImgPath: require('../../assets/images/about/area-ck.png'),
-              selected: false
-            }
-          ],
-          video: []
-        },
-        {
-          info: [
-            {
-              id: 2,
-              title: '工作进展',
-              normalImgPath: require('../../assets/images/about/progress.png'),
-              selectedImgPath: require('../../assets/images/about/progress-ck.png'),
-              selected: false
-            }
-          ],
-          video: []
-        },
-        {
-          info: [
-            {
-              id: 3,
-              title: '成果展示',
-              normalImgPath: require('../../assets/images/about/result.png'),
-              selectedImgPath: require('../../assets/images/about/result-ck.png'),
               selected: false
             }
           ],
@@ -146,8 +162,62 @@ export default {
           videlUrl: 'rtmp://58.200.131.2:1935/livetv/hunantv'
         }
       ],
+      imgList: [
+        {
+          id: 0,
+          imgTitle: '禁捕工作大事记',
+          imgSrc: require('../../assets/images/about/dsj.jpg')
+        },
+        {
+          id: 1,
+          imgTitle: '推动禁捕工作',
+          imgSrc: require('../../assets/images/about/jbgz.jpg')
+        },
+        {
+          id: 2,
+          imgTitle: '精准建档立卡',
+          imgSrc: require('../../assets/images/about/jdk.jpg')
+        },
+        {
+          id: 0,
+          imgTitle: '落实补偿政策',
+          imgSrc: require('../../assets/images/about/bczc.jpg')
+        },
+        {
+          id: 1,
+          imgTitle: '专项打击整治',
+          imgSrc: require('../../assets/images/about/djzz.jpg')
+        },
+        {
+          id: 2,
+          imgTitle: '执法能力提升',
+          imgSrc: require('../../assets/images/about/nlts.jpg')
+        },
+        {
+          id: 0,
+          imgTitle: '武汉在行动',
+          imgSrc: require('../../assets/images/about/xd.jpg')
+        },
+        {
+          id: 1,
+          imgTitle: '加强舆论宣传',
+          imgSrc: require('../../assets/images/about/ylxc.jpg')
+        },
+        {
+          id: 2,
+          imgTitle: '渔民转产安置',
+          imgSrc: require('../../assets/images/about/zcaz.jpg')
+        }
+      ],
       tabTitle: '禁捕政策',
-      selectClass: 0
+      selectClass: 0,
+      selectedId: 0
+    }
+  },
+
+  watch: {
+    $route () {
+      this.$destroy('LivePlayer')
     }
   },
 
@@ -162,6 +232,7 @@ export default {
           if (item.id === id) {
             item.selected = true
             this.tabTitle = item.title
+            this.selectedId = id
           } else {
             item.selected = false
           }
@@ -170,8 +241,23 @@ export default {
     },
 
     listChecked (select) {
-      console.log(select)
+      // console.log(select)
       this.selectClass = select
+    },
+
+    imgListStyle (n) {
+      if (n === 9) {
+        return {
+          width: '33.33%',
+          height: '33.33%'
+        }
+      }
+    },
+
+    scaleImg (id) {
+      // alert(3553)
+      this.cutDialogVisible = !this.cutDialogVisible
+      this.clickImgUrl = this.imgList[id].imgSrc
     }
   }
 }
@@ -210,7 +296,33 @@ export default {
     .content {
       width: 90%;
       height: 100%;
-      margin: 30px 70px;
+      margin: 50px 70px;
+      .imgList {
+        display: flex;
+        flex-wrap: wrap;
+        height: 710px;
+        > div {
+          img {
+            width: 100%;
+            height: 85%;
+          }
+          > div {
+            box-sizing: border-box;
+            // height: 223px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            width: calc(100% - 10px);
+            height: calc(100% - 10px);
+            background: url("../../assets/images/video.png") no-repeat center
+              center;
+            background-color: #00497c;
+            cursor: pointer;
+          }
+          > div.active {
+            border: 2px solid rgba(255, 244, 100, 1);
+          }
+        }
+      }
       .video_wrap {
         text-align: center;
         .video_list {
@@ -218,6 +330,7 @@ export default {
           .playerStyle {
             width: 270px;
             height: 154px;
+            background: rgb(152, 255, 169);
           }
         }
         .video_list > div.active {
@@ -228,6 +341,56 @@ export default {
           margin-top: 10px;
           font-size: 16px;
           color: #86d0e8;
+        }
+      }
+    }
+  }
+}
+.cutDialog {
+  background: rgba(0, 0, 0, 0.6);
+  img {
+    width: 743px;
+    height: 428px;
+  }
+  /deep/.el-dialog {
+    width: 803px;
+    height: 549px;
+    background: url("../../assets/images/dialog-bg.png") no-repeat;
+    .el-dialog__header {
+      display: none;
+    }
+    .el-dialog__body {
+      padding: 26px 30px;
+    }
+    .el-dialog__footer {
+      padding: 0 30px;
+      .remark {
+        display: flex;
+        justify-content: space-between;
+        .replain {
+          text-align: left;
+          span {
+            color: #fff;
+          }
+          .el-input {
+            width: 410px;
+            .el-input__inner {
+              color: #fff;
+              border: none;
+              border-bottom: 1px solid rgb(153, 153, 153);
+              background: transparent;
+            }
+            input::-webkit-input-placeholder {
+              color: #999;
+            }
+          }
+        }
+        .el-button--default {
+          background: transparent;
+          color: rgba(30, 176, 252, 1);
+        }
+        .el-button--primary {
+          background: #1eb0fc;
         }
       }
     }

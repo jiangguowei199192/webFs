@@ -43,6 +43,7 @@ export default {
 .container {
   .menu_tab {
     line-height: 40px;
+    cursor: pointer;
     .menu_tab_icon {
       width: 24px;
       height: 24px;
