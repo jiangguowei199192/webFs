@@ -22,7 +22,7 @@ const routes = [
     name: 'home',
     component: () => import('../views/home'),
     children: [
-    // 实时视频
+      // 实时视频
       {
         path: '/videoSystem',
         name: 'videoSystem',
@@ -108,6 +108,12 @@ const routes = [
             component: () => import('../views/systemSettings/firePolice')
           }
         ]
+      },
+      // 关于我们
+      {
+        path: '/aboutUs',
+        name: 'aboutUs',
+        component: () => import('../views/aboutUs')
       }
     ]
   }
