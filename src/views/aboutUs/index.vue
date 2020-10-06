@@ -160,6 +160,16 @@ export default {
           id: 3,
           videoTitle: '武湖-红外监控禁捕.mp4',
           videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/ddd.mp4'
+        },
+        {
+          id: 4,
+          videoTitle: '央视禁捕报道.mp4',
+          videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/eee.mp4'
+        },
+        {
+          id: 5,
+          videoTitle: '湖北经视报道.mp4',
+          videlUrl: 'http://111.47.13.103:40015/cloud-video/cjdbh/fff.mp4'
         }
       ],
       imgList: [
@@ -326,7 +336,7 @@ export default {
       .video_wrap {
         text-align: center;
         .video_list {
-          margin-right: 20px;
+          margin: 25px 20px 0 0;
           .playerStyle {
             width: 270px;
             height: 154px;
@@ -356,7 +366,7 @@ export default {
     width: 1003px;
     height: 749px;
     background: url("../../assets/images/dialog-bg.png") no-repeat;
-     background-size:100% 100%;
+    background-size: 100% 100%;
     .el-dialog__header {
       display: none;
     }
