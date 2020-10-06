@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'production') {
   // mqttServer = '172.16.63.148'
   // mqttPort = 2883
   // headImg = 'http://172.16.63.148'
-  projectTitle = '武汉市长江大保护执法指挥系统'
+  projectTitle = '天地察打一体化禁捕系统'
 }
 export default {
   baseUrl,
