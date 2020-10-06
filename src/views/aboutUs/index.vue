@@ -175,48 +175,48 @@ export default {
       imgList: [
         {
           id: 0,
-          imgTitle: '禁捕工作大事记',
-          imgSrc: require('../../assets/images/about/dsj.jpg')
-        },
-        {
-          id: 1,
-          imgTitle: '推动禁捕工作',
-          imgSrc: require('../../assets/images/about/jbgz.jpg')
-        },
-        {
-          id: 2,
-          imgTitle: '精准建档立卡',
-          imgSrc: require('../../assets/images/about/jdk.jpg')
-        },
-        {
-          id: 0,
-          imgTitle: '落实补偿政策',
-          imgSrc: require('../../assets/images/about/bczc.jpg')
-        },
-        {
-          id: 1,
-          imgTitle: '专项打击整治',
-          imgSrc: require('../../assets/images/about/djzz.jpg')
-        },
-        {
-          id: 2,
-          imgTitle: '执法能力提升',
-          imgSrc: require('../../assets/images/about/nlts.jpg')
-        },
-        {
-          id: 0,
           imgTitle: '武汉在行动',
           imgSrc: require('../../assets/images/about/xd.jpg')
         },
         {
           id: 1,
-          imgTitle: '加强舆论宣传',
-          imgSrc: require('../../assets/images/about/ylxc.jpg')
+          imgTitle: '禁捕工作大事记',
+          imgSrc: require('../../assets/images/about/dsj.jpg')
         },
         {
           id: 2,
+          imgTitle: '推动禁捕工作',
+          imgSrc: require('../../assets/images/about/jbgz.jpg')
+        },
+        {
+          id: 3,
+          imgTitle: '精准建档立卡',
+          imgSrc: require('../../assets/images/about/jdk.jpg')
+        },
+        {
+          id: 4,
+          imgTitle: '落实补偿政策',
+          imgSrc: require('../../assets/images/about/bczc.jpg')
+        },
+        {
+          id: 5,
           imgTitle: '渔民转产安置',
           imgSrc: require('../../assets/images/about/zcaz.jpg')
+        },
+        {
+          id: 6,
+          imgTitle: '专项打击整治',
+          imgSrc: require('../../assets/images/about/djzz.jpg')
+        },
+        {
+          id: 7,
+          imgTitle: '执法能力提升',
+          imgSrc: require('../../assets/images/about/nlts.jpg')
+        },
+        {
+          id: 8,
+          imgTitle: '加强舆论宣传',
+          imgSrc: require('../../assets/images/about/ylxc.jpg')
         }
       ],
       tabTitle: '禁捕政策',
