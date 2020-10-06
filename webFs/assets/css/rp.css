@@ -1,0 +1,106 @@
+.rpDivBoxComm {
+  position: relative;
+  padding: 5px 14px;
+  border: 1px solid #1EB0FC;
+  background-color: #121E3AD8;
+  color: #FFFFFF;
+  font-size: 14px;
+  cursor: default;
+}
+/*详情弹窗倒立小三角样式*/
+.rpInvertedTriangle:after, .rpInvertedTriangle:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  margin-top: 0px;
+}
+.rpInvertedTriangle:after {
+  border-top-color: #1EB0FC;
+  border-width: 10px;
+  left: 50%;
+  margin-left: -10px;
+}
+.rpInvertedTriangle:before {
+  border-top-color: #1EB0FC;
+  border-width: 11px;
+  left: 50%;
+  margin-left: -11px;
+}
+
+.rpInstitutionBox {
+  width: 330px;
+  height: 160px;
+}
+.rpPoliceBox {
+  width: 330px;
+  height: 190px;
+}
+.rpCameraBox {
+  width: 330px;
+  height: 180px;
+}
+.rpDroneBox {
+  width: 330px;
+  height: 180px;
+}
+.rpShipBox {
+  width: 330px;
+  height: 160px;
+}
+.rpWarningBox {
+  width: 330px;
+  height: 210px;
+}
+.rpRegionBox {
+  width: 330px;
+  height: 100px;
+}
+
+.rpTitleBox {
+  height: 25px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #1EB0FC;
+}
+.rpTitleImg {
+  position: absolute;
+  top: 9px;
+  width: 21px;
+  height: 16px;
+  background-image: url('../images/rpTitleImg.png');
+}
+.rpTitleText {
+  position: absolute;
+  top: 7px;
+  left: 48px;
+}
+
+.rpContentBox {
+  margin-top: 10px;
+  height: 20px;
+  line-height: 20px;
+}
+.rpNameComm {
+  display: inline-block;
+  vertical-align: top;
+}
+.rpValueComm {
+  margin-left: 3px;
+  display: inline-block;
+  width: 240px;
+  word-break:keep-all;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.rpGotoDetail {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  color: #1EB0FC;
+  text-decoration: underline;
+  cursor: pointer;
+}
