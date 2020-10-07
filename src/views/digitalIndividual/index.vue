@@ -24,6 +24,7 @@
           :default-time="['00:00:00', '23:59:59']"
           class="datePickerStyle"
           @change="dateSearch"
+          value-format="yyyyMMdd"
         ></el-date-picker>
 
         <el-input
@@ -32,7 +33,7 @@
           class="otherInput"
         ></el-input>
 
-        <div class="searchBtn">
+        <div class="searchBtn" @click="otherSearch">
           <img
             :src="searchImg"
             style="
@@ -107,25 +108,21 @@
             prop="source"
           ></el-table-column>
           <el-table-column
-            width="105"
             align="center"
             label="举报人"
             prop="people"
           ></el-table-column>
           <el-table-column
-            width="150"
             align="center"
             label="举报电话"
             prop="phone"
           ></el-table-column>
           <el-table-column
-            width="250"
             align="center"
             label="举报地点"
             prop="address"
           ></el-table-column>
           <el-table-column
-            width="180"
             align="center"
             label="举报时间"
             prop="time"
@@ -136,7 +133,6 @@
             prop="belong"
           ></el-table-column>
           <el-table-column
-            width="180"
             align="center"
             label="简要描述"
             prop="description"
@@ -181,31 +177,35 @@
         <div class="detailTitle">案件信息</div>
         <div class="detailTitleLine"></div>
         <div>
-          <div class="detailText1 detailText2">案件编号：{{detailDlg.bianHao}}</div>
-          <div class="detailText1">信息来源：{{detailDlg.source}}</div>
+          <div class="detailText1 detailText2">
+            案件编号：{{ detailDlg.bianHao }}
+          </div>
+          <div class="detailText1">信息来源：{{ detailDlg.source }}</div>
         </div>
-        <div>
-          <div class="detailText1 detailText2">举报人：{{detailDlg.people}}</div>
-          <div class="detailText1">举报电话：{{detailDlg.phone}}</div>
-        </div>
-        <div class="detailText3">举报地址：{{detailDlg.address}}</div>
         <div>
           <div class="detailText1 detailText2">
-            举报时间：{{detailDlg.time}}
+            举报人：{{ detailDlg.people }}
           </div>
-          <div class="detailText1">案件所属：{{detailDlg.belong}}</div>
+          <div class="detailText1">举报电话：{{ detailDlg.phone }}</div>
         </div>
-        <div class="detailText3">简要描述：{{detailDlg.description}}</div>
-        <div class="detailText3">重点记录：{{detailDlg.mainRecord}}</div>
+        <div class="detailText3">举报地址：{{ detailDlg.address }}</div>
+        <div>
+          <div class="detailText1 detailText2">
+            举报时间：{{ detailDlg.time }}
+          </div>
+          <div class="detailText1">案件所属：{{ detailDlg.belong }}</div>
+        </div>
+        <div class="detailText3">简要描述：{{ detailDlg.description }}</div>
+        <div class="detailText3">重点记录：{{ detailDlg.mainRecord }}</div>
 
         <div class="detailTitle" style="margin-top: 33px">处置信息</div>
         <div class="detailTitleLine"></div>
-        <div class="detailText3">处置结果：{{detailDlg.handleResult}}</div>
+        <div class="detailText3">处置结果：{{ detailDlg.handleResult }}</div>
         <div>
           <div class="detailText1 detailText2">
-            处置时间：{{detailDlg.handleTime}}
+            处置时间：{{ detailDlg.handleTime }}
           </div>
-          <div class="detailText1">处置人：{{detailDlg.handlePeople}}</div>
+          <div class="detailText1">处置人：{{ detailDlg.handlePeople }}</div>
         </div>
 
         <div class="npdCancel" @click="detailCancelClick">关闭</div>
@@ -216,7 +216,7 @@
       <div>
         <div class="npdTitleSty">处置记录</div>
         <el-form
-          ref=""
+          ref="handleRef"
           :model="handleForm"
           label-width="90px"
           :inline="true"
@@ -229,7 +229,7 @@
               v-model="handleForm.record"
             ></el-input>
           </el-form-item>
-          <el-form-item label="处置时间" class="input1">
+          <el-form-item label="处置时间" prop="time" class="input1">
             <el-date-picker
               v-model="handleForm.time"
               type="datetime"
@@ -237,7 +237,7 @@
               class="timeStyle"
             ></el-date-picker>
           </el-form-item>
-          <el-form-item label="处置人" class="input2">
+          <el-form-item label="处置人" prop="people" class="input2">
             <el-input
               placeholder="请输入"
               v-model="handleForm.people"
@@ -254,244 +254,163 @@
 </template>
 
 <script>
+import { policeApi } from '@/api/police.js'
+import { Notification } from 'element-ui'
+import qs from 'qs'
+
 export default {
   name: 'individual',
   created () {
-    // 假数据
-    // for (let index = 0; index < 17; index++) {
-    //   this.policeList.push(this.policeListItem)
-    // }
+    this.getList()
   },
   data () {
-    return (
-      {
-        searchImg: require('../../assets/images/policeHistory/search.png'),
-        belongOptions: [],
-        search: {
-          belong: '',
-          date: '',
-          other: ''
-        },
+    return {
+      searchImg: require('../../assets/images/policeHistory/search.png'),
+      belongOptions: [],
+      search: {
+        belong: '',
+        date: '',
+        other: ''
+      },
 
-        policeListItem: {
-          selected: false,
-          xuHao: '1',
-          bianHao: 'YZ63718FFB7380BL81',
-          source: '群众举报',
-          people: '李',
-          phone: '15910678970',
-          address: '江夏区文化大道',
-          time: '2020-09-28 15:23:20',
-          belong: '武汉市渔政',
-          description: '疑似有非法捕捞船只',
-          status: '未处置'
-        },
-        policeList: [
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL82',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '未处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL83',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '未处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL84',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '已处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL85',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '已处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL86',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '已处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL87',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '已处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL88',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '已处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          },
-          {
-            selected: false,
-            xuHao: '1',
-            bianHao: 'YZ63718FFB7380BL89',
-            source: '群众举报',
-            people: '李',
-            phone: '15910678970',
-            address: '江夏区文化大道',
-            time: '2020-09-28 15:23:20',
-            belong: '武汉市渔政',
-            description: '疑似有非法捕捞船只',
-            status: '已处置',
-            mainRecord: '无',
-            handleResult: '已处置',
-            handleTime: '2020/10/3',
-            handlePeople: '周'
-          }
-        ],
-        pageData: {
-          total: 8,
-          pageSize: 10,
-          currentPage: 1
-        },
+      policeList: [],
+      pageData: {
+        total: 0,
+        pageSize: 10,
+        currentPage: 1
+      },
 
-        showDetail: false,
+      showDetail: false,
 
-        showHandle: false,
-        handleForm: {
-          record: '',
-          time: '',
-          people: ''
-        },
-        handleRules: {},
+      showHandle: false,
+      handleForm: {
+        record: '',
+        time: '',
+        people: ''
+      },
+      handleRules: {
+        record: [{ required: true, message: '请输入处置记录' }],
+        time: [{ required: true, message: '请选择处置时间' }],
+        people: [{ required: true, message: '请输入处置人' }]
+      },
+      handleItem: '',
 
-        currentIndex: -1,
+      currentIndex: -1,
 
-        selectedItem: [],
+      selectedItem: [],
 
-        detailDlg: {
-          bianHao: '',
-          source: '',
-          people: '',
-          phone: '',
-          address: '',
-          time: '',
-          belong: '',
-          description: '',
-          mainRecord: '',
-          handleResult: '',
-          handleTime: '',
-          handlePeople: ''
-        }
+      detailDlg: {
+        bianHao: '',
+        source: '',
+        people: '',
+        phone: '',
+        address: '',
+        time: '',
+        belong: '',
+        description: '',
+        mainRecord: '',
+        handleResult: '',
+        handleTime: '',
+        handlePeople: ''
       }
-    )
+    }
   },
   methods: {
+    async getList () {
+      var param = {
+        caseBelong: this.search.belong,
+        content: this.search.other,
+        currentPage: this.pageData.currentPage,
+        startTime: this.search.date[0],
+        endTime: this.search.date[1],
+        pageSize: this.pageData.pageSize
+      }
+      this.$axios
+        .post(policeApi.selectPage, param, {
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+        })
+        .then((res) => {
+          if (res && res.data && res.data.code === 0) {
+            var tempData = res.data.data
+            this.pageData.total = tempData.total
+
+            var tempArr = []
+            tempData.records.forEach((item, index) => {
+              var dict = {
+                id: item.id,
+                xuHao: index + 1,
+                bianHao: item.caseNo,
+                source: item.infoSource,
+                people: item.reportMan,
+                phone: item.reportTel,
+                address: item.reportAddr,
+                time: item.reportTime,
+                belong: item.caseBelong,
+                description: item.caseDesc,
+                // status: item.caseStatus,
+                status: '未处置',
+                mainRecord: item.importantRecord
+                // handleResult: "已处置",
+                // handleTime: "2020/10/3",
+                // handlePeople: "周",
+              }
+              tempArr.push(dict)
+            })
+            this.policeList = tempArr
+          }
+        })
+    },
+
     // 日期搜索
     dateSearch () {
-      // if (this.date1) {
-      //   this.pageData.currentPage = 1
-      //   var beginDate = new Date(this.date1[0])
-      //   var beginTime = beginDate.getTime()
-      //   var endDate = new Date(this.date1[1])
-      //   var endTime = endDate.getTime()
-      //   this.pageData.beginTime = beginTime
-      //   this.pageData.endTime = endTime
-      //   this.getFirePoliceList()
-      // } else {
-      //   this.pageData.beginTime = ''
-      //   this.pageData.endTime = ''
-      //   this.getFirePoliceList()
-      // }
+      this.getList()
+    },
+    otherSearch () {
+      this.getList()
     },
     // 点击表格行
     clickTableRow (row) {},
     // 分页页数改变
     currentPageChange () {
-      // this.getFirePoliceList()
+      this.getList()
     },
     // 勾选变化
     handleSelectionChange (val) {
       this.selectedItem = val
-      // console.log(val)
+      console.log(val)
     },
-    deleteClick () {
-      // console.log('shanchu')
+    async deleteClick () {
+      if (this.selectedItem.length <= 0) {
+        Notification({
+          title: '提示',
+          message: '请选择要删除的项目',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        return
+      }
+
+      var ids = []
+      this.selectedItem.forEach((item) => {
+        ids.push(item.id)
+      })
+
+      this.$axios
+        .post(
+          policeApi.deleteBatch,
+          qs.stringify({ ids: ids }, { arrayFormat: 'comma' })
+        )
+        .then((res) => {
+          if (res && res.data && res.data.code === 0) {
+            this.getList()
+            Notification({
+              title: '提示',
+              message: '删除成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+          }
+        })
     },
     // 显示案件详情
     showDetailClick (index, row) {
@@ -520,11 +439,40 @@ export default {
     // 处置
     resolve (index, row) {
       // console.log(index, row)
+      this.handleItem = row
       this.showHandle = true
     },
     // 处置弹窗-确定
     handelConfirmClick () {
-      this.showHandle = false
+      this.$refs.handleRef.validate((valid) => {
+        if (!valid) {
+          return
+        }
+
+        this.showHandle = false
+
+        var param = {
+          id: this.handleItem.id,
+          dispositionMan: this.handleForm.people,
+          dispositionRecord: this.handleForm.record,
+          dispositionTime: this.handleForm.time
+        }
+        this.$axios
+          .post(policeApi.dispose, param, {
+            headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+          })
+          .then((res) => {
+            if (res && res.data && res.data.code === 0) {
+              this.getList()
+              Notification({
+                title: '提示',
+                message: '处置成功',
+                type: 'success',
+                duration: 5 * 1000
+              })
+            }
+          })
+      })
     },
     // 处置弹窗-取消
     handelCancelClick () {

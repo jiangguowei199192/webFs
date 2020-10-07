@@ -106,6 +106,7 @@
               ></gMap>
             </div>
           </el-form-item>
+          <!-- value-format="yyyy-MM-dd HH:mm:ss" -->
           <el-form-item label="举报时间" class="input1">
             <el-date-picker
               v-model="newPoliceForm.time"
