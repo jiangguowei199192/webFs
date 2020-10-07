@@ -117,10 +117,10 @@
           <el-form-item label="案件所属" class="input1 label1">
             <el-select placeholder="请选择" v-model="newPoliceForm.belong">
               <el-option
-                v-for="(item, index) in belongOptions"
+                v-for="(item, index) in deptTree"
                 :key="index"
-                :label="item.label"
-                :value="item.value"
+                :label="item.deptName"
+                :value="item.deptCode"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -150,6 +150,7 @@
 import PoliceRankingMenu from './PoliceRankingMenu'
 import { policeApi } from '@/api/police.js'
 import { Notification } from 'element-ui'
+import { loginApi } from '@/api/login'
 
 export default {
   components: {
@@ -193,15 +194,16 @@ export default {
         people: [{ required: true, message: '请输入举报人' }],
         address: [{ required: true, message: '请输入举报地址' }]
       },
-      belongOptions: [
-        { label: '所属1', value: '1' },
-        { label: '所属2', value: '2' },
-        { label: '所属3', value: '3' }
-      ] // 案件所属列表
+
+      deptTree: ''
     }
   },
-  mounted () {
+  created () {
     this.getCount()
+    this.getDeptTree()
+  },
+  mounted () {
+
   },
   methods: {
     async getCount () {
@@ -234,6 +236,15 @@ export default {
             tempArr.push(dict)
           })
           this.chartData.rows = tempArr
+        }
+      })
+    },
+
+    // 获取组织树
+    async getDeptTree () {
+      this.$axios.post(loginApi.getDeptTree).then((res) => {
+        if (res && res.data && res.data.code === 0) {
+          this.deptTree = res.data.data[0].children
         }
       })
     },
