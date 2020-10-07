@@ -8,11 +8,11 @@
         <div class="countBaseStyle">
           <div style="width: 132px; height: 90px; display: inline-block">
             <div class="countTitleStyle">警情数量</div>
-            <div class="countNumberStyle">59</div>
+            <div class="countNumberStyle">{{ this.policeCount }}</div>
           </div>
           <div style="width: 132px; height: 90px; float: right">
             <div class="countTitleStyle">人员数量</div>
-            <div class="countNumberStyle">182</div>
+            <div class="countNumberStyle">{{ this.peopleCount }}</div>
           </div>
           <div
             style="
@@ -22,13 +22,13 @@
               margin-top: 10px;
             "
           >
-            <div class="countNumberStyle">54</div>
+            <div class="countNumberStyle">{{ this.redDeviceCount }}</div>
             <div class="countTitleStyle">红外设备</div>
           </div>
           <div
             style="width: 132px; height: 90px; float: right; margin-top: 10px"
           >
-            <div class="countNumberStyle">9</div>
+            <div class="countNumberStyle">{{ this.droneCount }}</div>
             <div class="countTitleStyle">无人机</div>
           </div>
         </div>
@@ -36,7 +36,7 @@
       <div class="policeRankingStyle">
         <div class="realtimeIconStyle"></div>
         <div class="realtimeTitleStyle">各区警情数量排行</div>
-        <PoliceRankingMenu></PoliceRankingMenu>
+        <PoliceRankingMenu ref="PoliceRankingMenu"></PoliceRankingMenu>
       </div>
       <div class="thisWeekStyle">
         <div class="realtimeIconStyle"></div>
@@ -57,7 +57,7 @@
       <div>
         <div class="npdTitleSty">新增案件</div>
         <el-form
-          ref=""
+          ref="newPoliceRef"
           :model="newPoliceForm"
           label-width="90px"
           :inline="true"
@@ -148,6 +148,8 @@
 
 <script>
 import PoliceRankingMenu from './PoliceRankingMenu'
+import { policeApi } from '@/api/police.js'
+import { Notification } from 'element-ui'
 
 export default {
   components: {
@@ -155,17 +157,14 @@ export default {
   },
   data () {
     return {
+      policeCount: 0,
+      peopleCount: 0,
+      redDeviceCount: 0,
+      droneCount: 0,
+
       chartData: {
         columns: ['日期', '警情'],
-        rows: [
-          { 日期: '9/29', 警情: 15 },
-          { 日期: '9/30', 警情: 3 },
-          { 日期: '10/1', 警情: 12 },
-          { 日期: '10/2', 警情: 7 },
-          { 日期: '10/3', 警情: 17 },
-          { 日期: '10/4', 警情: 18 },
-          { 日期: '10/5', 警情: 13 }
-        ]
+        rows: []
       },
       chartSettings: {
         area: true
@@ -184,22 +183,15 @@ export default {
         people: '', // 举报人
         phone: '', // 举报电话
         address: '', // 举报地址
-        lonLat: '', // 经纬度
         time: '', // 举报时间
         belong: '', // 案件所属
         description: '', // 简要描述
         record: '' // 重点记录
       },
       newPoliceRules: {
-        source: [
-          { required: true, message: '请输入信息来源' }
-        ],
-        people: [
-          { required: true, message: '请输入举报人' }
-        ],
-        address: [
-          { required: true, message: '请输入举报地址' }
-        ]
+        source: [{ required: true, message: '请输入信息来源' }],
+        people: [{ required: true, message: '请输入举报人' }],
+        address: [{ required: true, message: '请输入举报地址' }]
       },
       belongOptions: [
         { label: '所属1', value: '1' },
@@ -209,9 +201,43 @@ export default {
     }
   },
   mounted () {
-
+    this.getCount()
   },
   methods: {
+    async getCount () {
+      this.$axios.get(policeApi.selectCount).then((res) => {
+        if (res && res.data && res.data.code === 0) {
+          var tempData = res.data.data
+          this.policeCount = tempData.caseCount
+          this.peopleCount = tempData.userCount
+          this.redDeviceCount = tempData.gdjkcount
+          this.droneCount = tempData.wrjcount
+        }
+      })
+
+      this.$axios.get(policeApi.selectCountCaseNum).then((res) => {
+        if (res && res.data && res.data.code === 0) {
+          this.$refs.PoliceRankingMenu.setData(res.data.data)
+        }
+      })
+
+      this.$axios.get(policeApi.selectCountWeek).then((res) => {
+        if (res && res.data && res.data.code === 0) {
+          var tempData = res.data.data
+          var tempArr = []
+          tempData.forEach((item) => {
+            var date = item.reportTime.split('-')
+            var dict = {
+              日期: date[1] + date[2],
+              警情: item.caseCount
+            }
+            tempArr.push(dict)
+          })
+          this.chartData.rows = tempArr
+        }
+      })
+    },
+
     newPolice () {
       this.showNewPolice = true
 
@@ -232,7 +258,45 @@ export default {
       }, 500)
     },
     newPoliceConfirm () {
-      this.showNewPolice = false
+      this.$refs.newPoliceRef.validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        this.showNewPolice = false
+
+        var lonlat = this.getSelectedLocation()
+        var param = {
+          infoSource: this.newPoliceForm.source,
+          reportMan: this.newPoliceForm.people,
+          reportTel: this.newPoliceForm.phone,
+          reportAddr: this.newPoliceForm.address,
+          latitude: lonlat[1],
+          longitude: lonlat[0],
+          reportTime: this.newPoliceForm.time,
+          caseBelong: this.newPoliceForm.belong,
+          caseDesc: this.newPoliceForm.description,
+          importantRecord: this.newPoliceForm.record
+        }
+        this.$axios.post(policeApi.add, param, {
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+        }).then((res) => {
+          if (res && res.data && res.data.code === 0) {
+            Notification({
+              title: '提示',
+              message: '新增成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+            return
+          }
+          Notification({
+            title: '提示',
+            message: '新增失败',
+            type: 'warning',
+            duration: 5 * 1000
+          })
+        })
+      })
     },
     newPoliceCancel () {
       this.showNewPolice = false
