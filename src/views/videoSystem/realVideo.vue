@@ -1165,6 +1165,7 @@ export default {
             }
           })
         } else {
+          this.selectedIndex = 200
           for (let i = 0; i < divs.length; i++) {
             divs[i].classList.remove('selected')
           }
