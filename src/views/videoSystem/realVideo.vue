@@ -951,20 +951,10 @@ export default {
     playOrClose (type, curTreeData) {
       // 1.添加
       if (type === 1) {
-        // 开启人员识别
         if (curTreeData.deviceTypeCode === 'GDJK') {
-          // new MqttService().client.send(
-          //   'video/start/algorithm',
-          //   JSON.stringify({
-          //     deviceCode: curTreeData.deviceCode,
-          //     channelId: curTreeData.streamType,
-          //     streamUrl: curTreeData.streamUrl,
-          //     isOpen: 1
-          //   })
-          // )
-          // 开启AR
+          // 开启人员识别
           new MqttService().client.send(
-            'video/start/arAlgorithm',
+            'video/start/algorithm',
             JSON.stringify({
               deviceCode: curTreeData.deviceCode,
               channelId: curTreeData.streamType,
@@ -972,6 +962,16 @@ export default {
               isOpen: 1
             })
           )
+          // 开启AR
+          // new MqttService().client.send(
+          //   'video/start/arAlgorithm',
+          //   JSON.stringify({
+          //     deviceCode: curTreeData.deviceCode,
+          //     channelId: curTreeData.streamType,
+          //     streamUrl: curTreeData.streamUrl,
+          //     isOpen: 1
+          //   })
+          // )
         }
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
@@ -1051,17 +1051,17 @@ export default {
       } else {
         if (curTreeData.deviceTypeCode === 'GDJK') {
           // 关闭人员识别
-          // new MqttService().client.send(
-          //   'video/stop/algorithm',
-          //   JSON.stringify({
-          //     deviceCode: curTreeData.deviceCode,
-          //     channelId: curTreeData.streamType,
-          //     streamUrl: curTreeData.streamUrl,
-          //     isOpen: 0
-          //   })
-          // )
+          new MqttService().client.send(
+            'video/stop/algorithm',
+            JSON.stringify({
+              deviceCode: curTreeData.deviceCode,
+              channelId: curTreeData.streamType,
+              streamUrl: curTreeData.streamUrl,
+              isOpen: 0
+            })
+          )
           // 关闭AR
-          new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
+          // new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         }
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
