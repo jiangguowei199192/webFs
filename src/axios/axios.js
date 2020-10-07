@@ -36,7 +36,8 @@ service.interceptors.request.use((config) => {
     config.url !== '/cloud-fms/dept/update' &&
     config.url !== '/fms-river-protection/riverCase/selectListCaseInfo' &&
     config.url !== '/fms-river-protection/riverCase/selectListDeptInfo' &&
-    config.url !== '/fms-river-protection/riverCase/selectListUserPolice') {
+    config.url !== '/fms-river-protection/riverCase/selectListUserPolice' &&
+    config.url !== '/fms-river-protection/riverCase/add') {
     // 判断请求方式是否为POST，进行转换格式
     config.method === 'post' ? config.data = qs.stringify({ ...config.data }) : config.paramsSerializer = function (params) {
       return qs.stringify(params, { arrayFormat: 'repeat' })

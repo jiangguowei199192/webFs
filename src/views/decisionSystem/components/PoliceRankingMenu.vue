@@ -1,15 +1,15 @@
 <template>
-  <div style="height: 250px; margin-top: 22px;">
-    <div ref="rankingRef" style="height: 250px; overflow: hidden;">
+  <div style="height: 250px; margin-top: 22px">
+    <div ref="rankingRef" style="height: 250px; overflow: hidden">
       <div class="rankingItemStyle" v-for="(item, index) in data" :key="index">
         <span class="itemLeftTitleStyle">{{
-          "NO." + item.No + " " + item.title
+          "NO." + item.NO + " " + item.deptName
         }}</span>
-        <span class="itemRightTitleStyle">{{ item.count }}</span>
+        <span class="itemRightTitleStyle">{{ item.caseNum }}</span>
         <el-progress
           :show-text="false"
           color="#00ccff"
-          :percentage="item.count"
+          :percentage="item.caseNum"
           style="margin-top: 8px"
         ></el-progress>
       </div>
@@ -19,30 +19,14 @@
 
 <script>
 export default {
-  mounted () {
-    const p = this
-    this.timer = setInterval(() => {
-      p.scroll()
-    }, 2000)
-  },
+  mounted () {},
   beforeDestroy () {
     clearInterval(this.timer)
   },
   data () {
     return {
       timer: null,
-      data: [
-        { No: 1, title: '江夏区渔政', count: 90 },
-        { No: 2, title: '洪山区渔政', count: 77 },
-        { No: 3, title: '江岸区渔政', count: 50 },
-        { No: 4, title: '黄陂区渔政', count: 34 },
-        { No: 5, title: '汉阳区渔政', count: 4 },
-        { No: 1, title: '江夏区渔政', count: 90 },
-        { No: 2, title: '洪山区渔政', count: 77 },
-        { No: 3, title: '江岸区渔政', count: 50 },
-        { No: 4, title: '黄陂区渔政', count: 34 },
-        { No: 5, title: '汉阳区渔政', count: 4 }
-      ]
+      data: []
     }
   },
   methods: {
@@ -50,6 +34,28 @@ export default {
       this.$refs.rankingRef.scrollTop = this.$refs.rankingRef.scrollTop + 50
       if (this.$refs.rankingRef.scrollTop === 250) {
         this.$refs.rankingRef.scrollTop = 0
+      }
+    },
+
+    setData (rankingData) {
+      if (rankingData.length) {
+        var temp1 = []
+        rankingData.forEach((item, index) => {
+          var dict = {
+            NO: index + 1,
+            caseNum: rankingData[index].caseNum,
+            deptName: rankingData[index].deptName
+          }
+          temp1.push(dict)
+        })
+        this.data = temp1
+
+        if (temp1.length > 5) {
+          const p = this
+          this.timer = setInterval(() => {
+            p.scroll()
+          }, 2000)
+        }
       }
     }
   }
