@@ -872,7 +872,7 @@ export default {
           height: Math.round((curArea.height / 1080) * 720 * 100) / 100
         }
         console.log(this.curPositionObj)
-        // this.showMarkForm = true
+        this.showMarkForm = true
       }
     },
     // 创建元素
