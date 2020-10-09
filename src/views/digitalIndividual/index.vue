@@ -126,6 +126,7 @@
             align="center"
             label="举报时间"
             prop="time"
+            width="170"
           ></el-table-column>
           <el-table-column
             align="center"
@@ -221,7 +222,7 @@
           label-width="90px"
           :inline="true"
           :rules="handleRules"
-          style="margin-top: 40px; margin-left: 46px; margin-right: 50px"
+          style="margin-top: 30px; margin-left: 46px; margin-right: 50px"
         >
           <el-form-item label="处置记录" prop="record" class="input2">
             <el-input
@@ -487,15 +488,14 @@ export default {
   min-width: 1700px;
   height: 899px;
   padding-top: 20px;
-  // background: white;
 }
 .container {
-  margin: 0px 20px 10px 20px;
-  // min-width: 1560px;
+  margin: 0 auto;
+  width: 93%;
   height: 800px;
   padding: 40px 48px 48px 48px;
   background: url(../../assets/images/policeHistory/box.png) no-repeat;
-  background-size: 100%;
+  background-size: 100% 100%;
 }
 
 .belongSel {
@@ -667,7 +667,7 @@ export default {
       width: 100%;
       height: 569px;
       background: url(../../assets/images/policeHistory/detailBox.png) no-repeat;
-      background-size: 100%;
+      background-size: 100% 100%;
     }
   }
 }
@@ -694,7 +694,7 @@ export default {
 .detailTitleLine {
   height: 3px;
   background: url(../../assets/images/policeHistory/detailLine.png) no-repeat;
-  background-size: 100%;
+  background-size: 100% 100%;
 }
 .detailText1 {
   display: inline-block;
@@ -721,10 +721,10 @@ export default {
       display: inline-block;
       padding: 0px;
       width: 100%;
-      height: 679px;
-      background: url(../../assets/images/RealtimeDataMenu/newPoliceBox.png)
+      height: 329px;
+      background: url(../../assets/images/policeHistory/handleBox.png)
         no-repeat;
-      background-size: 100%;
+      background-size: 100% 100%;
       .npdTitleSty {
         width: 166px;
         height: 34px;
@@ -733,9 +733,9 @@ export default {
         font-weight: bold;
         line-height: 42px;
         background: url(../../assets/images/header-bg.png) no-repeat;
-        background-size: 100%;
+        background-size: 100% 100%;
         padding-left: 30px;
-        margin: 26px 0 0 24px;
+        margin: 20px 0 0 24px;
       }
       .input1 {
         .el-input__inner {
