@@ -909,9 +909,9 @@ export default {
             new MqttService().client.send(
               'video/stop/arAlgorithm',
               JSON.stringify({
-                deviceCode: this.videoInfo.deviceCode,
-                channelId: this.videoInfo.streamType,
-                streamUrl: this.videoInfo.streamUrl,
+                deviceCode: me.videoInfo.deviceCode,
+                channelId: me.videoInfo.streamType,
+                streamUrl: me.videoInfo.streamUrl,
                 isOpen: 0
               })
             )
