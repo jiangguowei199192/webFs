@@ -691,7 +691,7 @@ export default {
   border-radius: 4px;
   border: solid 1px #1eb0fc;
   cursor: pointer;
-  margin-top: 44px;
+  margin-top: 24px;
 }
 
 .detailTitle {
