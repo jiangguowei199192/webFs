@@ -878,6 +878,8 @@ export default {
           // 都不显示
           me.showCurindex = 1000
           me.clearRemark()
+          me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: false })
+          me.resetForm('ruleForm')
           // 关闭AR
           new MqttService().client.send(
             'video/stop/arAlgorithm',
@@ -888,8 +890,6 @@ export default {
               isOpen: 0
             })
           )
-          me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: false })
-          me.resetForm('ruleForm')
         }
       })
     },
