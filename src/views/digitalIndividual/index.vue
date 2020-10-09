@@ -6,12 +6,13 @@
           placeholder="案件所属"
           v-model="search.belong"
           class="belongSel"
+          clearable
         >
           <el-option
-            v-for="(item, index) in belongOptions"
+            v-for="(item, index) in deptTree"
             :key="index"
-            :label="item.label"
-            :value="item.value"
+            :label="item.deptName"
+            :value="item.deptCode"
           ></el-option>
         </el-select>
 
@@ -23,7 +24,6 @@
           end-placeholder="结束日期"
           :default-time="['00:00:00', '23:59:59']"
           class="datePickerStyle"
-          @change="dateSearch"
           value-format="yyyyMMdd"
         ></el-date-picker>
 
@@ -33,7 +33,7 @@
           class="otherInput"
         ></el-input>
 
-        <div class="searchBtn" @click="otherSearch">
+        <div class="searchBtn" @click="searchClick">
           <img
             :src="searchImg"
             style="
@@ -236,6 +236,7 @@
               type="datetime"
               placeholder="请选择"
               class="timeStyle"
+              value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="处置人" prop="people" class="input2">
@@ -258,16 +259,18 @@
 import { policeApi } from '@/api/police.js'
 import { Notification } from 'element-ui'
 import qs from 'qs'
+import { loginApi } from '@/api/login'
 
 export default {
   name: 'individual',
   created () {
     this.getList()
+    this.getDeptTree()
   },
   data () {
     return {
       searchImg: require('../../assets/images/policeHistory/search.png'),
-      belongOptions: [],
+      deptTree: [],
       search: {
         belong: '',
         date: '',
@@ -322,8 +325,8 @@ export default {
         caseBelong: this.search.belong,
         content: this.search.other,
         currentPage: this.pageData.currentPage,
-        startTime: this.search.date[0],
-        endTime: this.search.date[1],
+        startTime: this.search.date ? this.search.date[0] : null,
+        endTime: this.search.date ? this.search.date[1] : null,
         pageSize: this.pageData.pageSize
       }
       this.$axios
@@ -348,12 +351,11 @@ export default {
                 time: item.reportTime,
                 belong: item.caseBelong,
                 description: item.caseDesc,
-                // status: item.caseStatus,
-                status: '未处置',
-                mainRecord: item.importantRecord
-                // handleResult: "已处置",
-                // handleTime: "2020/10/3",
-                // handlePeople: "周",
+                status: item.caseStatus,
+                mainRecord: item.importantRecord,
+                handleResult: item.dispositionRecord,
+                handleTime: item.dispositionTime,
+                handlePeople: item.dispositionMan
               }
               tempArr.push(dict)
             })
@@ -362,11 +364,17 @@ export default {
         })
     },
 
-    // 日期搜索
-    dateSearch () {
-      this.getList()
+    // 获取组织树
+    async getDeptTree () {
+      this.$axios.post(loginApi.getDeptTree).then((res) => {
+        if (res && res.data && res.data.code === 0) {
+          this.deptTree = res.data.data[0].children
+        }
+      })
     },
-    otherSearch () {
+
+    searchClick () {
+      console.log('searchClick')
       this.getList()
     },
     // 点击表格行
