@@ -1,7 +1,7 @@
 <template>
   <div style="height: 250px; margin-top: 22px">
     <div ref="rankingRef" style="height: 250px; overflow: hidden">
-      <div class="rankingItemStyle" v-for="(item, index) in data" :key="index">
+      <div class="rankingItemStyle" v-for="(item, index) in showData" :key="index">
         <span class="itemLeftTitleStyle">{{
           "NO." + item.NO + " " + item.deptName
         }}</span>
@@ -9,7 +9,7 @@
         <el-progress
           :show-text="false"
           color="#00ccff"
-          :percentage="item.caseNum"
+          :percentage="item.point"
           style="margin-top: 8px"
         ></el-progress>
       </div>
@@ -26,31 +26,45 @@ export default {
   data () {
     return {
       timer: null,
-      data: []
+      showData: [],
+      trueData: []
     }
   },
   methods: {
     scroll () {
       this.$refs.rankingRef.scrollTop = this.$refs.rankingRef.scrollTop + 50
-      if (this.$refs.rankingRef.scrollTop === 250) {
+      if (this.$refs.rankingRef.scrollTop === this.trueData.length * 50) {
         this.$refs.rankingRef.scrollTop = 0
       }
     },
 
     setData (rankingData) {
       if (rankingData.length) {
+        this.trueData = rankingData
+
         var temp1 = []
         rankingData.forEach((item, index) => {
           var dict = {
             NO: index + 1,
             caseNum: rankingData[index].caseNum,
-            deptName: rankingData[index].deptName
+            deptName: rankingData[index].deptName,
+            point: (rankingData[index].caseNum / rankingData[0].caseNum) * 100
           }
           temp1.push(dict)
         })
-        this.data = temp1
 
         if (temp1.length > 5) {
+          // 额外添加五条数据，为实现滚动效果
+          var temp2 = []
+          temp1.forEach(item => {
+            temp2.push(item)
+          })
+          for (let index = 0; index < 5; index++) {
+            temp2.push(temp1[index])
+          }
+
+          this.showData = temp2
+
           const p = this
           this.timer = setInterval(() => {
             p.scroll()
@@ -68,6 +82,11 @@ export default {
   .itemLeftTitleStyle {
     color: white;
     font-size: 14px;
+    display: inline-block;
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .itemRightTitleStyle {
     float: right;
