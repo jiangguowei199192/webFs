@@ -963,15 +963,15 @@ export default {
             })
           )
           // 开启AR
-          // new MqttService().client.send(
-          //   'video/start/arAlgorithm',
-          //   JSON.stringify({
-          //     deviceCode: curTreeData.deviceCode,
-          //     channelId: curTreeData.streamType,
-          //     streamUrl: curTreeData.streamUrl,
-          //     isOpen: 1
-          //   })
-          // )
+          new MqttService().client.send(
+            'video/start/arAlgorithm',
+            JSON.stringify({
+              deviceCode: curTreeData.deviceCode,
+              channelId: curTreeData.streamType,
+              streamUrl: curTreeData.streamUrl,
+              isOpen: 1
+            })
+          )
         }
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
@@ -1061,7 +1061,7 @@ export default {
             })
           )
           // 关闭AR
-          // new MqttService().client.send(' video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
+          new MqttService().client.send('video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         }
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
