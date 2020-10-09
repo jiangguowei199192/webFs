@@ -173,7 +173,7 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="showDetail" width="852px" class="detailDlg">
+    <el-dialog :close-on-click-modal="false" :visible.sync="showDetail" width="852px" class="detailDlg">
       <div>
         <div class="detailTitle">案件信息</div>
         <div class="detailTitleLine"></div>
@@ -213,7 +213,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="showHandle" width="960px" class="newPoliceDlg">
+    <el-dialog :close-on-click-modal="false" :visible.sync="showHandle" width="960px" class="newPoliceDlg">
       <div>
         <div class="npdTitleSty">处置记录</div>
         <el-form
