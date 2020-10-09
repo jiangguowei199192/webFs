@@ -53,7 +53,7 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="showNewPolice" width="960px" class="newPoliceDlg">
+    <el-dialog :visible.sync="showNewPolice" :close-on-click-modal="false" width="960px" class="newPoliceDlg">
       <div>
         <div class="npdTitleSty">新增案件</div>
         <el-form
