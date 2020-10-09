@@ -33,8 +33,8 @@
                   <el-button
                     v-for="(list,index2) in item.children"
                     :key="index2"
-                    :class="{visible:!list.isSelected,visibleSelected:list.isSelected}"
-                    :style="{backgroundColor:list.isSelected?'rgba(0,212,15,1)':'',color:list.isSelected?'#fff':'#1EB0FC'}"
+                    :class="{visible:!list.isSelected,visibleSelected:list.isSelected,curSelected:list.isCurSelected}"
+                    :style="{backgroundColor:list.isCurSelected?'#1EB0FC':list.isSelected?'rgba(0,212,15,1)':'',color:list.isSelected?'#fff':'#1EB0FC'}"
                     @click.stop="playDeviceVideo(item,list,index1,index2)"
                     :title="list.label"
                   >{{list.label&&list.label.length>3?list.label.slice(0,3)+'..':list.label?list.label:'-'}}</el-button>
@@ -410,6 +410,7 @@ export default {
         this.onlineArray.forEach(item => {
           item.children.forEach(list => {
             list.isSelected = false
+            list.isCurSelected = false
           })
         })
       }
@@ -456,13 +457,13 @@ export default {
       console.log(curData)
       if (!this.onlineArray[index1].children[index2].isSelected) {
         // 关闭其它所有的选中状态
-        // this.onlineArray.forEach(item => {
-        //   if (item.children && item.children.length > 0) {
-        //     item.children.forEach(list => {
-        //       list.isSelected = false
-        //     })
-        //   }
-        // })
+        this.onlineArray.forEach(item => {
+          if (item.children && item.children.length > 0) {
+            item.children.forEach(list => {
+              list.isCurSelected = false
+            })
+          }
+        })
         this.selectedIndex = index1
         this.$set(
           this.onlineArray[index1].children[index2],
@@ -474,6 +475,11 @@ export default {
         this.$set(
           this.onlineArray[index1].children[index2],
           'isSelected',
+          false
+        )
+        this.$set(
+          this.onlineArray[index1].children[index2],
+          'isCurSelected',
           false
         )
         // const result = this.onlineArray[index1].children.some(child => {
@@ -1022,6 +1028,11 @@ export default {
                       'isSelected',
                       false
                     )
+                    this.$set(
+                      this.onlineArray[index1].children[index2],
+                      'isCurSelected',
+                      false
+                    )
                   }
                 })
               })
@@ -1111,6 +1122,9 @@ export default {
                 if (list.id === curVideo.id) {
                   this.selectedIndex = index
                   list.isSelected = true
+                  list.isCurSelected = true
+                } else {
+                  list.isCurSelected = false
                 }
               })
             }
@@ -1723,7 +1737,7 @@ export default {
         button.visible {
           background: url(../../assets/images/visible.png) no-repeat 4px center;
         }
-        button.visibleSelected {
+        button.visibleSelected,button.curSelected {
           background: url(../../assets/images/visible_selected.png) no-repeat
             4px center;
         }
