@@ -477,11 +477,13 @@ export default {
           'isSelected',
           false
         )
-        this.$set(
-          this.onlineArray[index1].children[index2],
-          'isCurSelected',
-          false
-        )
+        this.onlineArray.forEach(item => {
+          if (item.children && item.children.length > 0) {
+            item.children.forEach(list => {
+              list.isCurSelected = false
+            })
+          }
+        })
         // const result = this.onlineArray[index1].children.some(child => {
         //   return child.isSelected === true
         // })
