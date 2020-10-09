@@ -337,7 +337,7 @@ import { api } from '@/api/videoSystem/realVideo'
 import globalApi from '../../utils/globalApi'
 import { throttle, debounce } from '../../utils/public.js'
 import { EventBus } from '@/utils/eventBus.js'
-import MqttService from '@/utils/mqttService'
+// import MqttService from '@/utils/mqttService'
 
 export default {
   name: 'videoContainer',
@@ -959,18 +959,6 @@ export default {
     playOrClose (type, curTreeData) {
       // 1.添加
       if (type === 1) {
-        if (curTreeData.deviceTypeCode === 'GDJK') {
-          // 开启人员识别
-          new MqttService().client.send(
-            'video/start/algorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 1
-            })
-          )
-        }
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
         this.refreshMap(curTreeData)
@@ -1052,18 +1040,6 @@ export default {
           )
         }
       } else {
-        if (curTreeData.deviceTypeCode === 'GDJK') {
-          // 关闭人员识别
-          new MqttService().client.send(
-            'video/stop/algorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 0
-            })
-          )
-        }
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
         this.curSelectedVideo = {}

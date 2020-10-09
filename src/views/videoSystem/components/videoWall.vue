@@ -869,19 +869,43 @@ export default {
         // console.log(width, element.clientWidth, element.clientWidth, element.style.width)
         // if (width === window.screen.width && height === window.screen.height) {
         if (width === window.screen.width) {
+          if (me.videoInfo.deviceTypeCode === 'GDJK') {
+            // 开启人员识别
+            new MqttService().client.send(
+              'video/start/algorithm',
+              JSON.stringify({
+                deviceCode: me.videoInfo.deviceCode,
+                channelId: me.videoInfo.streamType,
+                streamUrl: me.videoInfo.streamUrl,
+                isOpen: 1
+              })
+            )
+          }
           me.bIsFullScreenVideo = true
           me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: true })
         } else {
+          if (me.videoInfo.deviceTypeCode === 'GDJK') {
+            // 关闭人员识别
+            new MqttService().client.send(
+              'video/stop/algorithm',
+              JSON.stringify({
+                deviceCode: me.videoInfo.deviceCode,
+                channelId: me.videoInfo.streamType,
+                streamUrl: me.videoInfo.streamUrl,
+                isOpen: 0
+              })
+            )
+          }
           me.bIsFullScreenVideo = false
           me.$refs.gduMap.closeAllPopover()
-          me.showAR && (me.showAR = false)
+
           // 都不显示
           me.showCurindex = 1000
           me.clearRemark()
           me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: false })
           me.resetForm('ruleForm')
           // 关闭AR
-          me.showAR &&
+          if (me.showAR) {
             new MqttService().client.send(
               'video/stop/arAlgorithm',
               JSON.stringify({
@@ -891,6 +915,8 @@ export default {
                 isOpen: 0
               })
             )
+          }
+          me.showAR && (me.showAR = false)
         }
       })
     },
