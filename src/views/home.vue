@@ -375,7 +375,7 @@ export default {
     cursor: pointer;
     position: absolute;
     top: 3px;
-    right: 20px;
+    right: 15px;
     img {
       width: 40px;
       height: 40px;
