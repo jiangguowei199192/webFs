@@ -25,12 +25,7 @@
             <div class="header">AR实景地图指挥</div>
           </template>
           <div class="footer" @dblclick.stop="stopEvent">
-            <a
-              @mouseenter="showActive(1)"
-              @mouseleave="showActive(0)"
-              title="AR"
-              @click="showAR=!showAR"
-            >
+            <a @mouseenter="showActive(1)" @mouseleave="showActive(0)" title="AR" @click="changeAR">
               <img :src="arPic" alt title="AR" />
               <img v-show="active === 1" class="hide_tab" :src="arSelectedPic" />
             </a>
@@ -698,6 +693,33 @@ export default {
     showActive (index) {
       this.active = index
     },
+    // 显示与隐藏AR
+    changeAR () {
+      this.showAR = !this.showAR
+      if (this.showAR) {
+        // 开启AR
+        new MqttService().client.send(
+          'video/start/arAlgorithm',
+          JSON.stringify({
+            deviceCode: this.videoInfo.deviceCode,
+            channelId: this.videoInfo.streamType,
+            streamUrl: this.videoInfo.streamUrl,
+            isOpen: 1
+          })
+        )
+      } else {
+        // 关闭AR
+        new MqttService().client.send(
+          'video/stop/arAlgorithm',
+          JSON.stringify({
+            deviceCode: this.videoInfo.deviceCode,
+            channelId: this.videoInfo.streamType,
+            streamUrl: this.videoInfo.streamUrl,
+            isOpen: 0
+          })
+        )
+      }
+    },
     // 点击抓取，显示抓拍图片
     showImg: throttle(function () {
       // 显示抓取的图片
@@ -856,6 +878,16 @@ export default {
           // 都不显示
           me.showCurindex = 1000
           me.clearRemark()
+          // 关闭AR
+          new MqttService().client.send(
+            'video/stop/arAlgorithm',
+            JSON.stringify({
+              deviceCode: this.videoInfo.deviceCode,
+              channelId: this.videoInfo.streamType,
+              streamUrl: this.videoInfo.streamUrl,
+              isOpen: 0
+            })
+          )
           me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: false })
           me.resetForm('ruleForm')
         }

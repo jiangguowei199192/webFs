@@ -962,16 +962,6 @@ export default {
               isOpen: 1
             })
           )
-          // 开启AR
-          new MqttService().client.send(
-            'video/start/arAlgorithm',
-            JSON.stringify({
-              deviceCode: curTreeData.deviceCode,
-              channelId: curTreeData.streamType,
-              streamUrl: curTreeData.streamUrl,
-              isOpen: 1
-            })
-          )
         }
         this.curSelectedVideo = JSON.parse(JSON.stringify(curTreeData))
         console.log('当前选中', this.curSelectedVideo)
@@ -1060,8 +1050,6 @@ export default {
               isOpen: 0
             })
           )
-          // 关闭AR
-          new MqttService().client.send('video/stop/arAlgorithm', JSON.stringify({ deviceCode: curTreeData.deviceCode, channelId: curTreeData.streamType, streamUrl: curTreeData.streamUrl, isOpen: 0 }))
         }
         // 2.关闭视频 如果关闭的是显示的视频
         // if (curTreeData.id === this.curSelectedVideo.id) {
@@ -1604,7 +1592,7 @@ export default {
     })
     // AR数据
     EventBus.$on('getArChange', info => {
-      console.log(info)
+      console.log('ar数据', info)
       this.totalVideosArray.forEach((item, index) => {
         if (
           item.deviceCode === info.deviceCode &&
