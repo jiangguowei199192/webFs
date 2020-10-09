@@ -881,15 +881,16 @@ export default {
           me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: false })
           me.resetForm('ruleForm')
           // 关闭AR
-          new MqttService().client.send(
-            'video/stop/arAlgorithm',
-            JSON.stringify({
-              deviceCode: this.videoInfo.deviceCode,
-              channelId: this.videoInfo.streamType,
-              streamUrl: this.videoInfo.streamUrl,
-              isOpen: 0
-            })
-          )
+          me.showAR &&
+            new MqttService().client.send(
+              'video/stop/arAlgorithm',
+              JSON.stringify({
+                deviceCode: this.videoInfo.deviceCode,
+                channelId: this.videoInfo.streamType,
+                streamUrl: this.videoInfo.streamUrl,
+                isOpen: 0
+              })
+            )
         }
       })
     },
