@@ -880,6 +880,7 @@ export default {
                 isOpen: 1
               })
             )
+            console.log('开启人员识别')
           }
           me.bIsFullScreenVideo = true
           me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: true })
@@ -895,6 +896,7 @@ export default {
                 isOpen: 0
               })
             )
+            console.log('关闭人员识别')
           }
           me.bIsFullScreenVideo = false
           me.$refs.gduMap.closeAllPopover()
