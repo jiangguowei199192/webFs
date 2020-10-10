@@ -40,18 +40,23 @@ export default {
 
     setData (rankingData) {
       if (rankingData.length) {
-        this.trueData = rankingData
+        rankingData.forEach((item, index) => {
+          if (item.deptName === null) {
+            rankingData.splice(index, 1)
+          }
+        })
 
         var temp1 = []
         rankingData.forEach((item, index) => {
           var dict = {
             NO: index + 1,
-            caseNum: rankingData[index].caseNum,
-            deptName: rankingData[index].deptName,
-            point: (rankingData[index].caseNum / rankingData[0].caseNum) * 100
+            caseNum: item.caseNum,
+            deptName: item.deptName,
+            point: (item.caseNum / rankingData[0].caseNum) * 100
           }
           temp1.push(dict)
         })
+        this.trueData = temp1
 
         if (temp1.length > 5) {
           // 额外添加五条数据，为实现滚动效果
@@ -69,6 +74,8 @@ export default {
           this.timer = setInterval(() => {
             p.scroll()
           }, 2000)
+        } else {
+          this.showData = temp1
         }
       }
     }
