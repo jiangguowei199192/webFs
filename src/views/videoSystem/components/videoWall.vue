@@ -666,6 +666,37 @@ export default {
     },
     deviceCode (val) {
       this.setDroneDevCode(val)
+    },
+    'videoInfo.isShowOperate' (nv, ov) {
+      if (nv) {
+        if (this.videoInfo.deviceTypeCode === 'GDJK') {
+          // 开启人员识别
+          new MqttService().client.send(
+            'video/start/algorithm',
+            JSON.stringify({
+              deviceCode: this.videoInfo.deviceCode,
+              channelId: this.videoInfo.streamType,
+              streamUrl: this.videoInfo.streamUrl,
+              isOpen: 1
+            })
+          )
+          console.log('开启人员识别')
+        }
+      } else {
+        if (this.videoInfo.deviceTypeCode === 'GDJK') {
+          // 关闭人员识别
+          new MqttService().client.send(
+            'video/stop/algorithm',
+            JSON.stringify({
+              deviceCode: this.videoInfo.deviceCode,
+              channelId: this.videoInfo.streamType,
+              streamUrl: this.videoInfo.streamUrl,
+              isOpen: 0
+            })
+          )
+          console.log('关闭人员识别')
+        }
+      }
     }
   },
 
@@ -869,35 +900,9 @@ export default {
         // console.log(width, element.clientWidth, element.clientWidth, element.style.width)
         // if (width === window.screen.width && height === window.screen.height) {
         if (width === window.screen.width) {
-          if (me.videoInfo.deviceTypeCode === 'GDJK') {
-            // 开启人员识别
-            new MqttService().client.send(
-              'video/start/algorithm',
-              JSON.stringify({
-                deviceCode: me.videoInfo.deviceCode,
-                channelId: me.videoInfo.streamType,
-                streamUrl: me.videoInfo.streamUrl,
-                isOpen: 1
-              })
-            )
-            console.log('开启人员识别')
-          }
           me.bIsFullScreenVideo = true
           me.$emit('fullscreenvideo', { info: me.videoInfo, bfull: true })
         } else {
-          if (me.videoInfo.deviceTypeCode === 'GDJK') {
-            // 关闭人员识别
-            new MqttService().client.send(
-              'video/stop/algorithm',
-              JSON.stringify({
-                deviceCode: me.videoInfo.deviceCode,
-                channelId: me.videoInfo.streamType,
-                streamUrl: me.videoInfo.streamUrl,
-                isOpen: 0
-              })
-            )
-            console.log('关闭人员识别')
-          }
           me.bIsFullScreenVideo = false
           me.$refs.gduMap.closeAllPopover()
 
@@ -917,6 +922,7 @@ export default {
                 isOpen: 0
               })
             )
+            console.log('关闭AR')
           }
           me.showAR && (me.showAR = false)
         }
