@@ -36,12 +36,12 @@
             style="margin-top: 44px;"
             v-bind:itemData="rightItemVideoServe"
           ></SettingRightTable>-->
-          <SettingRightTable
+          <!-- <SettingRightTable
             id="idRightItemSmartFunction"
             style="margin-top: 44px;"
             v-bind:itemData="rightItemSmartFunction"
             v-bind:userDetail="userDetail"
-          ></SettingRightTable>
+          ></SettingRightTable> -->
           <!-- 第一版不开放 -->
           <!-- <SettingRightTable
             id="idRightItemMapServe"
@@ -80,42 +80,42 @@ export default {
               selected: true
             }
           ]
-        },
-        {
-          headerTitle: '高级',
-          info: [
-            // 第一版不开放
-            // {
-            //   id: 1,
-            //   title: '用户权限',
-            //   normalImgPath: require('../../assets/images/Setting/setting-userPermission-normal.png'),
-            //   selectedImgPath: require('../../assets/images/Setting/setting-userPermission-selected.png'),
-            //   selected: false
-            // },
-            // {
-            //   id: 2,
-            //   title: '视频服务',
-            //   normalImgPath: require('../../assets/images/Setting/setting-videoServe-normal.png'),
-            //   selectedImgPath: require('../../assets/images/Setting/setting-videoServe-selected.png'),
-            //   selected: false
-            // },
-            {
-              id: 3,
-              title: '智能功能管理',
-              normalImgPath: require('../../assets/images/Setting/setting-smartManager-normal.png'),
-              selectedImgPath: require('../../assets/images/Setting/setting-smartManager-selected.png'),
-              selected: false
-            }
-            // 第一版不开放
-            // {
-            //   id: 4,
-            //   title: '地图服务',
-            //   normalImgPath: require('../../assets/images/Setting/setting-mapServe-normal.png'),
-            //   selectedImgPath: require('../../assets/images/Setting/setting-mapServe-selected.png'),
-            //   selected: false
-            // }
-          ]
         }
+        // {
+        //   headerTitle: '高级',
+        //   info: [
+        // 第一版不开放
+        // {
+        //   id: 1,
+        //   title: '用户权限',
+        //   normalImgPath: require('../../assets/images/Setting/setting-userPermission-normal.png'),
+        //   selectedImgPath: require('../../assets/images/Setting/setting-userPermission-selected.png'),
+        //   selected: false
+        // },
+        // {
+        //   id: 2,
+        //   title: '视频服务',
+        //   normalImgPath: require('../../assets/images/Setting/setting-videoServe-normal.png'),
+        //   selectedImgPath: require('../../assets/images/Setting/setting-videoServe-selected.png'),
+        //   selected: false
+        // },
+        // {
+        //   id: 3,
+        //   title: '智能功能管理',
+        //   normalImgPath: require('../../assets/images/Setting/setting-smartManager-normal.png'),
+        //   selectedImgPath: require('../../assets/images/Setting/setting-smartManager-selected.png'),
+        //   selected: false
+        // }
+        // 第一版不开放
+        // {
+        //   id: 4,
+        //   title: '地图服务',
+        //   normalImgPath: require('../../assets/images/Setting/setting-mapServe-normal.png'),
+        //   selectedImgPath: require('../../assets/images/Setting/setting-mapServe-selected.png'),
+        //   selected: false
+        // }
+        //   ]
+        // }
       ],
       rightItemUserSetting: {
         headerTitle: '账号设置',
