@@ -152,6 +152,7 @@ import PoliceRankingMenu from './PoliceRankingMenu'
 import { policeApi } from '@/api/police.js'
 import { Notification } from 'element-ui'
 import { loginApi } from '@/api/login'
+import { EventBus } from '@/utils/eventBus.js'
 
 export default {
   components: {
@@ -293,6 +294,9 @@ export default {
           headers: { 'Content-Type': 'application/json;charset=UTF-8' }
         }).then((res) => {
           if (res && res.data && res.data.code === 0) {
+            setTimeout(() => {
+              EventBus.$emit('addNewWarningSuccess', res.data.data)
+            }, 5000)
             Notification({
               title: '提示',
               message: '新增成功',
