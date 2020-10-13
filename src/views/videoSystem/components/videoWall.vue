@@ -753,6 +753,8 @@ export default {
     },
     // 点击抓取，显示抓拍图片
     showImg: throttle(function () {
+      // 防止抓拍时，有显示其它弹框
+      this.showCurindex = 1000
       // 显示抓取的图片
       const params = {
         deviceCode: this.videoInfo.deviceCode,
