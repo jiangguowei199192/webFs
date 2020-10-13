@@ -69,7 +69,7 @@
           v-if="policeList"
           @row-click="clickTableRow"
           :data="policeList"
-          empty-text="no data"
+          empty-text="暂无数据"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"></el-table-column>
