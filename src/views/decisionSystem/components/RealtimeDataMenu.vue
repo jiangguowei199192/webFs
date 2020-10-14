@@ -94,7 +94,20 @@
               placeholder="请输入"
               v-model="newPoliceForm.address"
             ></el-input>
-            <div style="width: 760px; height: 140px; margin-top: 5px">
+            <!-- <div style="width: 760px; height: 140px; margin-top: 5px;">
+              <gMap
+                ref="gduMap"
+                handleType="devMap"
+                :bShowSimpleSearchTools="true"
+                :bShowBasic="false"
+                :bShowMeasure="false"
+                :bShowLonLat="false"
+                :bAutoLocate="false"
+              ></gMap>
+            </div> -->
+          </el-form-item>
+          <el-form-item label="    " prop="lon">
+            <div style="width: 760px; height: 140px;">
               <gMap
                 ref="gduMap"
                 handleType="devMap"
@@ -106,7 +119,7 @@
               ></gMap>
             </div>
           </el-form-item>
-          <el-form-item label="举报时间" class="input1">
+          <el-form-item label="举报时间" prop="time" class="input1">
             <el-date-picker
               v-model="newPoliceForm.time"
               type="datetime"
@@ -189,12 +202,15 @@ export default {
         time: '', // 举报时间
         belong: '', // 案件所属
         description: '', // 简要描述
-        record: '' // 重点记录
+        record: '', // 重点记录
+        lon: ''
       },
       newPoliceRules: {
         source: [{ required: true, message: '请输入信息来源' }],
         people: [{ required: true, message: '请输入举报人' }],
-        address: [{ required: true, message: '请输入举报地址' }]
+        address: [{ required: true, message: '请输入举报地址' }],
+        time: [{ required: true, message: '请选择举报时间' }],
+        lon: [{ required: true, message: '请选择坐标' }]
       },
 
       deptTree: ''
@@ -254,9 +270,12 @@ export default {
     newPolice () {
       this.showNewPolice = true
 
+      var that = this
       setTimeout(() => {
         const tmpMap = this.$refs.gduMap.map2D
         tmpMap.clickEvent.addEventListener((lonlat) => {
+          that.newPoliceForm.lon = lonlat[0]
+
           tmpMap.customMarkerLayerManager.clear()
           tmpMap.customMarkerLayerManager.addMarker({
             name: null,
