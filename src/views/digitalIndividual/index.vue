@@ -512,12 +512,14 @@ export default {
     height: 40px;
     color: #c5f3ff;
     border: solid 1px #1eb0fc;
+    border-radius: 0;
     background-color: transparent;
     font-size: 16px;
   }
 }
 
 .otherInput {
+  vertical-align: top;
   width: 450px;
   height: 40px;
   margin-left: 27px;
@@ -526,15 +528,18 @@ export default {
     height: 40px;
     color: #c5f3ff;
     border: solid 1px #1eb0fc;
+    border-radius: 0;
     background-color: transparent;
     font-size: 16px;
   }
 }
 
 .datePickerStyle {
+  vertical-align: top;
   display: inline-block;
   background-color: transparent;
   border-color: #1eb0fc;
+  border-radius: 0;
   width: 427px;
   height: 40px;
   margin-left: 20px;
