@@ -1272,7 +1272,7 @@ export default {
             item.children.forEach(list => {
               if (list.id === this.curVideosArray[0].id) {
                 this.selectedIndex = index
-                list.isSelected = true
+                list.isCurSelected = true
               }
             })
           }
