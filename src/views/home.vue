@@ -181,7 +181,10 @@ export default {
       if (this.$route.path === '/playback') {
         this.curActive = 2
       } else if (this.$route.path === '/videoSystem') {
+        this.isActive = 1
         this.curActive = 1
+      } else if (this.$route.path === '/digitalIndividual') {
+        this.isActive = 4
       }
     },
     // 点击激活当前系统
