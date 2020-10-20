@@ -1436,6 +1436,8 @@ export default {
           channelId: this.videoInfo.streamType
         })
       )
+      // 显示角度
+      this.getPtzInfo()
       const params = {
         device_id: this.videoInfo.deviceCode,
         channel_id: this.videoInfo.streamType,
