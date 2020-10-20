@@ -767,10 +767,25 @@ export default {
     showActive (index) {
       this.active = index
     },
+    // 获取云台信息
+    getPtzInfo () {
+      const params = {
+        deviceCode: this.videoInfo.deviceCode,
+        channelId: this.videoInfo.streamType
+      }
+      this.$axios.post(api.getPtzInfo, params).then(res => {
+        if (res && res.data && res.data.code === 0) {
+          const data = res.data.data
+          this.horizontalValue = data.nPTZPan
+          this.verticalValue = data.nPTZTilt
+        }
+      })
+    },
     // 显示与隐藏AR
     changeAR () {
       this.showAR = !this.showAR
       if (this.showAR) {
+        this.getPtzInfo()
         // 开启AR
         new MqttService().client.send(
           'video/start/arAlgorithm',
