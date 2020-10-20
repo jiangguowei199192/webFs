@@ -20,7 +20,12 @@
           :class="{bg:showAR}"
         >
           <!-- canvas绘图 -->
-          <canvas-area :showAR="showAR" @canvasEnd="getPosition" @canvasStart="showCurindex=1000" :showMarkForm="showMarkForm"></canvas-area>
+          <canvas-area
+            :showAR="showAR"
+            @canvasEnd="getPosition"
+            @canvasStart="showCurindex=1000"
+            :showMarkForm="showMarkForm"
+          ></canvas-area>
           <template v-if="showAR">
             <div class="header">AR实景地图指挥</div>
           </template>
@@ -29,15 +34,15 @@
               <img :src="arPic" alt title="AR" />
               <img v-show="active === 1" class="hide_tab" :src="arSelectedPic" />
             </a>
-            <!-- <a
+            <a
               @mouseenter="showActive(2)"
               @mouseleave="showActive(0)"
-              @click="showCurindex=1"
+              @click.stop="getTodayFire"
               title="火情报警"
             >
               <img :src="alarmPic" alt />
               <img v-show="active === 2" class="hide_tab" :src="alarmSelectedPic" />
-            </a>-->
+            </a>
             <a
               @mouseenter="showActive(3)"
               @mouseleave="showActive(0)"
@@ -93,23 +98,31 @@
           <div class="realPoliceInfo" v-show="showCurindex==1" @dblclick.stop="stopEvent">
             <div class="title">实时警情</div>
             <div class="content webFsScroll">
-              <div class="item" v-for="(item,index) in 9" :key="index">
+              <div class="item" v-for="(item,index) in todayFireArray" :key="index">
                 <div class="pic">
-                  <img src="../../../assets/images/type_fire.png" alt />
+                  <img :src="`${picUrl}${item.alarmPic}`" alt />
                 </div>
-                <div>
-                  <p>时间：2020-08-12 15:12:00</p>
-                  <p>地点：武汉市第一医院</p>
-                  <p>坐标：30.254124 114.221454</p>
+                <div class="detail">
+                  <p>时间：{{item.alarmTime}}</p>
+                  <p>
+                    地点：
+                    <span
+                      :title="item.alarmAddress"
+                    >{{item.alarmAddress&&item.alarmAddress.length>9?item.alarmAddress.slice(0,9)+'.':'-'}}</span>
+                  </p>
+                  <p>坐标：{{item.alarmLongitude}},{{item.alarmLatitude}}</p>
                   <p>
                     类型：
-                    <span class="type">火情报警</span>
+                    <span
+                      class="type"
+                    >{{item.alarmTypeCode==='HUO'?'火点报警':item.alarmTypeCode==='YANWU'?'烟雾报警':'-'}}</span>
                   </p>
                 </div>
               </div>
             </div>
             <img src="../../../assets/images/AR/X.png" @click="showCurindex=1000" />
           </div>
+
           <!-- 标签弹框 -->
           <div class="tagInfo" @dblclick.stop="stopEvent" v-show="showCurindex==4">
             <div>
@@ -272,7 +285,7 @@
           :class="{ship:item.label==1}"
         ></span>
       </div>
-      <!-- 显示AR标签 -->
+       <!-- 显示AR标签 -->
       <div
         class="fullScreenAr"
         v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0"
@@ -284,9 +297,9 @@
           :style="{
           left:item.label=='0'?((Number(item.left)+Number(item.width/2))/1280*1920-51.5)+'px':(Number(item.left)+Number(item.width/2))/1280*1920+'px',
          top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
+          :title="item.label==0?item.labelName:''"
         >
-          <div>{{item.labelName}}</div>
-          <!-- Number(item.left)+Number(item.width/2))/720)*1080-25+'px' -->
+          <div v-show="item.label!=0">{{item.labelName}}</div>
         </div>
       </div>
       <!-- 新版云台操作 -->
@@ -461,6 +474,7 @@ import globalApi from '../../../utils/globalApi'
 import { api } from '@/api/videoSystem/realVideo'
 import { timeFormat } from '@/utils/date'
 import MqttService from '@/utils/mqttService'
+import { EventBus } from '@/utils/eventBus.js'
 export default {
   data () {
     return {
@@ -487,6 +501,7 @@ export default {
       arPic: require('@/assets/images/AR/ar.png'),
       arSelectedPic: require('@/assets/images/AR/ar_selected.png'),
 
+      todayFireArray: [], // 保存火情火点数据
       alarmPic: require('@/assets/images/AR/alarm.png'),
       alarmSelectedPic: require('@/assets/images/AR/alarm_selected.png'),
 
@@ -750,6 +765,28 @@ export default {
           })
         )
       }
+    },
+    // 获取今日警情
+    getTodayFire () {
+      this.showCurindex = 1
+      const params = {
+        deviceCode: this.videoInfo.deviceCode,
+        streamCode: this.videoInfo.streamType,
+        pageSize: 1000000,
+        timeBegin: new Date(new Date().toLocaleDateString()).getTime()
+      }
+      this.$axios.get(api.todayAlarm, { params }).then(res => {
+        if (res && res.data && res.data.code === 0) {
+          const data = res.data.data.data
+          data.forEach(element => {
+            element.alarmTime = timeFormat(element.alarmTime)
+            if (element.alarmPicList && element.alarmPicList.length > 0) {
+              element.alarmPic = element.alarmPicList[0].picPath
+            }
+          })
+          this.todayFireArray = data
+        }
+      })
     },
     // 点击抓取，显示抓拍图片
     showImg: throttle(function () {
@@ -1443,7 +1480,40 @@ export default {
   filters: {
     timeFormat
   },
-  created () {}
+  created () {
+    // 监听火情报警
+    EventBus.$on('getFireAlarm', info => {
+      if (
+        this.videoInfo.deviceCode === info.deviceCode &&
+        this.videoInfo.streamType === info.streamType &&
+        this.videoInfo.isShowOperate
+      ) {
+        // 如果此时火情弹框打开了
+        if (this.showCurindex === 1) {
+          this.getTodayFire()
+        }
+        this.showNotification = true
+        this.infoObj.isWarning = true
+        this.infoObj.isError = false
+        this.infoObj.isSuccess = false
+        this.infoObj.title = '警告'
+        this.infoObj.msg = '发现火情火点！'
+        setTimeout(() => {
+          this.showNotification = false
+        }, 3000)
+      }
+      // if (info.alarmStatus !== 'mistaken') {
+      //   info.bConfirmed = false
+      //   info.alarmTime = timeFormat(info.alarmTime)
+      //   this.handlingAlarmImgUrl(info)
+      //   this.fireWarningArray.push(info)
+      //   this.fireTotalNum = this.fireWarningArray.length
+      //   if (this.bShowMarkersInMap) {
+      //     this.addNewFireWarning(info)
+      //   }
+      // }
+    })
+  }
 }
 </script>
 <style lang="less" >
