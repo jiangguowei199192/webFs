@@ -285,7 +285,30 @@
           :class="{ship:item.label==1}"
         ></span>
       </div>
-       <!-- 显示AR标签 -->
+      <!-- 刻度尺 -->
+      <div class="rule" v-show="showAR">
+        <!-- x轴箭头 -->
+        <div class="horizontal">
+          <span>0</span>
+          <div :style="{left:(horizontalValue/360*800-7)+'px'}">
+            <img :src="upPic" />
+            <div>{{horizontalValue}}</div>
+          </div>
+          <span>360</span>
+        </div>
+        <!-- y轴箭头 -->
+        <div class="vertical">
+          <span>180</span>
+          <div
+            :style="{top:verticalValue< 0 ? 73 + String(verticalValue).slice(1) / 180 * 80 +'px': (73 - verticalValue / 180 * 80)+'px'}"
+          >
+            <div>{{verticalValue>0?verticalValue:String(verticalValue).slice(1)}}</div>
+            <img :src="rightPic" />
+          </div>
+          <span>180</span>
+        </div>
+      </div>
+      <!-- 显示AR标签 -->
       <div
         class="fullScreenAr"
         v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0"
@@ -498,6 +521,11 @@ export default {
       active: '', // 动态显示悬停相关图标
       showAR: false, // 显示AR
       showCurindex: 1000, // 显示弹框
+      upPic: require('@/assets/images/AR/up.png'),
+      rightPic: require('@/assets/images/AR/right.png'),
+      horizontalValue: 0, // 水平角度
+      verticalValue: 0, // 垂直角度
+
       arPic: require('@/assets/images/AR/ar.png'),
       arSelectedPic: require('@/assets/images/AR/ar_selected.png'),
 
@@ -2003,6 +2031,70 @@ export default {
     }
     div.high {
       background: url(../../../assets/images/AR/high.png) no-repeat;
+    }
+  }
+  div.rule {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 802px;
+    height: 162px;
+    background: url(../../../assets/images/AR/rule.png) no-repeat;
+    .horizontal,
+    .vertical {
+      position: absolute;
+      div {
+        font-size: 14px;
+        font-family: Source Han Sans CN;
+        font-weight: 400;
+        color: #f8b652;
+      }
+    }
+    .horizontal {
+      top: 81px;
+      > div {
+        position: absolute;
+        div {
+          margin-left: -7px;
+        }
+      }
+      span {
+        position: absolute;
+        color: #00c4e0;
+      }
+      span:nth-child(1) {
+        left: -13px;
+        top: -5px;
+      }
+      span:nth-child(3) {
+        left: 804px;
+        top: -8px;
+      }
+    }
+    .vertical {
+      left: 360px;
+      > div {
+        position: absolute;
+        display: flex;
+        width: 42px;
+        justify-content: space-between;
+        // div {
+        //   margin-right: 2px;
+        // }
+      }
+      span {
+        position: absolute;
+        color: #00c4e0;
+      }
+      span:nth-child(1) {
+        left: 25px;
+        top: -16px;
+      }
+      span:nth-child(3) {
+        left: 25px;
+        top: 164px;
+      }
     }
   }
   .fullScreenOperate {
