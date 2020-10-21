@@ -173,7 +173,12 @@
       </div>
     </div>
 
-    <el-dialog :close-on-click-modal="false" :visible.sync="showDetail" width="852px" class="detailDlg">
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="showDetail"
+      width="852px"
+      class="detailDlg"
+    >
       <div>
         <div class="detailTitle">案件信息</div>
         <div class="detailTitleLine"></div>
@@ -213,7 +218,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog :close-on-click-modal="false" :visible.sync="showHandle" width="960px" class="newPoliceDlg">
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="showHandle"
+      width="960px"
+      class="newPoliceDlg"
+    >
       <div>
         <div class="npdTitleSty">处置记录</div>
         <el-form
@@ -249,6 +259,27 @@
         <div style="height: 32px">
           <div class="npdConfirm1" @click="handelConfirmClick">确定</div>
           <div class="npdCancel1" @click="handelCancelClick">取消</div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="showDeleteTip"
+      width="390px"
+      class="deleteTipDlg"
+    >
+      <div>
+        <div style="color: white; margin-left: 30px; margin-top: 30px">
+          您确认删除这些数据吗？
+        </div>
+        <div style="color: white; margin-left: 30px; margin-top: 10px">
+          <span style="color: red;">删除后无法撤销</span>
+          <span style="color: gray;">，您还要继续吗？</span>
+        </div>
+        <div style="height: 32px; margin-top: 30px">
+          <div class="npdConfirm2" @click="deleteConfirmClick">确认</div>
+          <div class="npdCancel2" @click="deleteCancelClick">取消</div>
         </div>
       </div>
     </el-dialog>
@@ -316,7 +347,9 @@ export default {
         handleResult: '',
         handleTime: '',
         handlePeople: ''
-      }
+      },
+
+      showDeleteTip: false
     }
   },
   methods: {
@@ -388,6 +421,7 @@ export default {
       this.selectedItem = val
       console.log(val)
     },
+    // 批量删除
     async deleteClick () {
       if (this.selectedItem.length <= 0) {
         Notification({
@@ -399,27 +433,7 @@ export default {
         return
       }
 
-      var ids = []
-      this.selectedItem.forEach((item) => {
-        ids.push(item.id)
-      })
-
-      this.$axios
-        .post(
-          policeApi.deleteBatch,
-          qs.stringify({ ids: ids }, { arrayFormat: 'comma' })
-        )
-        .then((res) => {
-          if (res && res.data && res.data.code === 0) {
-            this.getList()
-            Notification({
-              title: '提示',
-              message: '删除成功',
-              type: 'success',
-              duration: 5 * 1000
-            })
-          }
-        })
+      this.showDeleteTip = true
     },
     // 显示案件详情
     showDetailClick (index, row) {
@@ -447,9 +461,11 @@ export default {
     },
     // 处置
     resolve (index, row) {
-      // console.log(index, row)
       this.handleItem = row
       this.showHandle = true
+      if (this.$refs.handleRef) {
+        this.$refs.handleRef.resetFields()
+      }
     },
     // 处置弹窗-确定
     handelConfirmClick () {
@@ -486,6 +502,36 @@ export default {
     // 处置弹窗-取消
     handelCancelClick () {
       this.showHandle = false
+    },
+
+    deleteConfirmClick () {
+      this.showDeleteTip = false
+
+      var ids = []
+      this.selectedItem.forEach((item) => {
+        ids.push(item.id)
+      })
+
+      this.$axios
+        .post(
+          policeApi.deleteBatch,
+          qs.stringify({ ids: ids }, { arrayFormat: 'comma' })
+        )
+        .then((res) => {
+          if (res && res.data && res.data.code === 0) {
+            this.getList()
+            Notification({
+              title: '提示',
+              message: '删除成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+          }
+        })
+    },
+
+    deleteCancelClick () {
+      this.showDeleteTip = false
     }
   }
 }
@@ -735,8 +781,7 @@ export default {
       padding: 0px;
       width: 100%;
       height: 329px;
-      background: url(../../assets/images/policeHistory/handleBox.png)
-        no-repeat;
+      background: url(../../assets/images/policeHistory/handleBox.png) no-repeat;
       background-size: 100% 100%;
       .npdTitleSty {
         width: 166px;
@@ -785,7 +830,7 @@ export default {
   height: 32px;
   background: #1eb0fc;
   color: white;
-  margin-right: 65px;
+  margin-right: 35px;
   font-size: 18px;
   line-height: 32px;
   text-align: center;
@@ -805,5 +850,49 @@ export default {
   border-radius: 4px;
   border: solid 1px #1eb0fc;
   cursor: pointer;
+}
+
+.deleteTipDlg.el-dialog__wrapper {
+  /deep/.el-dialog {
+    .el-dialog__header {
+      display: none;
+    }
+    background: transparent;
+    .el-dialog__body {
+      display: inline-block;
+      padding: 0px;
+      width: 100%;
+      height: 155px;
+      background: url(../../assets/images/policeHistory/handleBox.png) no-repeat;
+      background-size: 100% 100%;
+    }
+    .npdConfirm2 {
+      float: right;
+      width: 60px;
+      height: 25px;
+      line-height: 25px;
+      background: #1eb0fc;
+      color: white;
+      margin-right: 25px;
+      font-size: 14px;
+      text-align: center;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .npdCancel2 {
+      float: right;
+      width: 60px;
+      height: 25px;
+      line-height: 25px;
+      background: transparent;
+      color: #1eb0fc;
+      margin-right: 15px;
+      font-size: 14px;
+      text-align: center;
+      border-radius: 4px;
+      border: solid 1px #1eb0fc;
+      cursor: pointer;
+    }
+  }
 }
 </style>

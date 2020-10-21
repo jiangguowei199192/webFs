@@ -269,6 +269,11 @@ export default {
 
     newPolice () {
       this.showNewPolice = true
+      this.newPoliceForm.phone = ''
+      this.newPoliceForm.belong = ''
+      this.newPoliceForm.description = ''
+      this.newPoliceForm.record = ''
+      this.$refs.newPoliceRef.resetFields()
 
       var that = this
       setTimeout(() => {
