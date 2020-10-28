@@ -501,16 +501,7 @@ import { EventBus } from '@/utils/eventBus.js'
 export default {
   data () {
     return {
-      arPositionList: [
-        {
-          top: '144.67',
-          left: '834.67',
-          width: '66.67',
-          label: '0',
-          labelName: '标签名称',
-          height: '79.33'
-        }
-      ],
+      timer: null, // 定时器
       picUrl: globalApi.baseUrl + '/video-service2', // 图片前缀
       showCutImg: false, // 是否显示抓拍的图片 默认不显示
       cutImgUrl: '', // 显示抓取的图片
@@ -1315,6 +1306,17 @@ export default {
     },
     // 鼠标按下
     startChange: debounce(function (index) {
+      // 鼠标按下每隔一秒通知后台获取云台信息
+      this.timer = setInterval(() => {
+        // 按住期间执行的代码
+        new MqttService().client.send(
+          'video/webControlPzt',
+          JSON.stringify({
+            deviceCode: this.videoInfo.deviceCode,
+            channelId: this.videoInfo.streamType
+          })
+        )
+      }, 1000)
       const params = {
         device_id: this.videoInfo.deviceCode,
         channel_id: this.videoInfo.streamType
@@ -1434,6 +1436,9 @@ export default {
     }, 500),
     // 鼠标松开
     stopChange: debounce(function (index) {
+      // 停止定时器
+      clearInterval(this.timer)
+      this.timer = null
       // 通知后台获取云台信息
       new MqttService().client.send(
         'video/webControlPzt',
