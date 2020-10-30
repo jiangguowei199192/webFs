@@ -492,7 +492,7 @@
 import LivePlayer from '@liveqing/liveplayer'
 import droneInfoMixin from '../../../utils/droneInfoMixin'
 import canvasArea from './canvasArea'
-import { debounce, throttle } from '../../../utils/public.js'
+import { throttle } from '../../../utils/public.js'
 import globalApi from '../../../utils/globalApi'
 import { api } from '@/api/videoSystem/realVideo'
 import { timeFormat } from '@/utils/date'
@@ -1323,7 +1323,7 @@ export default {
       }
     },
     // 鼠标按下
-    startChange: debounce(function (index) {
+    startChange (index) {
       // 鼠标按下每隔一秒通知后台获取云台信息
       this.timer = setInterval(() => {
         // 按住期间执行的代码
@@ -1451,9 +1451,9 @@ export default {
         default:
           break
       }
-    }, 500),
+    },
     // 鼠标松开
-    stopChange: debounce(function (index) {
+    stopChange (index) {
       // 停止定时器
       clearInterval(this.timer)
       this.timer = null
@@ -1539,7 +1539,7 @@ export default {
 
       console.log(params)
       this.changeViewVideo(params)
-    }, 500),
+    },
     // 云台操作
     changeViewVideo (params) {
       this.$axios
