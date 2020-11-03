@@ -1325,16 +1325,18 @@ export default {
     // 鼠标按下
     startChange (index) {
       // 鼠标按下每隔一秒通知后台获取云台信息
-      this.timer = setInterval(() => {
+      if (this.showAR) {
+        this.timer = setInterval(() => {
         // 按住期间执行的代码
-        new MqttService().client.send(
-          'video/webControlPzt',
-          JSON.stringify({
-            deviceCode: this.videoInfo.deviceCode,
-            channelId: this.videoInfo.streamType
-          })
-        )
-      }, 1000)
+          new MqttService().client.send(
+            'video/webControlPzt',
+            JSON.stringify({
+              deviceCode: this.videoInfo.deviceCode,
+              channelId: this.videoInfo.streamType
+            })
+          )
+        }, 2000)
+      }
       const params = {
         device_id: this.videoInfo.deviceCode,
         channel_id: this.videoInfo.streamType
@@ -1454,9 +1456,11 @@ export default {
     },
     // 鼠标松开
     stopChange (index) {
+      if (this.showAR) {
       // 停止定时器
-      clearInterval(this.timer)
-      this.timer = null
+        clearInterval(this.timer)
+        this.timer = null
+      }
       // 通知后台获取云台信息
       new MqttService().client.send(
         'video/webControlPzt',
