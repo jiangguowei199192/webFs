@@ -77,7 +77,7 @@
                 v-show="curSelectedVideo.labelTotal"
               >当前选中:{{curSelectedVideo.labelTotal}}</div>
               <div class="warning" @click.stop="$router.push({name:'fireAlarm'})">
-                <img :src="firePic" alt />
+                <img :src="firePic" alt :class="{animateBounceUp:isBounce}" />
                 监控报警
                 <b>{{ fireWarningArray.length }}</b>个
               </div>
@@ -348,6 +348,7 @@ export default {
   },
   data () {
     return {
+      isBounce: false, // 动画效果
       playerWidth: '',
       playerHeight: '',
       picUrl: globalApi.baseUrl + '/video-service2', // 图片前缀
@@ -1580,6 +1581,12 @@ export default {
   },
   mounted () {
     this.getPlayerStyle()
+    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', (info) => {
+      this.isBounce = true
+      setTimeout(() => {
+        this.isBounce = false
+      }, 3000)
+    })
     EventBus.$on('peopleRealChange', info => {
       this.totalVideosArray.forEach((item, index) => {
         if (
@@ -1639,6 +1646,11 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+@keyframes bounce-up {
+ 25% {transform: scale(2)}
+ 50%, 100% {transform: scale(1)}
+ 75% {transform: scale(0.8)}
+}
 .videoContainer {
   box-sizing: border-box;
   padding: 20px;
@@ -1739,7 +1751,8 @@ export default {
         button.visible {
           background: url(../../assets/images/visible.png) no-repeat 4px center;
         }
-        button.visibleSelected,button.curSelected {
+        button.visibleSelected,
+        button.curSelected {
           background: url(../../assets/images/visible_selected.png) no-repeat
             4px center;
         }
@@ -2019,6 +2032,9 @@ export default {
             margin-right: 12px;
             position: relative;
             top: -2px;
+          }
+          img.animateBounceUp {
+            animation: bounce-up 1.5s linear 2;
           }
           b {
             color: #ff0000;

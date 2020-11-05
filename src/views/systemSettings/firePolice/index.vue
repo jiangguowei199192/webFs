@@ -276,7 +276,6 @@ export default {
                   // 只有一张图片
                   element.alarmPicList[0].picPath =
                     globalApi.baseUrl +
-                    '/video-service2' +
                     element.alarmPicList[0].picPath
                   element.alarmPicList[1] = { picPath: '' }
                 } else {
@@ -288,7 +287,7 @@ export default {
                   ) {
                     const pic = element.alarmPicList[picIndex]
                     pic.picPath =
-                      globalApi.baseUrl + '/video-service2' + pic.picPath
+                      globalApi.baseUrl + pic.picPath
                   }
                 }
               } else {

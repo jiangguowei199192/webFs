@@ -9,10 +9,7 @@
             class="list"
             @click.stop="jumpTo(index)"
           >
-            <div
-              class="item"
-              :class="{ title: index == 3, active: isActive == index }"
-            >
+            <div class="item" :class="{ title: index == 3, active: isActive == index }">
               <span>{{ item.content }}</span>
             </div>
             <template>
@@ -21,23 +18,18 @@
                   type="primary"
                   :class="{ activeStatus: curActive == 1 }"
                   @click.stop="jumpToVideoUrl(1)"
-                  >实时视频</el-button
-                >
+                >实时视频</el-button>
                 <el-button
                   type="primary"
                   :class="{ activeStatus: curActive == 2 }"
                   @click.stop="jumpToVideoUrl(2)"
-                  >回放</el-button
-                >
+                >回放</el-button>
               </div>
             </template>
           </div>
         </div>
-        <div
-          :class="this.isChecked ? 'activeClass' : 'about'"
-          @click.stop="goToAboutUs()"
-        >
-          <img :src="this.isChecked ? aboutImgCkSrc : aboutImgSrc" alt="" />
+        <div :class="this.isChecked ? 'activeClass' : 'about'" @click.stop="goToAboutUs()">
+          <img :src="this.isChecked ? aboutImgCkSrc : aboutImgSrc" alt />
           <p>关于我们</p>
         </div>
 
@@ -58,6 +50,7 @@
             </template>
           </div>
         </div>
+        <audio src="./audio.mp3" ></audio>
       </el-header>
       <el-main>
         <!-- <router-view /> -->
@@ -119,46 +112,49 @@ export default {
   created () {
     this.systems[3].content = globalApi.projectTitle
     // 设备上线
-    EventBus.$on('video/device/online', (info) => {
+    EventBus.$on('video/device/online', info => {
       EventBus.$emit('UpdateDeviceOnlineStatus', info)
       this.$notify.success({ title: '提示', message: '设备上线！' })
     })
     // 设备下线
-    EventBus.$on('video/device/offline', (info) => {
+    EventBus.$on('video/device/offline', info => {
       EventBus.$emit('UpdateDeviceOnlineStatus', info)
       this.$notify.success({ title: '提示', message: '设备下线！' })
     })
     // 通道上线
-    EventBus.$on('video/realVideo/streamStart', (info) => {
+    EventBus.$on('video/realVideo/streamStart', info => {
       EventBus.$emit('streamStart', info)
     })
     // 通道下线
-    EventBus.$on('video/realVideo/streamEnd', (info) => {
+    EventBus.$on('video/realVideo/streamEnd', info => {
       EventBus.$emit('streamEnd', info)
     })
-    // 火情火点
-    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', (info) => {
-      this.$notify.warning({ title: '警告', message: '发现火点火情！' })
-      EventBus.$emit('getFireAlarm', info)
-    })
     // 飞机实时信息
-    EventBus.$on('droneInfos', (info) => {
+    EventBus.$on('droneInfos', info => {
       this.parseDroneRealtimeInfo(info)
     })
     // 人员识别提示
-    EventBus.$on('video/people/found', (info) => {
+    EventBus.$on('video/people/found', info => {
       this.$notify.warning({ title: '提示', message: '发现可疑人员!' })
     })
     // 人员显示
-    EventBus.$on('video/people/real', (info) => {
+    EventBus.$on('video/people/real', info => {
       EventBus.$emit('peopleRealChange', info)
     })
     // AR显示
-    EventBus.$on('video/aRAiResult', (info) => {
+    EventBus.$on('video/aRAiResult', info => {
       EventBus.$emit('getArChange', info)
     })
   },
   mounted () {
+    // 火情火点
+    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', (info) => {
+      this.$notify.warning({ title: '警告', message: '发现火点火情！' })
+      this.$nextTick(() => {
+        document.querySelector('audio').play()
+      })
+      EventBus.$emit('getFireAlarm', info)
+    })
     this.jumpTo(this.isActive)
     setInterval(() => {
       this.timeObj = getTime()
@@ -211,12 +207,12 @@ export default {
       else this.$router.push({ path: '/playback' })
     },
     init () {
-      amapApi.getLocation({}).then((res) => {
+      amapApi.getLocation({}).then(res => {
         if (res) {
           if (res && res.data && res.data.info === 'OK') {
             this.curCity = res.data.city || ''
             const cityCode = res.data.adcode
-            amapApi.getWeather({ city: cityCode }).then((res) => {
+            amapApi.getWeather({ city: cityCode }).then(res => {
               if (res && res.data && res.data.info === 'OK') {
                 this.weatherReport = res.data.lives[0]
               }
@@ -232,25 +228,25 @@ export default {
       const tmpAxios = this.$axios
       this.$axios
         .get(loginApi.getUserDetail)
-        .then((res) => {
+        .then(res => {
           if (res.data.code === 0) {
             tmpAxios
               .get(loginApi.getDeptByDeptCode, {
                 params: { deptCode: res.data.data.deptCode }
               })
-              .then((res2) => {
+              .then(res2 => {
                 if (res2.data.code === 0) {
-                  res2.data.data.forEach((deptCode) => {
+                  res2.data.data.forEach(deptCode => {
                     tmpThis.realtimeInfoTopicArray.push('gdu/' + deptCode)
                   })
                 }
               })
-              .catch((err2) => {
+              .catch(err2 => {
                 console.log('loginApi.getDeptByDeptCode Err : ' + err2)
               })
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log('loginApi.getUserDetail Err : ' + err)
         })
     },
