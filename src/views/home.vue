@@ -52,7 +52,7 @@
         </div>
         <audio src="./audio.mp3" ></audio>
       </el-header>
-      <el-main>
+      <el-main :style="machineMainStyle($route.path)">
         <!-- <router-view /> -->
         <keep-alive>
           <router-view v-if="$route.meta.keepAlive"></router-view>
@@ -190,6 +190,17 @@ export default {
   },
   methods: {
     // 路由发生变化
+    machineMainStyle (path) {
+      if (path === '/decisionSystem') {
+        return {
+          margin: '-65px 0px 0px 0px'
+        }
+      } else {
+        return {
+          margin: '0px'
+        }
+      }
+    },
     getPath () {
       // 激活实时视频还是回放视频 1实时 2回放
       if (this.$route.path === '/playback') {
@@ -419,6 +430,8 @@ export default {
     height: 40px;
     line-height: 40px;
     text-align: center;
+    z-index: 1000;
+    pointer-events: none;
     .realTime {
       width: 936px;
       background: url(../assets/images/logo.png) no-repeat;

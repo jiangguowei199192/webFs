@@ -1,5 +1,5 @@
 <template>
-  <div class="decision" style="padding-top:20px">
+  <div class="decision" :style="'height:'+fullHeight+'px;'">
     <gMap
       ref="gduMap"
       handleType="search_route"
@@ -45,6 +45,9 @@ export default {
   name: 'decision',
   data () {
     return {
+      minHeight: 900,
+      isCreate: false,
+      fullHeight: 0,
       selMenuType: '1',
       searchText: '',
       menuOptions: [
@@ -159,9 +162,21 @@ export default {
           duration: 5 * 1000
         })
       }
+    },
+    setMapHeight () {
+      const tmpMap = this.$refs.gduMap.map2D
+      var h = document.documentElement.clientHeight - 96
+      if (h < this.minHeight) this.fullHeight = this.minHeight
+      else this.fullHeight = h
+      setTimeout(() => {
+        tmpMap._map.updateSize()
+      }, 200)
     }
   },
   created () {
+  },
+  destroyed () {
+    window.onresize = null
   },
   mounted () {
     // this.$refs.gduMap.map2D.zoomToCenter(114.65511872631607, 30.68961010828556)
@@ -235,12 +250,13 @@ export default {
         this.$router.push({ path: '/digitalIndividual' })
       }
     })
+    const me = this
+    window.onresize = () => {
+      me.setMapHeight()
+    }
   },
   activated () {
-    const tmpMap = this.$refs.gduMap.map2D
-    setTimeout(() => {
-      tmpMap._map.updateSize()
-    }, 200)
+    this.setMapHeight()
   }
 }
 </script>
@@ -248,7 +264,6 @@ export default {
 <style lang="scss" scoped>
 .decision {
   position: relative;
-  height: 940px;
   .searchCombo {
     position: absolute;
     top: 40px;
