@@ -30,7 +30,7 @@ var mqttService;
     }
 
     this.disconnect = function () {
-      clearReconnect() 
+      clearReconnect()
       if (instance.isConnect) { instance.client.disconnect() }
     }
 
