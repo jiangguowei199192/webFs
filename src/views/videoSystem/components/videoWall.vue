@@ -1563,7 +1563,6 @@ export default {
     EventBus.$on('getFireAlarm', info => {
       if (
         this.videoInfo.deviceCode === info.deviceCode &&
-        this.videoInfo.streamType === info.streamType &&
         this.videoInfo.isShowOperate
       ) {
         // 如果此时火情弹框打开了
