@@ -21,13 +21,13 @@
         >
           <!-- canvas绘图 -->
           <canvas-area
-            :showAR="showAR"
+            :canDraw="showCurindex===4"
             @canvasEnd="getPosition"
             @canvasStart="showCurindex=1000"
             :showMarkForm="showMarkForm"
           ></canvas-area>
           <template v-if="showAR">
-            <div class="header">AR实景地图指挥</div>
+            <div class="header"  @dblclick.stop="stopEvent">AR实景地图指挥</div>
           </template>
           <div class="footer" @dblclick.stop="stopEvent">
             <a @mouseenter="showActive(1)" @mouseleave="showActive(0)" title="AR" @click="changeAR">
@@ -93,6 +93,11 @@
                 <img v-show="active === 7" class="hide_tab" :src="settingSelectedPic" />
               </a>-->
             </template>
+
+            <a title="退出全屏"  @click="exitFullScreen();showCurindex=100">
+              <img
+            :src="fScreen" alt width="40px"/>
+            </a>
           </div>
           <!-- 实时警情弹框 -->
           <div class="realPoliceInfo" v-show="showCurindex==1" @dblclick.stop="stopEvent">
@@ -510,6 +515,7 @@ export default {
       imgId: '', // 保存抓取图片id
       remark: '', // 说明文字
       active: '', // 动态显示悬停相关图标
+      fScreen: require('../../../assets/images/full-screen.png'),
       showAR: false, // 显示AR
       showCurindex: 1000, // 显示弹框
       upPic: require('@/assets/images/AR/up.png'),
@@ -736,7 +742,9 @@ export default {
   },
 
   destroyed () {
-    if (this.videoInfo.isLive !== false) { document.removeEventListener('visibilitychange', this.reloadVideo) }
+    if (this.videoInfo.isLive !== false) {
+      document.removeEventListener('visibilitychange', this.reloadVideo)
+    }
   },
 
   mounted () {
@@ -757,7 +765,9 @@ export default {
     })
 
     this.setPlayerSizeListener()
-    if (this.videoInfo.isLive !== false) { document.addEventListener('visibilitychange', this.reloadVideo) }
+    if (this.videoInfo.isLive !== false) {
+      document.addEventListener('visibilitychange', this.reloadVideo)
+    }
   },
 
   methods: {
@@ -765,10 +775,15 @@ export default {
      * 重新加载视频（最小化还原，或者浏览器tab页切换)
      */
     reloadVideo () {
-      if (document.visibilityState === 'visible' && this.lastState === 'hidden') {
+      if (
+        document.visibilityState === 'visible' &&
+        this.lastState === 'hidden'
+      ) {
         const url = this.videoInfo.streamUrl
         this.videoInfo.streamUrl = ''
-        this.$nextTick(() => { this.videoInfo.streamUrl = url })
+        this.$nextTick(() => {
+          this.videoInfo.streamUrl = url
+        })
       }
       this.lastState = document.visibilityState
     },
@@ -1027,17 +1042,18 @@ export default {
     },
     // 获取位置信息
     getPosition (curPosition) {
-      if (curPosition.width > 0) {
-        const curArea = JSON.parse(JSON.stringify(curPosition))
-        this.curPositionObj = {
-          x: Math.round((curArea.x / 1920) * 1280 * 100) / 100,
-          y: Math.round((curArea.y / 1080) * 720 * 100) / 100,
-          width: Math.round((curArea.width / 1920) * 1280 * 100) / 100,
-          height: Math.round((curArea.height / 1080) * 720 * 100) / 100
-        }
-        console.log(this.curPositionObj)
-        this.showMarkForm = true
-      }
+      // if (curPosition.width > 0) {
+      //   const curArea = JSON.parse(JSON.stringify(curPosition))
+      //   this.curPositionObj = {
+      //     x: Math.round((curArea.x / 1920) * 1280 * 100) / 100,
+      //     y: Math.round((curArea.y / 1080) * 720 * 100) / 100,
+      //     width: Math.round((curArea.width / 1920) * 1280 * 100) / 100,
+      //     height: Math.round((curArea.height / 1080) * 720 * 100) / 100
+      //   }
+      //   console.log(this.curPositionObj)
+
+      // }
+      this.showMarkForm = true
     },
     // 创建元素
     createTag (ruleForm, positionObj) {
@@ -1090,10 +1106,11 @@ export default {
               streamUrl: this.videoInfo.streamUrl,
               label: this.ruleForm.tagType,
               labelName: this.ruleForm.tagName,
-              x: this.curPositionObj.x,
-              y: this.curPositionObj.y,
-              width: this.curPositionObj.width,
-              height: this.curPositionObj.height,
+              // x: this.curPositionObj.x,
+              // y: this.curPositionObj.y,
+              pointsArray: [{ x: 1, y: 1 }],
+              // width: this.curPositionObj.width,
+              // height: this.curPositionObj.height,
               isOpen: 1
             })
           )
@@ -1327,7 +1344,7 @@ export default {
       // 鼠标按下每隔一秒通知后台获取云台信息
       if (this.showAR) {
         this.timer = setInterval(() => {
-        // 按住期间执行的代码
+          // 按住期间执行的代码
           new MqttService().client.send(
             'video/webControlPzt',
             JSON.stringify({
@@ -1457,7 +1474,7 @@ export default {
     // 鼠标松开
     stopChange (index) {
       if (this.showAR) {
-      // 停止定时器
+        // 停止定时器
         clearInterval(this.timer)
         this.timer = null
       }
