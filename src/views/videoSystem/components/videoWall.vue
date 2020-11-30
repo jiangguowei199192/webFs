@@ -23,11 +23,11 @@
           <canvas-area
             :canDraw="showCurindex===4"
             @canvasEnd="getPosition"
-            @canvasStart="showCurindex=1000"
             :showMarkForm="showMarkForm"
+            :tagType="ruleForm.tagType"
           ></canvas-area>
           <template v-if="showAR">
-            <div class="header"  @dblclick.stop="stopEvent">AR实景地图指挥</div>
+            <div class="header" @dblclick.stop="stopEvent">AR实景地图指挥</div>
           </template>
           <div class="footer" @dblclick.stop="stopEvent">
             <a @mouseenter="showActive(1)" @mouseleave="showActive(0)" title="AR" @click="changeAR">
@@ -74,7 +74,7 @@
                 @mouseenter="showActive(5)"
                 @mouseleave="showActive(0)"
                 title="标签"
-                @click="showCurindex=4"
+                @click="showCurindex=4;"
               >
                 <img :src="tagPic" alt />
                 <img v-show="active === 5" class="hide_tab" :src="tagSelectedPic" />
@@ -93,10 +93,9 @@
                 <img v-show="active === 7" class="hide_tab" :src="settingSelectedPic" />
               </a>-->
             </template>
-
-            <a title="退出全屏"  @click="exitFullScreen();showCurindex=100">
-              <img
-            :src="fScreen" alt width="40px"/>
+            <!-- 新增 -->
+            <a title="退出全屏" @click="exitFullScreen();showCurindex=100">
+              <img :src="fScreen" alt width="40px" />
             </a>
           </div>
           <!-- 实时警情弹框 -->
@@ -130,17 +129,27 @@
 
           <!-- 标签弹框 -->
           <div class="tagInfo" @dblclick.stop="stopEvent" v-show="showCurindex==4">
+            <!-- <p>常用标签</p> -->
             <div>
-              <img src="../../../assets/images/AR/high2.png" alt />
+              <img src="../../../assets/images/AR/high2.png" @click="changeType('0')" alt />
               <p>高点监控</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/building.png" alt />
+              <img src="../../../assets/images/AR/building.png"  @click="changeType('1')" alt />
               <p>建筑大厦</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/river2.png" alt />
+              <img src="../../../assets/images/AR/river2.png" @click="changeType('2')" alt />
               <p>河流</p>
+            </div>
+            <!-- <p>自定义标签</p> -->
+            <div>
+              <img src="../../../assets/images/AR/line.jpg"  @click="changeType('11')" alt width="40px" />
+              <p>线</p>
+            </div>
+            <div>
+              <img src="../../../assets/images/AR/line_close.jpg" @click="changeType('22')"  alt width="40px" />
+              <p>面</p>
             </div>
             <img src="../../../assets/images/AR/X.png" alt @click="showCurindex=1000" />
           </div>
@@ -434,11 +443,12 @@
           label-width="120px"
           class="demo-ruleForm"
         >
-          <el-form-item label="标签名称" prop="tagName">
+          <el-form-item label="标签名称:" prop="tagName">
             <el-input v-model.trim="ruleForm.tagName" placeholder="请输入标签名称" style="width:228px"></el-input>
           </el-form-item>
-          <el-form-item label="标签类型" prop="tagType" style="margin-top:20px;">
-            <el-select
+          <el-form-item label="标签类型:" prop="tagType" style="margin-top:20px;">
+           <template v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'">
+              <el-select
               style="width:228px"
               required
               v-model="ruleForm.tagType"
@@ -453,6 +463,10 @@
                 :value="item.id"
               ></el-option>
             </el-select>
+           </template>
+            <span v-else>
+              {{ruleForm.tagType==='11'?'自定义线':ruleForm.tagType==='22'?'自定义面':'-'}}
+            </span>
           </el-form-item>
           <el-form-item style="margin-top:30px;">
             <el-button
@@ -613,7 +627,7 @@ export default {
       picStorageArray: [], // 保存图库数据
       ruleForm: {
         tagName: '',
-        tagType: ''
+        tagType: '0'
       },
       rules: {
         tagName: [
@@ -839,6 +853,12 @@ export default {
         )
       }
     },
+    // add 切换标签类型
+    changeType (type) {
+      this.ruleForm.tagType = type
+      EventBus.$emit('typeChange')
+    },
+
     // 获取今日警情
     getTodayFire () {
       this.showCurindex = 1
@@ -1797,17 +1817,19 @@ export default {
         position: absolute;
         bottom: 114px;
         left: 924px;
-        width: 338px;
+        width: 538px;
         height: 126px;
         background: url(../../../assets/images/AR/tag_bg.png) no-repeat;
+        background-size:100% 100%;
         display: flex;
         align-items: center;
         justify-content: center;
+
         cursor: text;
         > div {
           text-align: center;
         }
-        div:nth-child(2) {
+        div {
           margin: 0 20px;
         }
         div:nth-child(2),

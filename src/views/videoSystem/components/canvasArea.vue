@@ -5,103 +5,189 @@
     @mousemove="mousemovehandler($event)"
     @mousedown="mousedownHandler($event)"
   >-->
-  <div class="ar" v-if="showAR">
+  <div class="ar" v-if="canDraw" @dblclick.stop="stopEvent">
     <canvas id="myCanvas" width="1920" height="1080">您的浏览器不支持 HTML5 canvas 标签。</canvas>
   </div>
 </template>
 
 <script>
-var startX, startY, endX, endY
+import { EventBus } from '@/utils/eventBus.js'
+var startX, startY
 var isdown = 0
+var points = []
+
 export default {
   props: {
-    showAR: {
+    canDraw: {
       type: Boolean,
       default: false
     },
     showMarkForm: {
       type: Boolean,
       default: false
+    },
+    tagType: {
+      type: String,
+      default: '0'
     }
-
   },
   methods: {
+    // 正在绘制时（showCurIndex=4），阻止鼠标双击退出全屏默认事件
+    stopEvent () {
+      event.stopPropagation()
+      return false
+    },
     // 鼠标按下记录起始坐标
     mousedownHandler (e) {
       startX = e.pageX
       startY = e.pageY
-      endX = e.pageX
-      endY = e.pageY
-      isdown = 1
-      this.$emit('canvasStart')
+
+      // isdown = 1
+      // this.$emit('canvasStart')
       console.log(startX + ',,,,' + startY)
-      console.log('endX', endX)
-    },
-    // 鼠标移动先清除之前画布 再重新绘制
-    mousemovehandler (e) {
-      if (isdown) {
-        // console.log(e.pageX+","+e.pageY)
-        // 更新 box 尺寸
-        // ab.style.width = e.pageX - startX + 'px';
-        // ab.style.height = e.pageY - startY + 'px';
-        // 获取页面中的canvas画布容器，通常为一个div
-        var c = document.getElementById('myCanvas')
-        // height = c.offsetHeight
-        // width = c.offsetWidth
-        endX = e.offsetX
-        endY = e.offsetY
-        var ctx = c.getContext('2d')
-        ctx.lineWidth = 1
-        ctx.strokeStyle = '#0f0'
-        ctx.clearRect(0, 0, c.offsetWidth, c.offsetHeight)
-
-        ctx.beginPath()
-        ctx.moveTo(startX, startY)
-        ctx.lineTo(e.pageX, startY) // shang
-        ctx.lineTo(e.pageX, e.pageY) // you
-        ctx.lineTo(startX, e.pageY) // xia
-        ctx.closePath()
-        ctx.stroke()
+      if (
+        this.tagType === '0' ||
+        this.tagType === '1' ||
+        this.tagType === '2'
+      ) {
+        const positionObj = { x: startX, y: startY }
+        this.$emit('canvasEnd', positionObj)
+        return
       }
-    },
-    // 鼠标弹起 清除画布
-    mouseuphandler () {
       isdown = 0
-      const c = document.getElementById('myCanvas')
-      // const height = c.offsetHeight
-      // const width = c.offsetWidth
-      var ctx = c.getContext('2d')
-      ctx.clearRect(0, 0, c.offsetWidth, c.offsetHeight)
-      // 获取矩形框距离左边cLeft，cWidth'
-      let cLeft = 0
-      let cWidth = 0
-      if (startX > endX) {
-        cLeft = endX
-        cWidth = startX - endX
-      } else {
-        cLeft = startX
-        cWidth = endX - startX
+      if (event.button === 0 && !isdown) {
+        points.push({
+          x: event.pageX,
+          y: event.pageY
+        })
+        console.log(points)
+        this.drawPolygon(points)
       }
+    },
+    drawPolygon (points, parms) {
+      const myCanvas = document.getElementById('myCanvas')
+      const ctx = myCanvas.getContext('2d')
+      // 如果是面，则必须清除之前画布，否则之前绘制的内容存在
+      if (this.tagType === '22') {
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+      }
+      ctx.strokeStyle = '#0f0'
+      ctx.lineWidth = '3'
 
-      // 获取矩形顶部Top，Height
-      let cTop = 0
-      let cHeight = 0
-      if (startY > endY) {
-        cTop = endY
-        cHeight = startY - endY
-      } else {
-        cTop = startY
-        cHeight = endY - startY
+      // 修改绘制颜色
+      // ctx.fillStyle = "#ff0";
+      ctx.beginPath()
+      // 虚线
+      // ctx.setLineDash([6]);
+      ctx.moveTo(points[0].x, points[0].y)
+
+      for (var i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y)
       }
-      // 获取矩形框Top，Height
-      console.log(endX, startX)
-      console.log(cLeft, cTop, cWidth, cHeight)
-      const positionObj = { x: cLeft, y: cTop, width: cWidth, height: cHeight }
-      this.$emit('canvasEnd', positionObj)
+      // 形成闭合 如果是面
+      if (this.tagType === '22') {
+        ctx.closePath()
+      }
+      // 绘制空心
+      ctx.stroke()
+      // 绘制实心
+      // ctx.fill();
+      // 若有文字则后绘制不会被覆盖
+      // ctx.fillStyle = "#00f";
+      // ctx.fillText("Hello Canvas", points[0].x, points[0].y);
+      // 下面是单独绘制轮廓线
+      // ctx.strokeStyle = '#0f0';
+      // ctx.lineWidth='3';
+      // ctx.beginPath();
+      // // 虚线
+      // // ctx.setLineDash([6]);
+      // ctx.moveTo(points[0].x,points[0].y);
+
+      // for(var i=1;i<points.length;i++) {
+      //     ctx.lineTo(points[i].x,points[i].y);
+      // }
+      // // 形成闭合
+      // ctx.closePath();
+      // // 绘制空心
+      // ctx.stroke();
+    },
+    // 鼠标双击结束绘制
+    mousedbclick (event) {
+      const myCanvas = document.getElementById('myCanvas')
+      const ctx = myCanvas.getContext('2d')
+      isdown = 1
+      this.$emit('canvasEnd', this.points)
+      points = []
+      // 绘制结束时清空画布，若不清空则之前绘制的图形依然存在
+
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+      // cvs.removeEventListener("mousemove", mousemoveHandler);
     }
+    // // 鼠标移动先清除之前画布 再重新绘制
+    // mousemovehandler (e) {
+    //   if (isdown) {
+    //     // console.log(e.pageX+","+e.pageY)
+    //     // 更新 box 尺寸
+    //     // ab.style.width = e.pageX - startX + 'px';
+    //     // ab.style.height = e.pageY - startY + 'px';
+    //     // 获取页面中的canvas画布容器，通常为一个div
+    //     var c = document.getElementById('myCanvas')
+    //     // height = c.offsetHeight
+    //     // width = c.offsetWidth
+    //     endX = e.offsetX
+    //     endY = e.offsetY
+    //     var ctx = c.getContext('2d')
+    //     ctx.lineWidth = 1
+    //     ctx.strokeStyle = '#0f0'
+    //     ctx.clearRect(0, 0, c.offsetWidth, c.offsetHeight)
+
+    //     ctx.beginPath()
+    //     ctx.moveTo(startX, startY)
+    //     ctx.lineTo(e.pageX, startY) // shang
+    //     ctx.lineTo(e.pageX, e.pageY) // you
+    //     ctx.lineTo(startX, e.pageY) // xia
+    //     ctx.closePath()
+    //     ctx.stroke()
+    //   }
+    // },
+    // 鼠标弹起 清除画布
+    // mouseuphandler () {
+    //   isdown = 0
+    //   const c = document.getElementById('myCanvas')
+    //   // const height = c.offsetHeight
+    //   // const width = c.offsetWidth
+    //   var ctx = c.getContext('2d')
+    //   ctx.clearRect(0, 0, c.offsetWidth, c.offsetHeight)
+    //   // 获取矩形框距离左边cLeft，cWidth'
+    //   let cLeft = 0
+    //   let cWidth = 0
+    //   if (startX > endX) {
+    //     cLeft = endX
+    //     cWidth = startX - endX
+    //   } else {
+    //     cLeft = startX
+    //     cWidth = endX - startX
+    //   }
+
+    //   // 获取矩形顶部Top，Height
+    //   let cTop = 0
+    //   let cHeight = 0
+    //   if (startY > endY) {
+    //     cTop = endY
+    //     cHeight = startY - endY
+    //   } else {
+    //     cTop = startY
+    //     cHeight = endY - startY
+    //   }
+    //   // 获取矩形框Top，Height
+    //   console.log(endX, startX)
+    //   console.log(cLeft, cTop, cWidth, cHeight)
+    //   const positionObj = { x: cLeft, y: cTop, width: cWidth, height: cHeight }
+    //   this.$emit('canvasEnd', positionObj)
+    // }
   },
   watch: {
-    showAR (nv) {
+    canDraw (nv) {
       if (nv) {
         this.$nextTick(() => {
           // 始终只会找到当前开启ar的视频
@@ -117,29 +203,45 @@ export default {
             false
           )
           div.addEventListener(
-            'mousemove',
-            $event => {
+            'dblclick',
+            e => {
               if (!this.showMarkForm) {
-                // 弹框没有显示时才可以绘制
-                this.mousemovehandler($event)
+                this.mousedbclick(e)
               }
             },
             false
           )
-          div.addEventListener(
-            'mouseup',
-            $event => {
-              if (!this.showMarkForm) {
-                this.mouseuphandler($event)
-              }
-            },
-            false
-          )
+          // div.addEventListener(
+          //   'mousemove',
+          //   $event => {
+          //     if (!this.showMarkForm) {
+          //       // 弹框没有显示时才可以绘制
+          //       this.mousemovehandler($event)
+          //     }
+          //   },
+          //   false
+          // )
+          // div.addEventListener(
+          //   'mouseup',
+          //   $event => {
+          //     if (!this.showMarkForm) {
+          //       this.mouseuphandler($event)
+          //     }
+          //   },
+          //   false
+          // )
         })
+      } else {
+        // 防止直接关闭esc退出全屏
+        points = []
       }
     }
   },
-  mounted () {}
+  mounted () {
+    EventBus.$on('typeChange', info => {
+      points = []
+    })
+  }
 }
 </script>
 <style>
