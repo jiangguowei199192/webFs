@@ -25,6 +25,8 @@
             @canvasEnd="getPosition"
             :showMarkForm="showMarkForm"
             :tagType="ruleForm.tagType"
+            :pointsArray='videoInfo.pointsArray'
+            :showAR="showAR"
           ></canvas-area>
           <template v-if="showAR">
             <div class="header" @dblclick.stop="stopEvent">AR实景地图指挥</div>
@@ -73,7 +75,7 @@
               <a
                 @mouseenter="showActive(5)"
                 @mouseleave="showActive(0)"
-                title="标签"
+                title="标签管理"
                 @click="showCurindex=4;"
               >
                 <img :src="tagPic" alt />
@@ -135,7 +137,7 @@
               <p>高点监控</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/building.png"  @click="changeType('1')" alt />
+              <img src="../../../assets/images/AR/building.png" @click="changeType('1')" alt />
               <p>建筑大厦</p>
             </div>
             <div>
@@ -144,11 +146,21 @@
             </div>
             <!-- <p>自定义标签</p> -->
             <div>
-              <img src="../../../assets/images/AR/line.jpg"  @click="changeType('11')" alt width="40px" />
+              <img
+                src="../../../assets/images/AR/line.jpg"
+                @click="changeType('11')"
+                alt
+                width="40px"
+              />
               <p>线</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/line_close.jpg" @click="changeType('22')"  alt width="40px" />
+              <img
+                src="../../../assets/images/AR/line_close.jpg"
+                @click="changeType('22')"
+                alt
+                width="40px"
+              />
               <p>面</p>
             </div>
             <img src="../../../assets/images/AR/X.png" alt @click="showCurindex=1000" />
@@ -316,7 +328,7 @@
           <div
             :style="{top:verticalValue< 0 ? 73 + String(verticalValue).slice(1) / 180 * 80 +'px': (73 - verticalValue / 180 * 80)+'px'}"
           >
-            <div>{{verticalValue>0?verticalValue:String(verticalValue).slice(1)}}</div>
+            <div>{{verticalValue>=0?verticalValue:String(verticalValue).slice(1)}}</div>
             <img :src="rightPic" />
           </div>
           <span>180</span>
@@ -325,14 +337,14 @@
       <!-- 显示AR标签 -->
       <div
         class="fullScreenAr"
-        v-show="showAR&&videoInfo.arPositionList&&videoInfo.arPositionList.length>0"
+        v-show="showAR&&videoInfo.onePointArray&&videoInfo.onePointArray.length>0"
       >
         <div
-          v-for="(item,index) in videoInfo.arPositionList"
+          v-for="(item,index) in videoInfo.onePointArray"
           :class="{high:item.label==0,build:item.label==1,river:item.label==2}"
           :key="index"
           :style="{
-          left:item.label=='0'?((Number(item.left)+Number(item.width/2))/1280*1920-51.5)+'px':(Number(item.left)+Number(item.width/2))/1280*1920+'px',
+          left:item.label=='0'?(Number(item.left)/1280*1920-51.5)+'px':Number(item.left)/1280*1920+'px',
          top:item.label==0?((item.top/720)*1080-102)+'px':((item.top/720)*1080-58)+'px'}"
           :title="item.label==0?item.labelName:''"
         >
@@ -447,26 +459,24 @@
             <el-input v-model.trim="ruleForm.tagName" placeholder="请输入标签名称" style="width:228px"></el-input>
           </el-form-item>
           <el-form-item label="标签类型:" prop="tagType" style="margin-top:20px;">
-           <template v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'">
+            <template v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'">
               <el-select
-              style="width:228px"
-              required
-              v-model="ruleForm.tagType"
-              placeholder="请选择标签类型"
-              :popper-append-to-body="false"
-              popper-class="selectStyle"
-            >
-              <el-option
-                v-for="item in tageTypeArray"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-           </template>
-            <span v-else>
-              {{ruleForm.tagType==='11'?'自定义线':ruleForm.tagType==='22'?'自定义面':'-'}}
-            </span>
+                style="width:228px"
+                required
+                v-model="ruleForm.tagType"
+                placeholder="请选择标签类型"
+                :popper-append-to-body="false"
+                popper-class="selectStyle"
+              >
+                <el-option
+                  v-for="item in tageTypeArray"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </template>
+            <span v-else>{{ruleForm.tagType==='11'?'自定义线':ruleForm.tagType==='22'?'自定义面':'-'}}</span>
           </el-form-item>
           <el-form-item style="margin-top:30px;">
             <el-button
@@ -560,7 +570,7 @@ export default {
       settingSelectedPic: require('@/assets/images/AR/setting_selected.png'),
       curSelectedIcon: 0, // 云台变倍或变焦 默认选中 0变倍 1变焦
       showMarkForm: false,
-      curPositionObj: {}, // 保存当前位置相关坐标
+      curPositionArray: [], // 保存当前位置相关坐标
       // showTagInfo: false, // 标签弹框 默认不显示
       // showPicStorage: false, // 图库弹框 默认不显示
       // showSetting: false, // 设置弹框
@@ -1062,17 +1072,19 @@ export default {
     },
     // 获取位置信息
     getPosition (curPosition) {
+      console.log('收到的绘制坐标信息', curPosition)
       // if (curPosition.width > 0) {
-      //   const curArea = JSON.parse(JSON.stringify(curPosition))
-      //   this.curPositionObj = {
-      //     x: Math.round((curArea.x / 1920) * 1280 * 100) / 100,
-      //     y: Math.round((curArea.y / 1080) * 720 * 100) / 100,
-      //     width: Math.round((curArea.width / 1920) * 1280 * 100) / 100,
-      //     height: Math.round((curArea.height / 1080) * 720 * 100) / 100
-      //   }
-      //   console.log(this.curPositionObj)
-
-      // }
+      const positionArray = JSON.parse(JSON.stringify(curPosition))
+      const totalPosition = []
+      positionArray.forEach(item => {
+        totalPosition.push({
+          x: Math.round((item.x / 1920) * 1280 * 100) / 100,
+          y: Math.round((item.y / 1080) * 720 * 100) / 100
+          // width: Math.round((item.width / 1920) * 1280 * 100) / 100,
+          // height: Math.round((item.height / 1080) * 720 * 100) / 100
+        })
+      })
+      this.curPositionArray = totalPosition
       this.showMarkForm = true
     },
     // 创建元素
@@ -1128,7 +1140,7 @@ export default {
               labelName: this.ruleForm.tagName,
               // x: this.curPositionObj.x,
               // y: this.curPositionObj.y,
-              pointsArray: [{ x: 1, y: 1 }],
+              pointsArray: this.curPositionArray,
               // width: this.curPositionObj.width,
               // height: this.curPositionObj.height,
               isOpen: 1
@@ -1140,10 +1152,11 @@ export default {
             streamUrl: this.videoInfo.streamUrl,
             label: this.ruleForm.tagType,
             labelName: this.ruleForm.tagName,
-            x: this.curPositionObj.x,
-            y: this.curPositionObj.y,
-            width: this.curPositionObj.width,
-            height: this.curPositionObj.height
+            pointsArray: this.curPositionArray
+            // x: this.curPositionObj.x,
+            // y: this.curPositionObj.y,
+            // width: this.curPositionObj.width,
+            // height: this.curPositionObj.height
           })
           this.resetForm('ruleForm')
         } else {
@@ -1820,7 +1833,7 @@ export default {
         width: 538px;
         height: 126px;
         background: url(../../../assets/images/AR/tag_bg.png) no-repeat;
-        background-size:100% 100%;
+        background-size: 100% 100%;
         display: flex;
         align-items: center;
         justify-content: center;

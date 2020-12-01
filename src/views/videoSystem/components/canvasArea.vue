@@ -5,7 +5,7 @@
     @mousemove="mousemovehandler($event)"
     @mousedown="mousedownHandler($event)"
   >-->
-  <div class="ar" v-if="canDraw" @dblclick.stop="stopEvent">
+  <div class="ar" v-if="showAR" @dblclick.stop="stopEvent">
     <canvas id="myCanvas" width="1920" height="1080">您的浏览器不支持 HTML5 canvas 标签。</canvas>
   </div>
 </template>
@@ -22,6 +22,10 @@ export default {
       type: Boolean,
       default: false
     },
+    showAR: {
+      type: Boolean,
+      default: false
+    },
     showMarkForm: {
       type: Boolean,
       default: false
@@ -29,6 +33,12 @@ export default {
     tagType: {
       type: String,
       default: '0'
+    },
+    pointsArray: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
   methods: {
@@ -38,9 +48,9 @@ export default {
       return false
     },
     // 鼠标按下记录起始坐标
-    mousedownHandler (e) {
-      startX = e.pageX
-      startY = e.pageY
+    mousedownHandler ($event) {
+      startX = $event.pageX
+      startY = $event.pageY
 
       // isdown = 1
       // this.$emit('canvasStart')
@@ -50,8 +60,10 @@ export default {
         this.tagType === '1' ||
         this.tagType === '2'
       ) {
-        const positionObj = { x: startX, y: startY }
-        this.$emit('canvasEnd', positionObj)
+        const curPositionObj = { x: startX, y: startY }
+        const arr = []
+        arr.push(curPositionObj)
+        this.$emit('canvasEnd', arr)
         return
       }
       isdown = 0
@@ -64,7 +76,7 @@ export default {
         this.drawPolygon(points)
       }
     },
-    drawPolygon (points, parms) {
+    drawPolygon (points, bool) {
       const myCanvas = document.getElementById('myCanvas')
       const ctx = myCanvas.getContext('2d')
       // 如果是面，则必须清除之前画布，否则之前绘制的内容存在
@@ -79,10 +91,18 @@ export default {
       ctx.beginPath()
       // 虚线
       // ctx.setLineDash([6]);
-      ctx.moveTo(points[0].x, points[0].y)
+      if (bool) {
+        ctx.moveTo(points[0].left, points[0].top)
+      } else {
+        ctx.moveTo(points[0].x, points[0].y)
+      }
 
       for (var i = 1; i < points.length; i++) {
-        ctx.lineTo(points[i].x, points[i].y)
+        if (bool) {
+          ctx.lineTo(points[i].left, points[i].top)
+        } else {
+          ctx.lineTo(points[i].x, points[i].y)
+        }
       }
       // 形成闭合 如果是面
       if (this.tagType === '22') {
@@ -116,7 +136,7 @@ export default {
       const myCanvas = document.getElementById('myCanvas')
       const ctx = myCanvas.getContext('2d')
       isdown = 1
-      this.$emit('canvasEnd', this.points)
+      this.$emit('canvasEnd', points)
       points = []
       // 绘制结束时清空画布，若不清空则之前绘制的图形依然存在
 
@@ -195,20 +215,22 @@ export default {
           console.log(div)
           div.addEventListener(
             'mousedown',
-            e => {
-              if (!this.showMarkForm) {
-                this.mousedownHandler(e)
-              }
-            },
+            // e => {
+            //   if (!this.showMarkForm) {
+            //     this.mousedownHandler()
+            //   }
+            // },
+            this.mousedownHandler,
             false
           )
           div.addEventListener(
             'dblclick',
-            e => {
-              if (!this.showMarkForm) {
-                this.mousedbclick(e)
-              }
-            },
+            // e => {
+            //   if (!this.showMarkForm) {
+            //     this.mousedbclick()
+            //   }
+            // },
+            this.mousedbclick,
             false
           )
           // div.addEventListener(
@@ -234,11 +256,49 @@ export default {
       } else {
         // 防止直接关闭esc退出全屏
         points = []
+        const div = document.getElementsByClassName('ar')[0]
+        console.log(div)
+        if (div) {
+          div.removeEventListener('mousedown',
+            this.mousedownHandler,
+            // (e) => {
+            //   if (!this.showMarkForm) {
+            //     this.mousedownHandler()
+            //   }
+            // },
+            false)
+          div.removeEventListener('dblclick',
+            this.mousedbclick,
+            // (e) => {
+            //   if (!this.showMarkForm) {
+            //     this.blclickHandler()
+            //   }
+            // },
+            false)
+        }
       }
+    },
+    // 收到的多个点的数据
+    pointsArray: {
+      handler () {
+        if (this.showAR) {
+          const myCanvas = document.getElementById('myCanvas')
+          const ctx = myCanvas.getContext('2d')
+          ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+          this.pointsArray.forEach(item => {
+            this.drawPolygon(item.pointsArray, true)
+          })
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
   mounted () {
     EventBus.$on('typeChange', info => {
+      const myCanvas = document.getElementById('myCanvas')
+      const ctx = myCanvas.getContext('2d')
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       points = []
     })
   }

@@ -1621,11 +1621,22 @@ export default {
           item.deviceCode === info.deviceCode &&
           item.streamType === info.channelId
         ) {
-          this.$set(
-            this.totalVideosArray[index],
-            'arPositionList',
-            info.arPositionList
-          )
+          info.arpositionList.forEach(item => {
+            if (item.onePointArray) {
+              this.$set(
+                this.totalVideosArray[index],
+                'onePointArray',
+                item.onePointArray
+              )
+            }
+            if (item.pointsArray) {
+              this.$set(
+                this.totalVideosArray[index],
+                'pointsArray',
+                item.pointsArray
+              )
+            }
+          })
         }
       })
       this.curVideosArray.forEach((item, index) => {
@@ -1633,14 +1644,65 @@ export default {
           item.deviceCode === info.deviceCode &&
           item.streamType === info.channelId
         ) {
-          this.$set(
-            this.curVideosArray[index],
-            'arPositionList',
-            info.arPositionList
-          )
+          info.arpositionList.forEach(item => {
+            if (item.onePointArray) {
+              this.$set(
+                this.curVideosArray[index],
+                'onePointArray',
+                item.onePointArray
+              )
+            }
+            if (item.pointsArray) {
+              this.$set(
+                this.curVideosArray[index],
+                'pointsArray',
+                item.pointsArray
+              )
+            }
+          })
         }
       })
     })
+    setTimeout(() => {
+      EventBus.$emit('getArChange', {
+        deviceCode: '6C01728PA4A9A6F',
+        channelId: '0',
+        arpositionList: [
+          { onePointArray: [{ left: 277.33, top: 355.33, labelName: 'label1', label: 0 }, { left: 560, top: 570, labelName: 'label2', label: 1 }] },
+          { pointsArray: [{ labelName: 'label1', label: 11, pointsArray: [{ left: 100, top: 100 }, { left: 200, top: 200 }] }, { labelName: 'label2', label: 22, pointsArray: [{ left: 300, top: 200 }, { left: 400, top: 300 }] }, { labelName: 'label3', label: 11, pointsArray: [{ left: 400, top: 400 }, { left: 500, top: 500 }] }] }
+        ]
+      })
+    }, 7000)
+    setTimeout(() => {
+      EventBus.$emit('getArChange', {
+        deviceCode: '6C01728PA4A9A6F',
+        channelId: '0',
+        arpositionList: [
+          { onePointArray: [] },
+          { pointsArray: [] }
+        ]
+      })
+    }, 10000)
+    setTimeout(() => {
+      EventBus.$emit('getArChange', {
+        deviceCode: '6C01728PA4A9A6F',
+        channelId: '0',
+        arpositionList: [
+          { onePointArray: [{ left: 277.33, top: 355.33, labelName: 'label1', label: 0 }, { left: 560, top: 570, labelName: 'label2', label: 1 }] },
+          { pointsArray: [{ labelName: 'label1', label: 11, pointsArray: [{ left: 100, top: 100 }, { left: 200, top: 200 }] }, { labelName: 'label2', label: 22, pointsArray: [{ left: 300, top: 200 }, { left: 400, top: 300 }] }, { labelName: 'label3', label: 11, pointsArray: [{ left: 400, top: 400 }, { left: 500, top: 500 }] }] }
+        ]
+      })
+    }, 15000)
+    setTimeout(() => {
+      EventBus.$emit('getArChange', {
+        deviceCode: '6C01728PA4A9A6F',
+        channelId: '0',
+        arpositionList: [
+          { onePointArray: [{ left: 477.33, top: 455.33, labelName: 'label1', label: 0 }, { left: 760, top: 770, labelName: 'label2', label: 1 }] },
+          { pointsArray: [{ labelName: 'label1', label: 11, pointsArray: [{ left: 700, top: 100 }, { left: 700, top: 200 }] }, { labelName: 'label2', label: 22, pointsArray: [{ left: 400, top: 200 }, { left: 400, top: 350 }] }, { labelName: 'label3', label: 11, pointsArray: [{ left: 700, top: 500 }, { left: 600, top: 100 }] }] }
+        ]
+      })
+    }, 25000)
     this.bSaveMultiDroneInfos = true
   }
 }
