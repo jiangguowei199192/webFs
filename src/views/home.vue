@@ -30,7 +30,7 @@
         </div>
         <div :class="this.isChecked ? 'activeClass' : 'about'" @click.stop="goToAboutUs()">
           <img :src="this.isChecked ? aboutImgCkSrc : aboutImgSrc" alt />
-          <p>新闻要闻</p>
+          <p>关于我们</p>
         </div>
 
         <div class="cur">
@@ -93,13 +93,13 @@ export default {
         },
 
         {
-          content: '案件中心'
+          content: '预警历史'
         },
         {
           content: '数字化装备'
         },
         {
-          content: '调度中心'
+          content: '系统设置'
         }
       ],
       curActive: 1, // 激活实时视频还是回放视频 1实时 2回放

@@ -25,8 +25,9 @@
             @canvasEnd="getPosition"
             :showMarkForm="showMarkForm"
             :tagType="ruleForm.tagType"
-            :pointsArray='videoInfo.pointsArray'
+            :pointsArray="videoInfo.pointsArray"
             :showAR="showAR"
+            ref="drawArea"
           ></canvas-area>
           <template v-if="showAR">
             <div class="header" @dblclick.stop="stopEvent">AR实景地图指挥</div>
@@ -76,7 +77,7 @@
                 @mouseenter="showActive(5)"
                 @mouseleave="showActive(0)"
                 title="标签管理"
-                @click="showCurindex=4;"
+                @click="showTagType"
               >
                 <img :src="tagPic" alt />
                 <img v-show="active === 5" class="hide_tab" :src="tagSelectedPic" />
@@ -96,8 +97,14 @@
               </a>-->
             </template>
             <!-- 新增 -->
-            <a title="退出全屏" @click="exitFullScreen();showCurindex=100">
-              <img :src="fScreen" alt width="40px" />
+            <a
+              @mouseenter="showActive(8)"
+              @mouseleave="showActive(0)"
+              title="退出全屏"
+              @click="arExitFullScreen"
+            >
+              <img :src="fScreen" />
+              <img v-show="active === 8" class="hide_tab" :src="fScreenSelected" />
             </a>
           </div>
           <!-- 实时警情弹框 -->
@@ -163,7 +170,7 @@
               />
               <p>面</p>
             </div>
-            <img src="../../../assets/images/AR/X.png" alt @click="showCurindex=1000" />
+            <img src="../../../assets/images/AR/X.png" alt @click="closeTagType" />
           </div>
           <!-- 图库弹框 -->
           <div class="picStorage" @dblclick.stop="stopEvent" v-show="showCurindex==3">
@@ -539,7 +546,7 @@ export default {
       imgId: '', // 保存抓取图片id
       remark: '', // 说明文字
       active: '', // 动态显示悬停相关图标
-      fScreen: require('../../../assets/images/full-screen.png'),
+
       showAR: false, // 显示AR
       showCurindex: 1000, // 显示弹框
       upPic: require('@/assets/images/AR/up.png'),
@@ -568,6 +575,8 @@ export default {
 
       settingPic: require('@/assets/images/AR/setting.png'),
       settingSelectedPic: require('@/assets/images/AR/setting_selected.png'),
+      fScreen: require('../../../assets/images/AR/exitFull.png'),
+      fScreenSelected: require('../../../assets/images/AR/exitFull_selected.png'),
       curSelectedIcon: 0, // 云台变倍或变焦 默认选中 0变倍 1变焦
       showMarkForm: false,
       curPositionArray: [], // 保存当前位置相关坐标
@@ -851,6 +860,9 @@ export default {
           })
         )
       } else {
+        this.resetForm('ruleForm')
+        this.showCurindex = 1000
+
         // 关闭AR
         new MqttService().client.send(
           'video/stop/arAlgorithm',
@@ -863,14 +875,56 @@ export default {
         )
       }
     },
+    // 显示标签弹框
+    showTagType () {
+      this.showCurindex = 4
+      // 关闭AR
+      new MqttService().client.send(
+        'video/stop/arAlgorithm',
+        JSON.stringify({
+          deviceCode: this.videoInfo.deviceCode,
+          channelId: this.videoInfo.streamType,
+          streamUrl: this.videoInfo.streamUrl,
+          isOpen: 0
+        })
+      )
+    },
     // add 切换标签类型
     changeType (type) {
+      // 先重置 再设置类型
+      this.resetForm('ruleForm')
       this.ruleForm.tagType = type
       EventBus.$emit('typeChange')
     },
-
+    // add 关闭标签类型弹框
+    closeTagType () {
+      // 防止绘制不双击结束，直接点关闭按钮 先重置，再隐藏弹框
+      this.resetForm('ruleForm')
+      this.showCurindex = 1000
+      // 开启AR
+      new MqttService().client.send(
+        'video/start/arAlgorithm',
+        JSON.stringify({
+          deviceCode: this.videoInfo.deviceCode,
+          channelId: this.videoInfo.streamType,
+          streamUrl: this.videoInfo.streamUrl,
+          isOpen: 1
+        })
+      )
+    },
+    // 退出全屏
+    arExitFullScreen () {
+      if (this.showCurindex === 4) {
+        this.resetForm('ruleForm')
+      }
+      this.showCurindex = 1000
+      this.exitFullScreen()
+    },
     // 获取今日警情
     getTodayFire () {
+      if (this.showCurindex === 4) {
+        this.resetForm('ruleForm')
+      }
       this.showCurindex = 1
       const params = {
         deviceCode: this.videoInfo.deviceCode,
@@ -893,6 +947,9 @@ export default {
     },
     // 点击抓取，显示抓拍图片
     showImg: throttle(function () {
+      if (this.showCurindex === 4) {
+        this.resetForm('ruleForm')
+      }
       // 防止抓拍时，有显示其它弹框
       this.showCurindex = 1000
       // 显示抓取的图片
@@ -969,6 +1026,9 @@ export default {
     },
     // 点击图库 显示图库弹框 获取图库数据
     getPicStorage () {
+      if (this.showCurindex === 4) {
+        this.resetForm('ruleForm')
+      }
       this.showCurindex = 3
       this.pageInfo.currentPage = 1
       this.getSnapList()
@@ -1119,7 +1179,7 @@ export default {
           console.log('成功')
           // this.createImgDom(this.ruleForm.tagType)
           // 成功之后调用该方法获取坐标信息
-          // this.$refs.drawArea.customQuery(this.ruleForm)
+          // this.$refs.drawArea.clearReact()
           // 标签名称和标签类型校验成功之后 调接口  获取数据  无需手动创建dom结构
           // this.showNotification = true
           // this.infoObj.isSuccess = true
@@ -1136,11 +1196,16 @@ export default {
               deviceCode: this.videoInfo.deviceCode,
               channelId: this.videoInfo.streamType,
               streamUrl: this.videoInfo.streamUrl,
+              pointsArray: this.curPositionArray,
               label: this.ruleForm.tagType,
               labelName: this.ruleForm.tagName,
+              lineType: 0,
+              lineWidth: 2,
+              lineColor: '#aaa',
+              fillColor: '#0f0',
+              opacity: 1,
               // x: this.curPositionObj.x,
               // y: this.curPositionObj.y,
-              pointsArray: this.curPositionArray,
               // width: this.curPositionObj.width,
               // height: this.curPositionObj.height,
               isOpen: 1
@@ -1150,13 +1215,19 @@ export default {
             deviceCode: this.videoInfo.deviceCode,
             channelId: this.videoInfo.streamType,
             streamUrl: this.videoInfo.streamUrl,
+            pointsArray: this.curPositionArray,
             label: this.ruleForm.tagType,
             labelName: this.ruleForm.tagName,
-            pointsArray: this.curPositionArray
+            lineType: 0,
+            lineWidth: 2,
+            lineColor: '#aaa',
+            fillColor: '#0f0',
+            opacity: 1,
             // x: this.curPositionObj.x,
             // y: this.curPositionObj.y,
             // width: this.curPositionObj.width,
-            // height: this.curPositionObj.height
+            // height: this.curPositionObj.height,
+            isOpen: 1
           })
           this.resetForm('ruleForm')
         } else {
@@ -1167,6 +1238,10 @@ export default {
     },
     // 重置表单
     resetForm (formName) {
+      // 防止第一次全屏时，找不到canvas对象
+      if (this.showCurindex === 4) {
+        this.$refs.drawArea.clearReact()
+      }
       this.showMarkForm = false
       this.$refs[formName].resetFields()
     },

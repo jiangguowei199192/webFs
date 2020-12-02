@@ -45,7 +45,7 @@ export default {
   name: 'decision',
   data () {
     return {
-      minHeight: 900,
+      minHeight: 901,
       isCreate: false,
       fullHeight: 0,
       selMenuType: '1',

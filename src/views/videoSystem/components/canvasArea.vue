@@ -12,9 +12,9 @@
 
 <script>
 import { EventBus } from '@/utils/eventBus.js'
-var startX, startY
-var isdown = 0
-var points = []
+let startX, startY
+let isdown = 0
+let points = []
 
 export default {
   props: {
@@ -42,6 +42,12 @@ export default {
     }
   },
   methods: {
+    // 清除画布
+    clearReact () {
+      const myCanvas = document.getElementById('myCanvas')
+      const ctx = myCanvas.getContext('2d')
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+    },
     // 正在绘制时（showCurIndex=4），阻止鼠标双击退出全屏默认事件
     stopEvent () {
       event.stopPropagation()
@@ -76,7 +82,7 @@ export default {
         this.drawPolygon(points)
       }
     },
-    drawPolygon (points, bool) {
+    drawPolygon (points, bool, label) {
       const myCanvas = document.getElementById('myCanvas')
       const ctx = myCanvas.getContext('2d')
       // 如果是面，则必须清除之前画布，否则之前绘制的内容存在
@@ -97,7 +103,7 @@ export default {
         ctx.moveTo(points[0].x, points[0].y)
       }
 
-      for (var i = 1; i < points.length; i++) {
+      for (let i = 1; i < points.length; i++) {
         if (bool) {
           ctx.lineTo(points[i].left, points[i].top)
         } else {
@@ -105,7 +111,7 @@ export default {
         }
       }
       // 形成闭合 如果是面
-      if (this.tagType === '22') {
+      if (this.tagType === '22' || label === 22) {
         ctx.closePath()
       }
       // 绘制空心
@@ -133,14 +139,14 @@ export default {
     },
     // 鼠标双击结束绘制
     mousedbclick (event) {
-      const myCanvas = document.getElementById('myCanvas')
-      const ctx = myCanvas.getContext('2d')
+      // const myCanvas = document.getElementById('myCanvas')
+      // const ctx = myCanvas.getContext('2d')
       isdown = 1
       this.$emit('canvasEnd', points)
       points = []
       // 绘制结束时清空画布，若不清空则之前绘制的图形依然存在
 
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+      // ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       // cvs.removeEventListener("mousemove", mousemoveHandler);
     }
     // // 鼠标移动先清除之前画布 再重新绘制
@@ -259,22 +265,26 @@ export default {
         const div = document.getElementsByClassName('ar')[0]
         console.log(div)
         if (div) {
-          div.removeEventListener('mousedown',
+          div.removeEventListener(
+            'mousedown',
             this.mousedownHandler,
             // (e) => {
             //   if (!this.showMarkForm) {
             //     this.mousedownHandler()
             //   }
             // },
-            false)
-          div.removeEventListener('dblclick',
+            false
+          )
+          div.removeEventListener(
+            'dblclick',
             this.mousedbclick,
             // (e) => {
             //   if (!this.showMarkForm) {
             //     this.blclickHandler()
             //   }
             // },
-            false)
+            false
+          )
         }
       }
     },
@@ -286,7 +296,7 @@ export default {
           const ctx = myCanvas.getContext('2d')
           ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
           this.pointsArray.forEach(item => {
-            this.drawPolygon(item.pointsArray, true)
+            this.drawPolygon(item.pointsArray, true, item.label)
           })
         }
       },
@@ -296,9 +306,9 @@ export default {
   },
   mounted () {
     EventBus.$on('typeChange', info => {
-      const myCanvas = document.getElementById('myCanvas')
-      const ctx = myCanvas.getContext('2d')
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+      // const myCanvas = document.getElementById('myCanvas')
+      // const ctx = myCanvas.getContext('2d')
+      // ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       points = []
     })
   }
