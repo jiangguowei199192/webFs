@@ -140,34 +140,60 @@
           <div class="tagInfo" @dblclick.stop="stopEvent" v-show="showCurindex==4">
             <!-- <p>常用标签</p> -->
             <div>
-              <img src="../../../assets/images/AR/high2.png" @click="changeType('0')" alt />
+              <div :class="{'active':ruleForm.tagType==='0'}" class="mar11">
+                <img src="../../../assets/images/AR/high2.png" @click="changeType('0')" alt />
+              </div>
               <p>高点监控</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/building.png" @click="changeType('1')" alt />
-              <p>建筑大厦</p>
+              <div :class="{'active':ruleForm.tagType==='1'}"  class="mar13">
+                <img
+                  src="../../../assets/images/AR/build_icon.png"
+                  @click="changeType('1')"
+
+                  alt
+                />
+              </div>
+
+              <p>建筑</p>
             </div>
             <div>
-              <img src="../../../assets/images/AR/river2.png" @click="changeType('2')" alt />
-              <p>河流</p>
+              <div :class="{'active':ruleForm.tagType==='2'}"  class="mar13">
+                <img
+                  src="../../../assets/images/AR/fire_icon.png"
+                  @click="changeType('2')"
+
+                  alt
+                />
+              </div>
+              <p>消防力量</p>
+            </div>
+            <div>
+              <div :class="{'active':ruleForm.tagType==='3'}" class="mar13">
+                <img src="../../../assets/images/AR/forest_icon.png" @click="changeType('3')" alt />
+              </div>
+
+              <p>森林</p>
+            </div>
+            <div>
+              <div :class="{'active':ruleForm.tagType==='4'}" class="mar13">
+                <img src="../../../assets/images/AR/palace_icon.png" @click="changeType('4')" alt />
+              </div>
+
+              <p>重点场所</p>
             </div>
             <!-- <p>自定义标签</p> -->
             <div>
-              <img
-                src="../../../assets/images/AR/line.jpg"
-                @click="changeType('11')"
-                alt
-                width="40px"
-              />
+              <div :class="{'active':ruleForm.tagType==='11'}" class="mar12">
+                <img src="../../../assets/images/AR/line.png" @click="changeType('11')" alt />
+              </div>
               <p>线</p>
             </div>
             <div>
-              <img
-                src="../../../assets/images/AR/line_close.jpg"
-                @click="changeType('22')"
-                alt
-                width="40px"
-              />
+              <div :class="{'active':ruleForm.tagType==='22'}" class="mar12">
+                <img src="../../../assets/images/AR/line_close.png" @click="changeType('22')" alt />
+              </div>
+
               <p>面</p>
             </div>
             <img src="../../../assets/images/AR/X.png" alt @click="closeTagType" />
@@ -266,7 +292,7 @@
                 <img src="../../../assets/images/AR/search_icon.png" alt />
                 <img src="../../../assets/images/AR/refresh.png" alt />
                 <img src="../../../assets/images/AR/down.png" alt />
-                <img src="../../../assets/images/AR/more.png" alt />
+                <!-- <img src="../../../assets/images/AR/more.png" alt /> -->
               </div>
             </div>
             <el-table :data="tableData" style="width: 100%;margin-top:17px;" :stripe="true">
@@ -348,7 +374,7 @@
       >
         <div
           v-for="(item,index) in videoInfo.onePointArray"
-          :class="{high:item.label==0,build:item.label==1,river:item.label==2}"
+          :class="{high:item.label==0,build:item.label==1,fire:item.label==2,forest:item.label==3,palace:item.label==4}"
           :key="index"
           :style="{
           left:item.label=='0'?(Number(item.left)/1280*1920-51.5)+'px':Number(item.left)/1280*1920+'px',
@@ -466,7 +492,9 @@
             <el-input v-model.trim="ruleForm.tagName" placeholder="请输入标签名称" style="width:228px"></el-input>
           </el-form-item>
           <el-form-item label="标签类型:" prop="tagType" style="margin-top:20px;">
-            <template v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'">
+            <template
+              v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'||ruleForm.tagType==='3'||ruleForm.tagType==='4'"
+            >
               <el-select
                 style="width:228px"
                 required
@@ -664,11 +692,19 @@ export default {
         },
         {
           id: '1',
-          name: '建筑大厦'
+          name: '建筑'
         },
         {
           id: '2',
-          name: '河流'
+          name: '消防力量'
+        },
+        {
+          id: '3',
+          name: '森林'
+        },
+        {
+          id: '4',
+          name: '重点场所'
         }
       ],
       showNotification: false,
@@ -1903,29 +1939,64 @@ export default {
       }
       .tagInfo {
         position: absolute;
-        bottom: 114px;
-        left: 924px;
-        width: 538px;
-        height: 126px;
+        bottom: 90px;
+        left: 818px;
+        width: 472px;
+        height: 128px;
         background: url(../../../assets/images/AR/tag_bg.png) no-repeat;
         background-size: 100% 100%;
         display: flex;
         align-items: center;
-        justify-content: center;
-
+        justify-content: space-between;
+        padding: 0 20px;
         cursor: text;
         > div {
           text-align: center;
         }
-        div {
-          margin: 0 20px;
+        > div p {
+          font-size: 12px;
         }
-        div:nth-child(2),
-        div:nth-child(3) {
-          img {
-            margin: 5px 0;
-          }
+        > div img {
+          cursor: pointer;
         }
+         > div div.mar11 {
+          margin: 11px 0;
+        }
+        > div div.mar13 {
+          margin: 13px 0;
+        }
+        > div div.mar12 {
+          margin: 12px 0;
+        }
+        >div div{
+            box-sizing: border-box;
+            border: 1px solid transparent;
+        }
+        > div:first-child  div{
+          width: 57px;
+          height:54px;
+        }
+        >div div img{
+          cursor: pointer;
+        }
+        > div:not(:first-child) div  {
+          width: 48px;
+          height:48px;
+          padding-top:7px;
+        }
+        > div div.active {
+          border: 1px solid rgb(30, 176, 252);
+          background: rgba(30, 176, 252, 0.6);
+        }
+        // div {
+        //   margin: 0 20px;
+        // }
+        // div:nth-child(2),
+        // div:nth-child(3) {
+        //   img {
+        //     margin: 5px 0;
+        //   }
+        // }
         > img {
           position: absolute;
           top: 15px;
@@ -2193,17 +2264,23 @@ export default {
         line-height: 44px;
       }
     }
-    > div.river,
-    div.build {
+    > div.fire,
+    div.build,div.forest,div.palace {
       width: 145px;
       height: 59px;
       padding-left: 48px;
     }
-    div.river {
-      background: url(../../../assets/images/AR/river.png) no-repeat;
+    div.fire {
+      background: url(../../../assets/images/AR/fire.png) no-repeat;
     }
     div.build {
       background: url(../../../assets/images/AR/build.png) no-repeat;
+    }
+    div.forest {
+      background: url(../../../assets/images/AR/build.png) no-repeat;
+    }
+    div.palace{
+       background: url(../../../assets/images/AR/palace.png) no-repeat;
     }
     div.high {
       background: url(../../../assets/images/AR/high.png) no-repeat;

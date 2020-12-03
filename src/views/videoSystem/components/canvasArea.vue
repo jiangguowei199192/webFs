@@ -64,7 +64,9 @@ export default {
       if (
         this.tagType === '0' ||
         this.tagType === '1' ||
-        this.tagType === '2'
+        this.tagType === '2' ||
+        this.tagType === '3' ||
+        this.tagType === '4'
       ) {
         const curPositionObj = { x: startX, y: startY }
         const arr = []
