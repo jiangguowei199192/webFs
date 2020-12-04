@@ -55,6 +55,10 @@ export default {
     },
     // 鼠标按下记录起始坐标
     mousedownHandler ($event) {
+      if (this.showMarkForm) {
+        this.$emit('closeMarkForm')
+        return
+      }
       startX = $event.pageX
       startY = $event.pageY
 
@@ -146,6 +150,17 @@ export default {
       isdown = 1
       this.$emit('canvasEnd', points)
       points = []
+      // const div = document.getElementsByClassName('ar')[0]
+      // div.removeEventListener(
+      //   'mousedown',
+      //   this.mousedownHandler,
+      //   // (e) => {
+      //   //   if (!this.showMarkForm) {
+      //   //     this.mousedownHandler()
+      //   //   }
+      //   // },
+      //   false
+      // )
       // 绘制结束时清空画布，若不清空则之前绘制的图形依然存在
 
       // ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
@@ -311,6 +326,7 @@ export default {
       // const myCanvas = document.getElementById('myCanvas')
       // const ctx = myCanvas.getContext('2d')
       // ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
+      // 若绘制时不结束直接切换类型或点击其它地方（调resetFrom 先重置到最新的一个点 然后若切换则清空了之前的数据） 清空数据
       points = []
     })
   }

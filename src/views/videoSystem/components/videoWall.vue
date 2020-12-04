@@ -27,6 +27,7 @@
             :tagType="ruleForm.tagType"
             :pointsArray="videoInfo.pointsArray"
             :showAR="showAR"
+            @closeMarkForm="closeMarkForm"
             ref="drawArea"
           ></canvas-area>
           <template v-if="showAR">
@@ -948,6 +949,10 @@ export default {
         })
       )
     },
+    // 鼠标单击若标签弹框此时已打开
+    closeMarkForm () {
+      this.resetForm('ruleForm')
+    },
     // 退出全屏
     arExitFullScreen () {
       if (this.showCurindex === 4) {
@@ -1485,6 +1490,9 @@ export default {
     },
     // 鼠标按下
     startChange (index) {
+      if (this.showCurindex === 4) {
+        this.resetForm('ruleForm')
+      }
       // 鼠标按下每隔一秒通知后台获取云台信息
       if (this.showAR) {
         this.timer = setInterval(() => {
@@ -1496,6 +1504,8 @@ export default {
               channelId: this.videoInfo.streamType
             })
           )
+          // 更新坐标角度
+          this.getPtzInfo()
         }, 2000)
       }
       const params = {
@@ -1621,6 +1631,8 @@ export default {
         // 停止定时器
         clearInterval(this.timer)
         this.timer = null
+        // 显示角度
+        this.getPtzInfo()
       }
       // 通知后台获取云台信息
       new MqttService().client.send(
@@ -1630,8 +1642,6 @@ export default {
           channelId: this.videoInfo.streamType
         })
       )
-      // 显示角度
-      this.getPtzInfo()
       const params = {
         device_id: this.videoInfo.deviceCode,
         channel_id: this.videoInfo.streamType,
