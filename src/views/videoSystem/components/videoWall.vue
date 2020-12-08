@@ -114,7 +114,7 @@
             <div class="content webFsScroll">
               <div class="item" v-for="(item,index) in todayFireArray" :key="index">
                 <div class="pic">
-                  <img :src="`${picUrl}${item.alarmPic}`" alt />
+                  <img :src="`${headImg}${item.alarmPic}`" alt />
                 </div>
                 <div class="detail">
                   <p>时间：{{item.alarmTime}}</p>
@@ -147,25 +147,15 @@
               <p>高点监控</p>
             </div>
             <div>
-              <div :class="{'active':ruleForm.tagType==='1'}"  class="mar13">
-                <img
-                  src="../../../assets/images/AR/build_icon.png"
-                  @click="changeType('1')"
-
-                  alt
-                />
+              <div :class="{'active':ruleForm.tagType==='1'}" class="mar13">
+                <img src="../../../assets/images/AR/build_icon.png" @click="changeType('1')" alt />
               </div>
 
               <p>建筑</p>
             </div>
             <div>
-              <div :class="{'active':ruleForm.tagType==='2'}"  class="mar13">
-                <img
-                  src="../../../assets/images/AR/fire_icon.png"
-                  @click="changeType('2')"
-
-                  alt
-                />
+              <div :class="{'active':ruleForm.tagType==='2'}" class="mar13">
+                <img src="../../../assets/images/AR/fire_icon.png" @click="changeType('2')" alt />
               </div>
               <p>消防力量</p>
             </div>
@@ -482,23 +472,24 @@
       <!-- 添加标签的弹框 -->
       <div class="fullScreenMark" v-show="showMarkForm">
         <img src="../../../assets/images/AR/close.png" @click="resetForm('ruleForm')" />
+        <h3>标签属性</h3>
         <el-form
           :model="ruleForm"
           :rules="rules"
           ref="ruleForm"
-          label-width="120px"
+          label-width="90px"
           class="demo-ruleForm"
+          label-position="left"
         >
-          <el-form-item label="标签名称:" prop="tagName">
-            <el-input v-model.trim="ruleForm.tagName" placeholder="请输入标签名称" style="width:228px"></el-input>
+          <el-form-item label="标签名称:" prop="tagName" class="tagName">
+            <el-input v-model.trim="ruleForm.tagName" placeholder="请输入标签名称" style="width: 168px;"></el-input>
           </el-form-item>
-          <el-form-item label="标签类型:" prop="tagType" style="margin-top:20px;">
+          <el-form-item label="标签类型:" prop="tagType" class="selectBg" style="margin-top:16px">
             <template
               v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'||ruleForm.tagType==='3'||ruleForm.tagType==='4'"
             >
               <el-select
-                style="width:228px"
-                required
+                style="width:168px;"
                 v-model="ruleForm.tagType"
                 placeholder="请选择标签类型"
                 :popper-append-to-body="false"
@@ -512,18 +503,74 @@
                 ></el-option>
               </el-select>
             </template>
-            <span v-else>{{ruleForm.tagType==='11'?'自定义线':ruleForm.tagType==='22'?'自定义面':'-'}}</span>
+            <span v-else>{{ruleForm.tagType==='11'?'自定义线段':ruleForm.tagType==='22'?'自定义区域':'-'}}</span>
           </el-form-item>
-          <el-form-item style="margin-top:30px;">
+          <el-form-item label="线段类型:" class="selectBg" style="margin-top:16px" prop="lineType">
+            <el-select
+              style="width:168px;"
+              placeholder="请选择"
+              :popper-append-to-body="false"
+              popper-class="selectStyle"
+              @change="changeSelection"
+              v-model="ruleForm.lineType"
+              ref="aaa"
+            >
+              <el-option
+                v-for="item in lineOption"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+                <img :src="item.label" width="128px" />
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="线宽:" style="margin-top:16px" prop="lineWidth">
+            <el-input-number
+              v-model="ruleForm.lineWidth"
+              controls-position="right"
+              :min="1"
+              :max="9999"
+              style="width:168px;"
+            ></el-input-number>
+          </el-form-item>
+          <el-form-item label="线段颜色:" style="margin-top:16px" prop="lineColor">
+            <!-- <el-color-picker  size="small" show-alpha  :picker-append-to-body="false" popper-class="selectStyle"></el-color-picker> -->
+            <input
+              :default-value="ruleForm.lineColor"
+              v-model="ruleForm.lineColor"
+              type="color"
+              @input="updateData"
+              style="width:168px;"
+            />
+          </el-form-item>
+          <el-form-item label="区域颜色:" style="margin-top:16px" prop="fillColor">
+            <input
+              :default-value="ruleForm.fillColor"
+              v-model="ruleForm.fillColor"
+              type="color"
+              style="width:168px;"
+            />
+            <!-- <el-color-picker v-model="ruleForm.fillColor" size="small" show-alpha  :append-to-body="false"  popper-class="selectStyle"></el-color-picker> -->
+          </el-form-item>
+          <el-form-item label="不透明度:" style="margin-top:16px" prop="opacity">
+            <el-slider
+              v-model="ruleForm.opacity"
+              style="width:140px;margin-right:15px;display:inline-block;vertical-align:middle"
+            ></el-slider>
+            <span style="color:
+color: #209CDF;">{{ruleForm.opacity}}%</span>
+          </el-form-item>
+          <el-form-item class="btns">
             <el-button
               type="primary"
               @click="resetForm('ruleForm')"
-              style="background:#18223A;color:#209CDF;border: 1px solid #209CDF;width:108px!important"
+              style="background:#18223A;color:#209CDF;border: 1px solid #209CDF;width:64px!important"
             >取消</el-button>
             <el-button
               type="primary"
               @click="submitForm('ruleForm')"
-              style="width:108px!important"
+              style="width:64px!important"
             >确定</el-button>
           </el-form-item>
         </el-form>
@@ -568,6 +615,7 @@ export default {
     return {
       timer: null, // 定时器
       picUrl: globalApi.baseUrl + '/video-service2', // 图片前缀
+      headImg: globalApi.headImg,
       showCutImg: false, // 是否显示抓拍的图片 默认不显示
       cutImgUrl: '', // 显示抓取的图片
       cutDialogVisible: false, // 抓取弹窗
@@ -675,7 +723,12 @@ export default {
       picStorageArray: [], // 保存图库数据
       ruleForm: {
         tagName: '',
-        tagType: '0'
+        tagType: '0',
+        lineType: '0',
+        lineWidth: 1,
+        lineColor: '#ffde00',
+        fillColor: '#00ff48',
+        opacity: 95
       },
       rules: {
         tagName: [
@@ -684,8 +737,50 @@ export default {
         ],
         tagType: [
           { required: true, message: '请选择标签类型', trigger: 'change,blur' }
+        ],
+        lineType: [
+          { required: true, message: '请选择线段类型', trigger: 'change,blur' }
+        ],
+        lineWidth: [
+          { required: true, message: '请选择线宽', trigger: 'change,blur' }
+        ],
+        lineColor: [
+          { required: true, message: '请选择线段颜色', trigger: 'change,blur' }
+        ],
+        fillColor: [
+          { required: true, message: '请选择区域颜色', trigger: 'change,blur' }
+        ],
+        opacity: [
+          { required: true, message: '请选择不透明度', trigger: 'change,blur' }
         ]
       },
+      // 线段类型
+      lineOption: [
+        {
+          label: require('../../../assets/images/AR/line_1.png'),
+          value: '0'
+        },
+        {
+          label: require('../../../assets/images/AR/line_2.png'),
+          value: '1'
+        },
+        {
+          label: require('../../../assets/images/AR/line_3.png'),
+          value: '2'
+        },
+        {
+          label: require('../../../assets/images/AR/line_4.png'),
+          value: '3'
+        },
+        {
+          label: require('../../../assets/images/AR/line_5.png'),
+          value: '4'
+        },
+        {
+          label: require('../../../assets/images/AR/line_6.png'),
+          value: '5'
+        }
+      ],
       tageTypeArray: [
         {
           id: '0',
@@ -1187,6 +1282,8 @@ export default {
       })
       this.curPositionArray = totalPosition
       this.showMarkForm = true
+      // 设置默认线段类型
+      this.changeSelection()
     },
     // 创建元素
     createTag (ruleForm, positionObj) {
@@ -1211,6 +1308,27 @@ export default {
       div.appendChild(span)
       div.appendChild(input)
       this.$refs.drawBox.appendChild(div)
+    },
+    // 关系方向下拉框改变事件
+    changeSelection () {
+      const mark = this.ruleForm.lineType
+      // const i = scope.$index
+      for (const index in this.lineOption) {
+        const aa = this.lineOption[index]
+        const value = aa.value
+        if (mark === value) {
+          this.$refs.aaa.$el.children[0].children[0].setAttribute(
+            'style',
+            'background:url(' +
+              aa.label +
+              ') no-repeat;color:#fff;text-indent: -9999px;background-position: center center'
+          )
+        }
+      }
+    },
+    updateData (val) {
+      console.log(this.ruleForm.lineColor)
+      // debugger
     },
     // 表单提交
     submitForm (formName) {
@@ -1776,6 +1894,10 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  input[type='color']::-webkit-color-swatch {border:0;}
   :focus {
     outline: none;
   }
@@ -1789,6 +1911,25 @@ export default {
     position: absolute !important;
     top: 30px !important;
   }
+  .tagName .el-form-item__content .el-input input {
+    border: 1px solid #209cdf;
+    background: #102035;
+  }
+  .selectBg .el-form-item__content .el-input input {
+    background: rgba(0, 57, 87, 0.9);
+    color: #fff;
+  }
+  .selectBg .el-select-dropdown {
+    background: rgba(0, 57, 87, 0.9);
+    .el-select-dropdown__item {
+      color: #fff;
+    }
+    .el-select-dropdown__item.hover,
+    .el-select-dropdown__item:hover {
+      background: #228ac4;
+    }
+  }
+
   .cutDialog {
     background: rgba(0, 0, 0, 0.6);
     /deep/.el-dialog {
@@ -1969,7 +2110,7 @@ export default {
         > div img {
           cursor: pointer;
         }
-         > div div.mar11 {
+        > div div.mar11 {
           margin: 11px 0;
         }
         > div div.mar13 {
@@ -1978,21 +2119,21 @@ export default {
         > div div.mar12 {
           margin: 12px 0;
         }
-        >div div{
-            box-sizing: border-box;
-            border: 1px solid transparent;
+        > div div {
+          box-sizing: border-box;
+          border: 1px solid transparent;
         }
-        > div:first-child  div{
+        > div:first-child div {
           width: 57px;
-          height:54px;
+          height: 54px;
         }
-        >div div img{
+        > div div img {
           cursor: pointer;
         }
-        > div:not(:first-child) div  {
+        > div:not(:first-child) div {
           width: 48px;
-          height:48px;
-          padding-top:7px;
+          height: 48px;
+          padding-top: 7px;
         }
         > div div.active {
           border: 1px solid rgb(30, 176, 252);
@@ -2275,7 +2416,9 @@ export default {
       }
     }
     > div.fire,
-    div.build,div.forest,div.palace {
+    div.build,
+    div.forest,
+    div.palace {
       width: 145px;
       height: 59px;
       padding-left: 48px;
@@ -2289,8 +2432,8 @@ export default {
     div.forest {
       background: url(../../../assets/images/AR/build.png) no-repeat;
     }
-    div.palace{
-       background: url(../../../assets/images/AR/palace.png) no-repeat;
+    div.palace {
+      background: url(../../../assets/images/AR/palace.png) no-repeat;
     }
     div.high {
       background: url(../../../assets/images/AR/high.png) no-repeat;
@@ -2742,14 +2885,25 @@ export default {
   .fullScreenMark {
     position: absolute;
     z-index: 20;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 386px;
-    height: 250px;
+    // left: 50%;
+    right: 20px;
+    top: 158px;
+    // transform: translateY(-50%);
+    width: 286px;
+    height: 528px;
+    background: rgba(16, 32, 53, 0.85);
+    border: 1px solid #209cdf;
+    // padding:0 px;
+    // opacity: 0.85;
     cursor: text;
-    background: url(../../../assets/images/AR/tag_add.png) no-repeat;
-    background-size: 100% 100%;
+    // background: url(../../../assets/images/AR/tag_add.png) no-repeat;
+    // background-size: 100% 100%;
+    > h3 {
+      font-size: 16px;
+      font-weight: 500;
+      color: #f5fafd;
+      padding: 12px 16px;
+    }
     > img {
       position: absolute;
       top: 8px;
@@ -2757,7 +2911,18 @@ export default {
       cursor: pointer;
     }
     form {
-      margin-top: 20px;
+      // margin-top: 20px;
+      .el-form-item {
+        margin-bottom: 0px;
+        .el-form-item__label {
+          color: #fff;
+        }
+      }
+      .btns {
+        position: absolute;
+        bottom: 10px;
+        right: 30px;
+      }
     }
     // .el-form-item__content,
     // .el-form-item__label,
@@ -2766,9 +2931,7 @@ export default {
     //   height: 22px;
     //   line-height: 22px !important;
     // }
-    .el-form-item {
-      margin-bottom: 0px;
-    }
+
     .el-select-dropdown__item {
       height: 28px !important;
       line-height: 28px !important;

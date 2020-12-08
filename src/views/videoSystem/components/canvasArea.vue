@@ -165,7 +165,7 @@ export default {
 
       // ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       // cvs.removeEventListener("mousemove", mousemoveHandler);
-    }
+    },
     // // 鼠标移动先清除之前画布 再重新绘制
     // mousemovehandler (e) {
     //   if (isdown) {
@@ -228,6 +228,10 @@ export default {
     //   const positionObj = { x: cLeft, y: cTop, width: cWidth, height: cHeight }
     //   this.$emit('canvasEnd', positionObj)
     // }
+    // 十六进制转rgb
+    hexToRgba (hex, opacity) {
+      return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ',' + parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')'
+    }
   },
   watch: {
     canDraw (nv) {
