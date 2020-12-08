@@ -528,13 +528,12 @@
           <el-form-item label="线宽:" style="margin-top:16px" prop="lineWidth">
             <el-input-number
               v-model="ruleForm.lineWidth"
-              controls-position="right"
               :min="1"
-              :max="9999"
-              style="width:168px;"
+              :max="10000"
+              style="width:96px;"
             ></el-input-number>
           </el-form-item>
-          <el-form-item label="线段颜色:" style="margin-top:16px" prop="lineColor">
+          <el-form-item label="线段颜色:" style="margin-top:16px;" prop="lineColor" class="labelColor">
             <!-- <el-color-picker  size="small" show-alpha  :picker-append-to-body="false" popper-class="selectStyle"></el-color-picker> -->
             <input
               :default-value="ruleForm.lineColor"
@@ -544,7 +543,7 @@
               style="width:168px;"
             />
           </el-form-item>
-          <el-form-item label="区域颜色:" style="margin-top:16px" prop="fillColor">
+          <el-form-item label="区域颜色:" style="margin-top:16px;" prop="fillColor" class="labelColor">
             <input
               :default-value="ruleForm.fillColor"
               v-model="ruleForm.fillColor"
@@ -554,12 +553,8 @@
             <!-- <el-color-picker v-model="ruleForm.fillColor" size="small" show-alpha  :append-to-body="false"  popper-class="selectStyle"></el-color-picker> -->
           </el-form-item>
           <el-form-item label="不透明度:" style="margin-top:16px" prop="opacity">
-            <el-slider
-              v-model="ruleForm.opacity"
-              style="width:140px;margin-right:15px;display:inline-block;vertical-align:middle"
-            ></el-slider>
-            <span style="color:
-color: #209CDF;">{{ruleForm.opacity}}%</span>
+            <el-slider v-model="ruleForm.opacity"></el-slider>
+            <span>{{ruleForm.opacity}}%</span>
           </el-form-item>
           <el-form-item class="btns">
             <el-button
@@ -1897,7 +1892,9 @@ export default {
   input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
   }
-  input[type='color']::-webkit-color-swatch {border:0;}
+  input[type="color"]::-webkit-color-swatch {
+    border: 0;
+  }
   :focus {
     outline: none;
   }
@@ -2902,7 +2899,8 @@ export default {
       font-size: 16px;
       font-weight: 500;
       color: #f5fafd;
-      padding: 12px 16px;
+      padding: 12px 11px;
+      font-size: 14px;
     }
     > img {
       position: absolute;
@@ -2912,6 +2910,7 @@ export default {
     }
     form {
       // margin-top: 20px;
+      padding-left: 14px;
       .el-form-item {
         margin-bottom: 0px;
         .el-form-item__label {
@@ -2922,6 +2921,62 @@ export default {
         position: absolute;
         bottom: 10px;
         right: 30px;
+      }
+      .labelColor .el-form-item__content {
+        margin-top: 4px;
+      }
+      .el-slider {
+        width: 130px !important;
+        margin-right: 5px !important;
+        display: inline-block;
+        vertical-align: middle;
+        .el-slider__runway,
+        .el-slider__bar {
+          height: 2px;
+        }
+        .el-slider__button-wrapper {
+          height: 33px;
+          .el-slider__button {
+            width: 10px;
+            height: 10px;
+          }
+        }
+      }
+      .el-slider + span {
+        display: inline-block;
+        font-size: 14px;
+        color: #209cdf;
+        width: 36px;
+        text-align: right;
+      }
+      div.el-input-number {
+        line-height: 24px;
+        > span {
+          height: 24px;
+          width:24px;
+          background: #00a0e9;
+          color: #ffffff;
+          border: none;
+        }
+        > span.el-input-number__decrease {
+          top: 0;
+          left: 0;
+        }
+        > span.el-input-number__increase {
+          right: 0;
+          top: 0;
+        }
+        > div.el-input {
+          input {
+            line-height: 24px;
+            height: 24px;
+            background: transparent;
+            border: 1px solid #00a0e9;
+            padding-left:24px;
+            padding-right:24px;
+            color:#fff;
+          }
+        }
       }
     }
     // .el-form-item__content,
