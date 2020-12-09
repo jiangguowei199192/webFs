@@ -178,14 +178,14 @@
               <div :class="{'active':ruleForm.tagType==='11'}" class="mar12">
                 <img src="../../../assets/images/AR/line.png" @click="changeType('11')" alt />
               </div>
-              <p>线</p>
+              <p>线段</p>
             </div>
             <div>
               <div :class="{'active':ruleForm.tagType==='22'}" class="mar12">
                 <img src="../../../assets/images/AR/line_close.png" @click="changeType('22')" alt />
               </div>
 
-              <p>面</p>
+              <p>区域</p>
             </div>
             <img src="../../../assets/images/AR/X.png" alt @click="closeTagType" />
           </div>
@@ -481,10 +481,7 @@
           class="demo-ruleForm"
           label-position="left"
         >
-          <el-form-item label="标签名称:" prop="tagName" class="tagName">
-            <el-input v-model.trim="ruleForm.tagName" placeholder="请输入标签名称" style="width: 168px;"></el-input>
-          </el-form-item>
-          <el-form-item label="标签类型:" prop="tagType" class="selectBg" style="margin-top:16px">
+          <el-form-item label="标签类型:" prop="tagType" class="selectBg" :style="{marginBottom:ruleForm.tagType==='11'||ruleForm.tagType==='22'?'6px':'16px'}">
             <template
               v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'||ruleForm.tagType==='3'||ruleForm.tagType==='4'"
             >
@@ -505,57 +502,73 @@
             </template>
             <span v-else>{{ruleForm.tagType==='11'?'自定义线段':ruleForm.tagType==='22'?'自定义区域':'-'}}</span>
           </el-form-item>
-          <el-form-item label="线段类型:" class="selectBg" style="margin-top:16px" prop="lineType">
-            <el-select
-              style="width:168px;"
-              placeholder="请选择"
-              :popper-append-to-body="false"
-              popper-class="selectStyle"
-              @change="changeSelection"
-              v-model="ruleForm.lineType"
-              ref="aaa"
-            >
-              <el-option
-                v-for="item in lineOption"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+           <el-form-item label="标签名称:" prop="tagName" class="tagName">
+            <el-input
+              v-model.trim="ruleForm.tagName"
+              placeholder="请输入标签名称"
+              style="width: 168px;color:#fff"
+            ></el-input>
+          </el-form-item>
+          <template v-if="ruleForm.tagType==='11'||ruleForm.tagType==='22'">
+            <el-form-item label="线段类型:" class="selectBg" style="margin-top:16px" prop="lineType">
+              <el-select
+                style="width:168px;"
+                placeholder="请选择"
+                :popper-append-to-body="false"
+                popper-class="selectStyle"
+                @change="changeSelection"
+                v-model="ruleForm.lineType"
+                ref="lineSelect"
               >
-                <img :src="item.label" width="128px" />
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="线宽:" style="margin-top:16px" prop="lineWidth">
-            <el-input-number
-              v-model="ruleForm.lineWidth"
-              :min="1"
-              :max="10000"
-              style="width:96px;"
-            ></el-input-number>
-          </el-form-item>
-          <el-form-item label="线段颜色:" style="margin-top:16px;" prop="lineColor" class="labelColor">
-            <!-- <el-color-picker  size="small" show-alpha  :picker-append-to-body="false" popper-class="selectStyle"></el-color-picker> -->
-            <input
-              :default-value="ruleForm.lineColor"
-              v-model="ruleForm.lineColor"
-              type="color"
-              @input="updateData"
-              style="width:168px;"
-            />
-          </el-form-item>
-          <el-form-item label="区域颜色:" style="margin-top:16px;" prop="fillColor" class="labelColor">
-            <input
-              :default-value="ruleForm.fillColor"
-              v-model="ruleForm.fillColor"
-              type="color"
-              style="width:168px;"
-            />
-            <!-- <el-color-picker v-model="ruleForm.fillColor" size="small" show-alpha  :append-to-body="false"  popper-class="selectStyle"></el-color-picker> -->
-          </el-form-item>
-          <el-form-item label="不透明度:" style="margin-top:16px" prop="opacity">
-            <el-slider v-model="ruleForm.opacity"></el-slider>
-            <span>{{ruleForm.opacity}}%</span>
-          </el-form-item>
+                <el-option
+                  v-for="item in lineOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                  <img :src="item.label" width="128px" />
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="线宽:" style="margin-top:12px" prop="lineWidth">
+              <el-input-number
+                v-model="ruleForm.lineWidth"
+                :min="1"
+                :max="10000"
+                style="width:96px;"
+              ></el-input-number>
+            </el-form-item>
+            <el-form-item label="线段颜色:" style="margin-top:8px;" prop="lineColor" class="labelColor">
+              <!-- <el-color-picker  size="small" show-alpha  :picker-append-to-body="false" popper-class="selectStyle"></el-color-picker> -->
+              <input
+                :default-value="ruleForm.lineColor"
+                v-model="ruleForm.lineColor"
+                type="color"
+                @input="updateData"
+                style="width:168px;"
+              />
+            </el-form-item>
+          </template>
+          <template v-if="ruleForm.tagType==='22'">
+            <el-form-item
+              label="区域颜色:"
+              style="margin-top:10px;"
+              prop="fillColor"
+              class="labelColor"
+            >
+              <input
+                :default-value="ruleForm.fillColor"
+                v-model="ruleForm.fillColor"
+                type="color"
+                style="width:168px;"
+              />
+              <!-- <el-color-picker v-model="ruleForm.fillColor" size="small" show-alpha  :append-to-body="false"  popper-class="selectStyle"></el-color-picker> -->
+            </el-form-item>
+            <el-form-item label="不透明度:" prop="opacity">
+              <el-slider v-model="ruleForm.opacity"></el-slider>
+              <span>{{ruleForm.opacity}}%</span>
+            </el-form-item>
+          </template>
           <el-form-item class="btns">
             <el-button
               type="primary"
@@ -1277,8 +1290,10 @@ export default {
       })
       this.curPositionArray = totalPosition
       this.showMarkForm = true
-      // 设置默认线段类型
-      this.changeSelection()
+      if (this.ruleForm.tagType === '11' || this.ruleForm.tagType === '22') {
+        // 设置默认线段类型
+        this.changeSelection()
+      }
     },
     // 创建元素
     createTag (ruleForm, positionObj) {
@@ -1307,17 +1322,18 @@ export default {
     // 关系方向下拉框改变事件
     changeSelection () {
       const mark = this.ruleForm.lineType
-      // const i = scope.$index
       for (const index in this.lineOption) {
-        const aa = this.lineOption[index]
-        const value = aa.value
+        const item = this.lineOption[index]
+        const value = item.value
         if (mark === value) {
-          this.$refs.aaa.$el.children[0].children[0].setAttribute(
-            'style',
-            'background:url(' +
-              aa.label +
-              ') no-repeat;color:#fff;text-indent: -9999px;background-position: center center'
-          )
+          this.$nextTick(() => {
+            this.$refs.lineSelect.$el.children[0].children[0].setAttribute(
+              'style',
+              'background:url(' +
+                item.label +
+                ') no-repeat;color:#fff;text-indent: -9999px;background-position: center center'
+            )
+          })
         }
       }
     },
@@ -1889,6 +1905,9 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
+  input[type="color"] {
+    border: none;
+  }
   input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
   }
@@ -1907,23 +1926,30 @@ export default {
   .selectStyle {
     position: absolute !important;
     top: 30px !important;
+    left: 0 !important;
   }
   .tagName .el-form-item__content .el-input input {
     border: 1px solid #209cdf;
     background: #102035;
   }
   .selectBg .el-form-item__content .el-input input {
-    background: rgba(0, 57, 87, 0.9);
+    border: 1px solid #209cdf;
+    background: #102035;
+    // background: rgba(0, 57, 87, 0.9);
     color: #fff;
   }
   .selectBg .el-select-dropdown {
-    background: rgba(0, 57, 87, 0.9);
+    background: #313c4f;
+    border: 1px solid #2293d1;
     .el-select-dropdown__item {
       color: #fff;
     }
     .el-select-dropdown__item.hover,
     .el-select-dropdown__item:hover {
-      background: #228ac4;
+      background: #102035;
+    }
+    .popper__arrow {
+      display: none;
     }
   }
 
@@ -2886,7 +2912,7 @@ export default {
     right: 20px;
     top: 158px;
     // transform: translateY(-50%);
-    width: 286px;
+    width: 300px;
     height: 528px;
     background: rgba(16, 32, 53, 0.85);
     border: 1px solid #209cdf;
@@ -2910,7 +2936,7 @@ export default {
     }
     form {
       // margin-top: 20px;
-      padding-left: 14px;
+      padding-left: 18px;
       .el-form-item {
         margin-bottom: 0px;
         .el-form-item__label {
@@ -2919,15 +2945,15 @@ export default {
       }
       .btns {
         position: absolute;
-        bottom: 10px;
+        bottom: 30px;
         right: 30px;
       }
       .labelColor .el-form-item__content {
-        margin-top: 4px;
+        margin-top: 6px;
       }
       .el-slider {
         width: 130px !important;
-        margin-right: 5px !important;
+        margin-right: 10px !important;
         display: inline-block;
         vertical-align: middle;
         .el-slider__runway,
@@ -2937,8 +2963,10 @@ export default {
         .el-slider__button-wrapper {
           height: 33px;
           .el-slider__button {
-            width: 10px;
-            height: 10px;
+            width: 14px;
+            height: 14px;
+            background: #209cdf;
+            border-color: #fff;
           }
         }
       }
@@ -2953,7 +2981,7 @@ export default {
         line-height: 24px;
         > span {
           height: 24px;
-          width:24px;
+          width: 24px;
           background: #00a0e9;
           color: #ffffff;
           border: none;
@@ -2972,9 +3000,9 @@ export default {
             height: 24px;
             background: transparent;
             border: 1px solid #00a0e9;
-            padding-left:24px;
-            padding-right:24px;
-            color:#fff;
+            padding-left: 24px;
+            padding-right: 24px;
+            color: #fff;
           }
         }
       }

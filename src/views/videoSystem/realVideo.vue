@@ -1421,10 +1421,11 @@ export default {
     },
     // 设备下线
     deviceOffline (device) {
+      // 只要有下线
+      if (this.isOnline) {
+        this.selectedIndex = 200
+      }
       if (device.id === this.curSelectedVideo.deviceCode) {
-        if (this.isOnline) {
-          this.selectedIndex = 200
-        }
         this.curSelectedVideo = {}
       }
       this.totalVideosArray.forEach((item, index) => {
