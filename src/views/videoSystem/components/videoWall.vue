@@ -1276,7 +1276,7 @@ export default {
     },
     // 获取位置信息
     getPosition (curPosition) {
-      console.log('前端绘制的坐标', curPosition)
+      console.log('转换之前-前端绘制的坐标', curPosition)
       // if (curPosition.width > 0) {
       const positionArray = JSON.parse(JSON.stringify(curPosition))
       const totalPosition = []
@@ -1288,6 +1288,7 @@ export default {
           // height: Math.round((item.height / 1080) * 720 * 100) / 100
         })
       })
+      console.log('转换之后-前端绘制的坐标', totalPosition)
       this.curPositionArray = totalPosition
       this.showMarkForm = true
       if (this.ruleForm.tagType === '11' || this.ruleForm.tagType === '22') {

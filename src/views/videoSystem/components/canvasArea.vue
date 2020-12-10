@@ -89,17 +89,18 @@ export default {
       }
     },
     drawPolygon (points, bool, item) {
-      console.log('多个点的坐标数据', points)
       const myCanvas = document.getElementById('myCanvas')
       const ctx = myCanvas.getContext('2d')
       const newPoints = []
       if (bool) {
+        console.log('转换之前收到后台的多个点的坐标', points)
         points.forEach(item => {
           newPoints.push({
             left: Math.round((item.left / 1920) * 1280 * 100) / 100,
             top: Math.round((item.top / 1080) * 720 * 100) / 100
           })
         })
+        console.log('转换之后收到后台的多个点的坐标', newPoints)
       }
       // 如果是面，则必须清除之前画布，否则之前绘制的内容存在
       if (this.tagType === '22') {
