@@ -1622,7 +1622,7 @@ export default {
           item.deviceCode === info.deviceCode &&
           item.streamType === info.channelId
         ) {
-          info.arpositionList.forEach(item => {
+          info.arPositionList.forEach(item => {
             if (item.onePointArray) {
               this.$set(
                 this.totalVideosArray[index],
@@ -1645,7 +1645,7 @@ export default {
           item.deviceCode === info.deviceCode &&
           item.streamType === info.channelId
         ) {
-          info.arpositionList.forEach(item => {
+          info.arPositionList.forEach(item => {
             if (item.onePointArray) {
               this.$set(
                 this.curVideosArray[index],
@@ -1668,9 +1668,9 @@ export default {
     //   EventBus.$emit('getArChange', {
     //     deviceCode: '6C01728PA4A9A6F',
     //     channelId: '0',
-    //     arpositionList: [
-    //       { onePointArray: [{ left: 477.33, top: 455.33, labelName: 'label1', label: 1 }, { left: 760, top: 770, labelName: 'label2', label: 1 }] },
-    //       { pointsArray: [{ labelName: 'label1', label: 11, pointsArray: [{ left: 700, top: 100 }, { left: 700, top: 200 }, { left: 800, top: 200 }] }, { labelName: 'label2', label: 22, pointsArray: [{ left: 400, top: 200 }, { left: 400, top: 350 }, { left: 500, top: 300 }] }, { labelName: 'label3', label: 11, pointsArray: [{ left: 700, top: 500 }, { left: 600, top: 100 }, { left: 650, top: 300 }] }] }
+    //     arPositionList: [
+    //       { onePointArray: [{ left: 477.33, top: 455.33, labelName: 'label1', label: 1 }, { left: 500, top: 300, labelName: 'label2', label: 1 }] },
+    //       { pointsArray: [{ labelName: 'label1', label: '11', lineType: '0', pointsArray: [{ left: 700, top: 100 }, { left: 700, top: 200 }, { left: 800, top: 200 }] }, { labelName: 'label2', label: '22', lineType: '3', pointsArray: [{ left: 400, top: 200 }, { left: 400, top: 350 }, { left: 500, top: 300 }] }, { labelName: 'label3', label: '11', lineType: '4', pointsArray: [{ left: 700, top: 500 }, { left: 600, top: 100 }, { left: 650, top: 300 }] }] }
     //     ]
     //   })
     // }, 5000)

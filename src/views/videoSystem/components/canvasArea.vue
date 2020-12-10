@@ -88,60 +88,92 @@ export default {
         this.drawPolygon(points)
       }
     },
-    drawPolygon (points, bool, label) {
+    drawPolygon (points, bool, item) {
+      console.log('多个点的坐标数据', points)
       const myCanvas = document.getElementById('myCanvas')
       const ctx = myCanvas.getContext('2d')
+      const newPoints = []
+      if (bool) {
+        points.forEach(item => {
+          newPoints.push({
+            left: Math.round((item.left / 1920) * 1280 * 100) / 100,
+            top: Math.round((item.top / 1080) * 720 * 100) / 100
+          })
+        })
+      }
       // 如果是面，则必须清除之前画布，否则之前绘制的内容存在
       if (this.tagType === '22') {
         ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       }
-      ctx.strokeStyle = '#0f0'
-      ctx.lineWidth = '3'
-
-      // 修改绘制颜色
-      // ctx.fillStyle = "#ff0";
+      if (bool) {
+        ctx.strokeStyle = item.lineColor || '#0f0'
+        ctx.lineWidth = item.lineWidth || 3
+      } else {
+        ctx.strokeStyle = '#ffde00'
+        ctx.lineWidth = 3
+      }
       ctx.beginPath()
       // 虚线
-      // ctx.setLineDash([6]);
       if (bool) {
-        ctx.moveTo(points[0].left, points[0].top)
+        ctx.setLineDash([item.lineType])
+      } else {
+        ctx.setLineDash([])
+      }
+      if (bool) {
+        ctx.moveTo(newPoints[0].left, newPoints[0].top)
       } else {
         ctx.moveTo(points[0].x, points[0].y)
       }
 
-      for (let i = 1; i < points.length; i++) {
-        if (bool) {
-          ctx.lineTo(points[i].left, points[i].top)
-        } else {
+      if (bool) {
+        for (let i = 1; i < newPoints.length; i++) {
+          ctx.lineTo(newPoints[i].left, newPoints[i].top)
+        }
+      } else {
+        for (let i = 1; i < points.length; i++) {
           ctx.lineTo(points[i].x, points[i].y)
         }
       }
       // 形成闭合 如果是面
-      if (this.tagType === '22' || label === 22) {
+      if (this.tagType === '22' || (bool && item.label === '22')) {
         ctx.closePath()
       }
-      // 绘制空心
-      ctx.stroke()
-      // 绘制实心
-      // ctx.fill();
+      // 绘制空心(前端绘制线和面，及展示线)
+      if (
+        this.tagType === '11' ||
+        (bool && item.label === '11') ||
+        this.tagType === '22'
+      ) {
+        ctx.stroke()
+      }
+      // 绘制实心（展示面）
+      if (bool && item.label === '22') {
+        ctx.fillStyle = item.fillColor || '#00ff48' // 填充颜色
+        ctx.fill()
+      }
       // 若有文字则后绘制不会被覆盖
-      // ctx.fillStyle = "#00f";
-      // ctx.fillText("Hello Canvas", points[0].x, points[0].y);
+      if (bool) {
+        ctx.font = '16px bold 黑体'
+        ctx.fillStyle = '#fff'
+        ctx.fillText(item.labelName, newPoints[0].left, newPoints[0].top)
+      }
       // 下面是单独绘制轮廓线
-      // ctx.strokeStyle = '#0f0';
-      // ctx.lineWidth='3';
-      // ctx.beginPath();
-      // // 虚线
-      // // ctx.setLineDash([6]);
-      // ctx.moveTo(points[0].x,points[0].y);
+      if (bool && item.label === '22') {
+        ctx.strokeStyle = item.lineColor || '#ffde00'
+        ctx.lineWidth = item.lineWidth
+        ctx.beginPath()
+        // 虚线
+        ctx.setLineDash([item.lineType])
+        ctx.moveTo(newPoints[0].left, newPoints[0].top)
 
-      // for(var i=1;i<points.length;i++) {
-      //     ctx.lineTo(points[i].x,points[i].y);
-      // }
-      // // 形成闭合
-      // ctx.closePath();
-      // // 绘制空心
-      // ctx.stroke();
+        for (var i = 1; i < points.length; i++) {
+          ctx.lineTo(newPoints[i].left, newPoints[i].top)
+        }
+        // 形成闭合
+        ctx.closePath()
+        // 绘制空心
+        ctx.stroke()
+      }
     },
     // 鼠标双击结束绘制
     mousedbclick (event) {
@@ -230,7 +262,17 @@ export default {
     // }
     // 十六进制转rgb
     hexToRgba (hex, opacity) {
-      return 'rgba(' + parseInt('0x' + hex.slice(1, 3)) + ',' + parseInt('0x' + hex.slice(3, 5)) + ',' + parseInt('0x' + hex.slice(5, 7)) + ',' + opacity + ')'
+      return (
+        'rgba(' +
+        parseInt('0x' + hex.slice(1, 3)) +
+        ',' +
+        parseInt('0x' + hex.slice(3, 5)) +
+        ',' +
+        parseInt('0x' + hex.slice(5, 7)) +
+        ',' +
+        opacity +
+        ')'
+      )
     }
   },
   watch: {
@@ -317,7 +359,7 @@ export default {
           const ctx = myCanvas.getContext('2d')
           ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
           this.pointsArray.forEach(item => {
-            this.drawPolygon(item.pointsArray, true, item.label)
+            this.drawPolygon(item.pointsArray, true, item)
           })
         }
       },

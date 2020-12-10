@@ -1276,7 +1276,7 @@ export default {
     },
     // 获取位置信息
     getPosition (curPosition) {
-      console.log('收到的绘制坐标信息', curPosition)
+      console.log('前端绘制的坐标', curPosition)
       // if (curPosition.width > 0) {
       const positionArray = JSON.parse(JSON.stringify(curPosition))
       const totalPosition = []
@@ -1319,7 +1319,7 @@ export default {
       div.appendChild(input)
       this.$refs.drawBox.appendChild(div)
     },
-    // 关系方向下拉框改变事件
+    // 线段类型下拉框改变事件
     changeSelection () {
       const mark = this.ruleForm.lineType
       for (const index in this.lineOption) {
@@ -1339,7 +1339,6 @@ export default {
     },
     updateData (val) {
       console.log(this.ruleForm.lineColor)
-      // debugger
     },
     // 表单提交
     submitForm (formName) {
@@ -1360,45 +1359,34 @@ export default {
           // }, 3000)
 
           // this.createTag(this.ruleForm, this.curPositionObj)
-          new MqttService().client.send(
-            'video/add/arAlgorithm',
-            JSON.stringify({
-              deviceCode: this.videoInfo.deviceCode,
-              channelId: this.videoInfo.streamType,
-              streamUrl: this.videoInfo.streamUrl,
-              pointsArray: this.curPositionArray,
-              label: this.ruleForm.tagType,
-              labelName: this.ruleForm.tagName,
-              lineType: 0,
-              lineWidth: 2,
-              lineColor: '#aaa',
-              fillColor: '#0f0',
-              opacity: 1,
-              // x: this.curPositionObj.x,
-              // y: this.curPositionObj.y,
-              // width: this.curPositionObj.width,
-              // height: this.curPositionObj.height,
-              isOpen: 1
-            })
-          )
-          console.log({
+          const params = {
             deviceCode: this.videoInfo.deviceCode,
             channelId: this.videoInfo.streamType,
             streamUrl: this.videoInfo.streamUrl,
             pointsArray: this.curPositionArray,
             label: this.ruleForm.tagType,
             labelName: this.ruleForm.tagName,
-            lineType: 0,
-            lineWidth: 2,
-            lineColor: '#aaa',
-            fillColor: '#0f0',
-            opacity: 1,
             // x: this.curPositionObj.x,
             // y: this.curPositionObj.y,
             // width: this.curPositionObj.width,
             // height: this.curPositionObj.height,
             isOpen: 1
-          })
+          }
+          if (this.ruleForm.tagType === '11' || this.ruleForm.tagType === '22') {
+            params.lineType = this.ruleForm.lineType
+            params.lineWidth = this.ruleForm.lineWidth
+            params.lineColor = this.ruleForm.lineColor
+          }
+          if (this.ruleForm.tagType === '22') {
+            params.fillColor = this.ruleForm.fillColor
+            params.opacity = this.ruleForm.opacity
+          }
+          new MqttService().client.send(
+            'video/add/arAlgorithm',
+            JSON.stringify(params)
+          )
+          console.log('添加时传给后台的数据', params)
+          console.log('添加时传给后台的坐标', this.curPositionArray)
           this.resetForm('ruleForm')
         } else {
           console.log('error submit!!')
@@ -1931,6 +1919,7 @@ export default {
   .tagName .el-form-item__content .el-input input {
     border: 1px solid #209cdf;
     background: #102035;
+    color: #fff;
   }
   .selectBg .el-form-item__content .el-input input {
     border: 1px solid #209cdf;
