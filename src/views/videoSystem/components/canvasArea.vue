@@ -96,8 +96,8 @@ export default {
         console.log('转换之前收到后台的多个点的坐标', points)
         points.forEach(item => {
           newPoints.push({
-            left: Math.round((item.left / 1920) * 1280 * 100) / 100,
-            top: Math.round((item.top / 1080) * 720 * 100) / 100
+            left: Math.round((item.left / 1280) * 1920 * 100) / 100,
+            top: Math.round((item.top / 720) * 1080 * 100) / 100
           })
         })
         console.log('转换之后收到后台的多个点的坐标', newPoints)
@@ -107,7 +107,7 @@ export default {
         ctx.clearRect(0, 0, myCanvas.width, myCanvas.height)
       }
       if (bool) {
-        ctx.strokeStyle = item.lineColor || '#0f0'
+        ctx.strokeStyle = item.lineColor || '#ffde00'
         ctx.lineWidth = item.lineWidth || 3
       } else {
         ctx.strokeStyle = '#ffde00'
@@ -154,9 +154,10 @@ export default {
       }
       // 若有文字则后绘制不会被覆盖
       if (bool) {
-        ctx.font = '16px bold 黑体'
+        ctx.font = '18px bold Source Han Sans CN'
         ctx.fillStyle = '#fff'
-        ctx.fillText(item.labelName, newPoints[0].left, newPoints[0].top)
+        ctx.textBaseline = 'bottom'
+        ctx.fillText(item.labelName, newPoints[0].left, newPoints[0].top - 3)
       }
       // 下面是单独绘制轮廓线
       if (bool && item.label === '22') {

@@ -1629,12 +1629,24 @@ export default {
                 'onePointArray',
                 item.onePointArray
               )
+            } else {
+              this.$set(
+                this.totalVideosArray[index],
+                'onePointArray',
+                []
+              )
             }
             if (item.pointsArray) {
               this.$set(
                 this.totalVideosArray[index],
                 'pointsArray',
                 item.pointsArray
+              )
+            } else {
+              this.$set(
+                this.totalVideosArray[index],
+                'pointsArray',
+                []
               )
             }
           })
@@ -1652,12 +1664,24 @@ export default {
                 'onePointArray',
                 item.onePointArray
               )
+            } else {
+              this.$set(
+                this.curVideosArray[index],
+                'onePointArray',
+                []
+              )
             }
             if (item.pointsArray) {
               this.$set(
                 this.curVideosArray[index],
                 'pointsArray',
                 item.pointsArray
+              )
+            } else {
+              this.$set(
+                this.curVideosArray[index],
+                'pointsArray',
+                []
               )
             }
           })

@@ -481,7 +481,12 @@
           class="demo-ruleForm"
           label-position="left"
         >
-          <el-form-item label="标签类型:" prop="tagType" class="selectBg" :style="{marginBottom:ruleForm.tagType==='11'||ruleForm.tagType==='22'?'6px':'16px'}">
+          <el-form-item
+            label="标签类型:"
+            prop="tagType"
+            class="selectBg"
+            :style="{marginBottom:ruleForm.tagType==='11'||ruleForm.tagType==='22'?'6px':'16px'}"
+          >
             <template
               v-if="ruleForm.tagType==='0'||ruleForm.tagType==='1'||ruleForm.tagType==='2'||ruleForm.tagType==='3'||ruleForm.tagType==='4'"
             >
@@ -502,7 +507,7 @@
             </template>
             <span v-else>{{ruleForm.tagType==='11'?'自定义线段':ruleForm.tagType==='22'?'自定义区域':'-'}}</span>
           </el-form-item>
-           <el-form-item label="标签名称:" prop="tagName" class="tagName">
+          <el-form-item label="标签名称:" prop="tagName" class="tagName">
             <el-input
               v-model.trim="ruleForm.tagName"
               placeholder="请输入标签名称"
@@ -1018,6 +1023,14 @@ export default {
     // 显示标签弹框
     showTagType () {
       this.showCurindex = 4
+      // 开启ar标记
+      new MqttService().client.send(
+        'video/webStartArMark',
+        JSON.stringify({
+          deviceCode: this.videoInfo.deviceCode,
+          channelId: this.videoInfo.streamType
+        })
+      )
       // 关闭AR
       new MqttService().client.send(
         'video/stop/arAlgorithm',
@@ -1373,7 +1386,10 @@ export default {
             // height: this.curPositionObj.height,
             isOpen: 1
           }
-          if (this.ruleForm.tagType === '11' || this.ruleForm.tagType === '22') {
+          if (
+            this.ruleForm.tagType === '11' ||
+            this.ruleForm.tagType === '22'
+          ) {
             params.lineType = this.ruleForm.lineType
             params.lineWidth = this.ruleForm.lineWidth
             params.lineColor = this.ruleForm.lineColor
@@ -1614,14 +1630,16 @@ export default {
       // 鼠标按下每隔一秒通知后台获取云台信息
       if (this.showAR) {
         this.timer = setInterval(() => {
+          if (this.showCurindex !== 4) {
           // 按住期间执行的代码
-          new MqttService().client.send(
-            'video/webControlPzt',
-            JSON.stringify({
-              deviceCode: this.videoInfo.deviceCode,
-              channelId: this.videoInfo.streamType
-            })
-          )
+            new MqttService().client.send(
+              'video/webControlPzt',
+              JSON.stringify({
+                deviceCode: this.videoInfo.deviceCode,
+                channelId: this.videoInfo.streamType
+              })
+            )
+          }
           // 更新坐标角度
           this.getPtzInfo()
         }, 2000)
@@ -1751,15 +1769,18 @@ export default {
         this.timer = null
         // 显示角度
         this.getPtzInfo()
+        if (this.showCurindex !== 4) {
+          // 通知后台获取云台信息
+          new MqttService().client.send(
+            'video/webControlPzt',
+            JSON.stringify({
+              deviceCode: this.videoInfo.deviceCode,
+              channelId: this.videoInfo.streamType
+            })
+          )
+        }
       }
-      // 通知后台获取云台信息
-      new MqttService().client.send(
-        'video/webControlPzt',
-        JSON.stringify({
-          deviceCode: this.videoInfo.deviceCode,
-          channelId: this.videoInfo.streamType
-        })
-      )
+
       const params = {
         device_id: this.videoInfo.deviceCode,
         channel_id: this.videoInfo.streamType,
