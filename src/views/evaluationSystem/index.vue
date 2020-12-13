@@ -1,20 +1,14 @@
 <template>
   <div :style="'height:' + fullHeight + 'px;'" style="position: relative">
-    <gMap
-      ref="gduMap"
-      :bShowBasic="false"
-      :bShowMeasure="false"
-      :bShowLonLat="false"
-    ></gMap>
+    <gMap ref="gduMap" :bShowBasic="false" :bShowMeasure="false" :bShowLonLat="false"></gMap>
     <!-- 案件列表 -->
-    <CaseList class="case-list"></CaseList>
+    <CaseList class="case-list" @getTodayCaseDone="getTodayCaseDone"></CaseList>
   </div>
 </template>
 
 <script>
 import videoMixin from '../videoSystem/mixins/videoMixin'
 import riverMixin from '../decisionSystem/riverMixin'
-import { EventBus } from '@/utils/eventBus.js'
 import createVueCompFunc from '@/utils/createVueComp'
 import droneInfo from './droneBox'
 import CaseList from './components/caseList'
@@ -51,7 +45,7 @@ export default {
       }
       if (dev.isOnline && dev.children && dev.children.length > 0) {
         dev.urls = []
-        dev.children.forEach((l) => {
+        dev.children.forEach(l => {
           dev.urls.push(l.streamUrl)
         })
       }
@@ -97,7 +91,16 @@ export default {
      */
     createDroneInfoCom (props) {
       return createVueCompFunc(droneInfo, props)
+    },
+    /**
+     *  获取案件列表完毕
+     */
+    getTodayCaseDone (files) {
+      this.showRpDatas(files)
     }
+  },
+  created () {
+    this.isDispatch = true
   },
   mounted () {
     this.$refs.gduMap.map2D._dispatchCenterManager.setCreateVueCompFunc(
@@ -108,19 +111,19 @@ export default {
       me.setMapHeight()
     }
     this.setMapHeight()
-    const tmpWarn = {
-      id: '6dddef0f25758f86db0b7281b0c2efa8',
-      caseNo: '2020092922678',
-      reportTel: '15672675664',
-      reportAddr: '汉口江滩',
-      reportTime: '2020-10-06 11:00:00',
-      caseDesc: null,
-      longitude: 114.316317,
-      latitude: 30.606778
-    }
-    setTimeout(() => {
-      EventBus.$emit('addNewWarningSuccess', tmpWarn)
-    }, 5000)
+    // const tmpWarn = {
+    //   id: '6dddef0f25758f86db0b7281b0c2efa8',
+    //   caseNo: '2020092922678',
+    //   reportTel: '15672675664',
+    //   reportAddr: '汉口江滩',
+    //   reportTime: '2020-10-06 11:00:00',
+    //   caseDesc: null,
+    //   longitude: 114.316317,
+    //   latitude: 30.606778
+    // }
+    // setTimeout(() => {
+    //   EventBus.$emit('addNewWarningSuccess', tmpWarn)
+    // }, 5000)
   },
   beforeDestroy () {
     window.onresize = null

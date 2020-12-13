@@ -5,7 +5,8 @@ const riverMixin = {
     return {
       warningList: [],
       deptList: [],
-      policeList: []
+      policeList: [],
+      isDispatch: false // 是否是调度中心页面
     }
   },
 
@@ -19,8 +20,7 @@ const riverMixin = {
         this.showRpDatas([data])
       }
     })
-
-    this.getWarningList()
+    if (!this.isDispatch) { this.getWarningList() }
     this.getDeptList()
     this.getPoliceList()
   },

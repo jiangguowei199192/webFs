@@ -168,10 +168,14 @@ export default {
                 mainRecord: item.importantRecord,
                 handleResult: item.dispositionRecord,
                 handleTime: item.dispositionTime,
-                handlePeople: item.dispositionMan
+                handlePeople: item.dispositionMan,
+                type: 'RP_Warning',
+                latitude: item.latitude,
+                longitude: item.longitude
               }
               this.todayCaseInfos.push(info)
             })
+            this.$emit('getTodayCaseDone', this.todayCaseInfos)
           }
         })
         .catch((err) => {
