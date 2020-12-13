@@ -212,7 +212,7 @@ export default {
         .then((res) => {
           console.log('警情信息接口返回: ', res)
           if (res && res.data && res.data.code === 0) {
-            const tempData = res.data.data.records
+            const tempData = res.data.data.records.filter(r => r.caseStatus === '未处置')
             tempData.forEach((item, index) => {
               const info = {
                 id: item.id,
