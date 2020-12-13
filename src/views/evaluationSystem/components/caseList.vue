@@ -4,7 +4,7 @@
  * @Author: liangkaiLee
  * @Date: 2020-12-13 13:50:41
  * @LastEditors: liangkaiLee
- * @LastEditTime: 2020-12-13 18:09:31
+ * @LastEditTime: 2020-12-13 20:28:26
 -->
 <template>
   <div>
@@ -42,11 +42,11 @@
             />
           </div>
           <div class="item_center">
-            <div class="left fl">
-              <img
-                src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2057769,1359025679&fm=26&gp=0.jpg"
-                alt=""
-              />
+            <div class="left fl" v-if="case_item.img || case_item.img !== null">
+              <img :src="case_item.img" alt="" />
+            </div>
+            <div class="left fl" v-else>
+              <img :src="caseImage" alt="" />
             </div>
             <div class="right fr">
               <p>
@@ -59,7 +59,9 @@
           </div>
           <div class="item_bottom">
             <span class="btn_dispatch">分派</span>
-            <span class="btn_complete">处置完成</span>
+            <span class="btn_complete" @click.stop="handleBoxShow"
+              >处置完成</span
+            >
           </div>
         </div>
       </div>
@@ -103,11 +105,59 @@
         </div>
       </div>
     </div>
+    <!-- 处置结果弹框 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="handleBoxVisible"
+      width="960px"
+      class="handel_box"
+    >
+      <div>
+        <div class="handel_header">处置结果</div>
+        <el-form
+          ref="handleRef"
+          :model="handleForm"
+          label-width="90px"
+          :inline="true"
+          :rules="handleRules"
+          style="margin-top: 30px; margin-left: 46px; margin-right: 50px"
+        >
+          <el-form-item label="处置结果" prop="record" class="textarea">
+            <el-input
+              placeholder="请输入...."
+              type="textarea"
+              v-model="handleForm.record"
+            ></el-input> </el-form-item
+          ><br />
+          <el-form-item label="处置时间" prop="time" class="input">
+            <el-date-picker
+              v-model="handleForm.time"
+              type="datetime"
+              placeholder="请选择"
+              class="timeStyle"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="处置人" prop="people" class="input">
+            <el-input
+              placeholder="请输入"
+              v-model="handleForm.people"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="handle_bottom">
+          <div class="btn_cancel" @click.stop="closeHandleBox">取消</div>
+          <div class="btn_confirm" @click.stop="submitHandleAdd">确定</div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { caseListApi } from '@/api/case'
+import globalApi from '@/utils/globalApi'
+import axios from 'axios'
 
 export default {
   name: 'caseList',
@@ -122,10 +172,21 @@ export default {
       timeImg: require('../../../assets/images/control/time.png'),
       //   位置icon
       placeImg: require('../../../assets/images/control/place.png'),
-
+      caseImage: require('../../../assets/images/control/case.png'),
       // 今日案件信息
       todayCaseInfos: [],
-      chatBoxVisible: false
+      chatBoxVisible: false,
+      handleBoxVisible: false,
+      handleForm: {
+        record: '',
+        time: '',
+        people: ''
+      },
+      handleRules: {
+        record: [{ required: true, message: '请输入处置记录' }],
+        time: [{ required: true, message: '请选择处置时间' }],
+        people: [{ required: true, message: '请输入处置人' }]
+      }
     }
   },
 
@@ -160,6 +221,7 @@ export default {
                 source: item.infoSource,
                 people: item.reportMan,
                 phone: item.reportTel,
+                img: item.caseImg,
                 address: item.reportAddr,
                 time: item.reportTime,
                 belong: item.caseBelong,
@@ -176,11 +238,31 @@ export default {
               this.todayCaseInfos.push(info)
             })
             this.$emit('getTodayCaseDone', this.todayCaseInfos)
+            // this.getCaseImg()
           }
         })
         .catch((err) => {
           console.log('接口错误: ' + err)
         })
+    },
+
+    getCaseImg () {
+      const _this = this
+      this.$nextTick(() => {
+        if (_this.todayCaseInfos.img || _this.todayCaseInfos.img !== null) {
+          _this.todayCaseInfos.forEach((item) => {
+            console.log(item)
+            axios
+              .get(globalApi.headImg + item.img)
+              .then((res) => {
+                console.log('获取的图片: ', res)
+              })
+              .catch((err) => {
+                console.log('加载json数据失败: ' + err)
+              })
+          })
+        }
+      })
     },
 
     chatBoxShow () {
@@ -191,6 +273,27 @@ export default {
     closeChatBox () {
       this.chatDialogVisible = false
       console.log(this.chatDialogVisible)
+    },
+
+    handleBoxShow () {
+      this.handleBoxVisible = true
+    },
+    closeHandleBox () {
+      this.handleBoxVisible = false
+    },
+    submitHandleAdd () {
+      this.$refs.handleRef.validate((valid) => {
+        if (!valid) return
+        this.$notify.success({
+          title: '提示',
+          message: '新增成功!',
+          duration: 2 * 1000
+        })
+        setTimeout(() => {
+          this.handleBoxVisible = false
+        }, 800)
+        this.handleForm = {}
+      })
     }
   }
 }
@@ -377,6 +480,88 @@ export default {
         margin-right: 20px;
       }
     }
+  }
+}
+
+.handel_box.el-dialog__wrapper {
+  /deep/.el-dialog {
+    .el-dialog__header {
+      display: none;
+    }
+    background: transparent;
+    .el-dialog__body {
+      display: inline-block;
+      padding: 0px;
+      width: 100%;
+      height: 360px;
+      background: url(../../../assets/images/policeHistory/handleBox.png)
+        no-repeat center/100% 100%;
+      .handel_header {
+        width: 165px;
+        height: 34px;
+        line-height: 34px;
+        background: url(../../../assets/images/header-bg.png) no-repeat
+          center/100%;
+        padding-left: 15px;
+        margin: 15px 0 0 15px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+      }
+      .textarea {
+        .el-textarea__inner {
+          width: 760px;
+          height: 86px;
+          border: 1px solid #0fbfe0;
+          background-color: transparent;
+          color: rgb(243, 243, 243);
+        }
+      }
+      .input {
+        .el-input__inner {
+          width: 760px;
+          color: white;
+          border: solid 1px #0fbfe0;
+          background-color: transparent;
+        }
+      }
+      .el-form-item__label {
+        color: #0fbfe0;
+        font-size: 15px;
+      }
+      .label1 {
+        margin-left: 40px;
+      }
+      .timeStyle {
+        width: 310px;
+      }
+    }
+  }
+}
+.handle_bottom {
+  padding: 0 40px;
+  display: flex;
+  justify-content: flex-end;
+  .btn_confirm,
+  .btn_cancel {
+    display: block;
+    width: 87px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border: 1px solid #1eb0fc;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .btn_confirm {
+    background: #1eb0fc;
+    color: #fff;
+  }
+  .btn_cancel {
+    background: transparent;
+    color: #1eb0fc;
+    margin-right: 20px;
   }
 }
 </style>
