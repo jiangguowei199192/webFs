@@ -13,7 +13,7 @@
               <span>{{ item.content }}</span>
             </div>
             <template>
-              <div class="status" v-if="index == 1">
+              <div class="status" v-if="index == 2">
                 <el-button
                   type="primary"
                   :class="{ activeStatus: curActive == 1 }"
@@ -28,10 +28,10 @@
             </template>
           </div>
         </div>
-        <div :class="this.isChecked ? 'activeClass' : 'about'" @click.stop="goToAboutUs()">
+        <!-- <div :class="this.isChecked ? 'activeClass' : 'about'" @click.stop="goToAboutUs()">
           <img :src="this.isChecked ? aboutImgCkSrc : aboutImgSrc" alt />
           <p>关于我们</p>
-        </div>
+        </div> -->
 
         <div class="cur">
           <div class="realTime">
@@ -50,7 +50,7 @@
             </template>
           </div>
         </div>
-        <audio src="./audio.mp3" ></audio>
+        <audio src="./audio.mp3"></audio>
       </el-header>
       <el-main :style="machineMainStyle($route.path)">
         <!-- <router-view /> -->
@@ -83,20 +83,20 @@ export default {
           content: '可视化调度'
         },
         {
-          content: '视频侦查'
+          content: '调度中心'
         },
         {
-          content: '评战系统'
+          content: '视频侦查'
         },
         {
           content: '消防救援现场指挥系统'
         },
 
         {
-          content: '预警历史'
+          content: '案件中心'
         },
         {
-          content: '数字化装备'
+          content: '信息要闻'
         },
         {
           content: '系统设置'
@@ -164,7 +164,7 @@ export default {
   },
   mounted () {
     // 火情火点
-    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', (info) => {
+    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', info => {
       this.$notify.warning({ title: '警告', message: '发现火点火情！' })
       this.$nextTick(() => {
         document.querySelector('audio').play()
@@ -180,7 +180,9 @@ export default {
     // eslint-disable-next-line no-unused-vars
     this.mqtt = new MqttService()
     // 如果mqtt已经创建过
-    if (this.mqtt.created) { this.mqtt.mqttConnect() }
+    if (this.mqtt.created) {
+      this.mqtt.mqttConnect()
+    }
     // 获取飞机实时信息所需订阅主题
     this.getRealtimeInfoTopics()
   },
@@ -191,7 +193,7 @@ export default {
   methods: {
     // 路由发生变化
     machineMainStyle (path) {
-      if (path === '/decisionSystem') {
+      if (path === '/decisionSystem' || path === '/evaluationSystem') {
         return {
           margin: '-65px 0px 0px 0px'
         }
@@ -206,7 +208,7 @@ export default {
       if (this.$route.path === '/playback') {
         this.curActive = 2
       } else if (this.$route.path === '/videoSystem') {
-        this.isActive = 1
+        this.isActive = 2
         this.curActive = 1
       } else if (this.$route.path === '/digitalIndividual') {
         this.isActive = 4
@@ -216,14 +218,14 @@ export default {
     jumpTo (index) {
       if (index !== 3) {
         if (index === 0) this.$router.push({ path: '/decisionSystem' })
-        else if (index === 1) {
+        else if (index === 2) {
           this.jumpToVideoUrl(this.curActive)
-        } else if (index === 2) {
+        } else if (index === 1) {
           this.$router.push({ path: '/evaluationSystem' })
         } else if (index === 4) {
           this.$router.push({ path: '/digitalIndividual' })
         } else if (index === 5) {
-          this.$router.push({ path: '/digitalEquipment' })
+          this.goToAboutUs()
         } else if (index === 6) this.$router.push({ path: '/systemSettings' })
         this.isActive = index
       }
@@ -268,7 +270,9 @@ export default {
                   res2.data.data.forEach(deptCode => {
                     tmpThis.realtimeInfoTopicArray.push('gdu/' + deptCode)
                   })
-                  tmpThis.realtimeInfoTopicArray.unshift('gdu/' + res.data.data.deptCode)
+                  tmpThis.realtimeInfoTopicArray.unshift(
+                    'gdu/' + res.data.data.deptCode
+                  )
                 }
               })
               .catch(err2 => {
@@ -385,14 +389,14 @@ export default {
     div.list:nth-child(n + 5) .active {
       background: url(../assets/images/selected-right.png) no-repeat !important;
     }
-    div.list:nth-child(3),
-    div.list:nth-child(6) {
-      display: none;
-    }
-    div.list:nth-child(1),
-    div.list:nth-child(5) {
-      margin-right: 40px;
-    }
+    // div.list:nth-child(3),
+    // div.list:nth-child(6) {
+    //   display: none;
+    // }
+    // div.list:nth-child(1),
+    // div.list:nth-child(5) {
+    //   margin-right: 40px;
+    // }
   }
   .about {
     // width: 100px;
