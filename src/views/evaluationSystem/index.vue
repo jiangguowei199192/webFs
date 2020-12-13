@@ -110,7 +110,13 @@ export default {
     setTimeout(() => {
       EventBus.$emit('addNewWarningSuccess', tmpWarn)
     }, 5000)
+  },
+  beforeDestroy () {
+    window.onresize = null
+    // 销毁时，清空图层数据
+    this.$refs.gduMap.map2D._dispatchCenterManager.removeAll()
   }
+
 }
 </script>
 
