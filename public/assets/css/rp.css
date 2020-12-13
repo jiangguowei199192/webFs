@@ -104,3 +104,118 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.rpInfoBox {
+  width: 330px;
+  padding: 0px 14px;
+  border: 1px solid #1EB0FC;
+  background-color: #121E3AD8;
+  color: #FFFFFF;
+  font-size: 14px; 
+}
+
+.rpInfoBox .titleBox{
+  height: 35px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #1EB0FC;
+}
+
+.rpInfoBox .ulBox{
+  padding: 7px 0px;
+}
+
+.rpInfoBox .ulBox ul li {
+  word-break: break-all;
+}
+
+.rpInfoBox .titleBox span:nth-child(1)
+{
+  position: absolute;
+  width: 21px;
+  height: 16px;
+  top:10px;
+  background-image: url('../images/rpTitleImg.png');
+}
+
+.rpInfoBox .titleBox span:nth-child(2)
+{
+  position: absolute;
+  line-height: 35px;
+  left: 48px;
+}
+
+.rpInfoBox .titleBox span:nth-child(3)
+{
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top:11px;
+  right: 11px;
+  background-image: url('../images/close.png');
+  cursor: pointer;
+}
+
+.rpInfoBox .ulBox ul li span {
+  line-height: 30px;
+}
+
+.rpInfoBox .phoneBox, .rpInfoBox .assignBox
+{
+  position: relative;
+  display: inline-block;
+  width: 82px;
+  height: 28px;
+  background: #1EB0FC;
+  margin-bottom: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 18px;
+}
+
+.rpInfoBox .phoneBox span:nth-child(1), .rpInfoBox .assignBox span:nth-child(1)
+{
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 4px;
+  left: 6px;
+  background-image: url('../images/phone.png');
+}
+
+.rpInfoBox .assignBox span:nth-child(1){
+  background-image: url('../images/people.png');
+}
+
+.rpInfoBox .phoneBox span:nth-child(2),.rpInfoBox .assignBox span:nth-child(2)
+{
+  position: absolute;
+  line-height: 28px;
+  left: 39px;
+}
+
+.rpInfoBox .numberBox span:nth-child(2),.rpInfoBox .numberBox span:nth-child(5)
+{
+  color: #66FF00;
+  font-size: 18px;
+}
+
+.rpInfoBox .numberBox span:nth-child(4)
+{
+  margin-left: 48px;
+}
+
+/* overlay在最上层 */
+.ol-overlaycontainer-stopevent {
+  z-index: 100 !important;
+}
+
+.rpDivBoxComm .rpTitleBox span:nth-child(3)
+{
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top:11px;
+  right: 11px;
+  background-image: url('../images/close.png');
+  cursor: pointer;
+}
