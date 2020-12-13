@@ -1,6 +1,13 @@
 <template>
-  <div :style="'height:'+fullHeight+'px;'">
-    <gMap ref="gduMap" :bShowBasic="false" :bShowMeasure="false" :bShowLonLat="false"></gMap>
+  <div :style="'height:' + fullHeight + 'px;'" style="position: relative">
+    <gMap
+      ref="gduMap"
+      :bShowBasic="false"
+      :bShowMeasure="false"
+      :bShowLonLat="false"
+    ></gMap>
+    <!-- 案件列表 -->
+    <CaseList class="case-list"></CaseList>
   </div>
 </template>
 
@@ -10,8 +17,12 @@ import riverMixin from '../decisionSystem/riverMixin'
 import { EventBus } from '@/utils/eventBus.js'
 import createVueCompFunc from '@/utils/createVueComp'
 import droneInfo from './droneBox'
+import CaseList from './components/caseList'
+
 export default {
   name: 'evaluation',
+  components: { CaseList },
+
   data () {
     return {
       minHeight: 901,
@@ -40,7 +51,7 @@ export default {
       }
       if (dev.isOnline && dev.children && dev.children.length > 0) {
         dev.urls = []
-        dev.children.forEach(l => {
+        dev.children.forEach((l) => {
           dev.urls.push(l.streamUrl)
         })
       }
@@ -58,11 +69,11 @@ export default {
     },
     // 显示高点设备和无人机设备
     getAllDeviceDoneCallback (cameraDevs, droneDevs) {
-      cameraDevs.forEach(dev => {
+      cameraDevs.forEach((dev) => {
         this.handerVideoDevice(dev)
       })
       this.showRpDatas(cameraDevs)
-      droneDevs.forEach(dev => {
+      droneDevs.forEach((dev) => {
         this.handerVideoDevice(dev)
       })
       this.showRpDatas(droneDevs)
@@ -116,9 +127,13 @@ export default {
     // 销毁时，清空图层数据
     this.$refs.gduMap.map2D._dispatchCenterManager.removeAll()
   }
-
 }
 </script>
 
 <style lang="scss" scoped>
+.case-list {
+  position: absolute;
+  left: 20px;
+  top: 50px;
+}
 </style>
