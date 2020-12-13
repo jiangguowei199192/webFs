@@ -221,7 +221,7 @@ export default {
                 source: item.infoSource,
                 people: item.reportMan,
                 phone: item.reportTel,
-                img: item.caseImg,
+                img: globalApi.headImg + item.caseImg,
                 address: item.reportAddr,
                 time: item.reportTime,
                 belong: item.caseBelong,
