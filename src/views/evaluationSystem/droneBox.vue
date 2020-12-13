@@ -5,7 +5,7 @@
       <span>{{dataInfo.title}}</span>
       <span @click="close"></span>
     </div>
-    <div class="playerBox">
+    <div class="playerBox" @dblclick="showDialog">
       <LivePlayer
         v-if="isOnline"
         ref="playerCtrl"
@@ -39,6 +39,29 @@
         </li>
       </ul>
     </div>
+    <el-dialog
+      custom-class="el-dialog-custom"
+      :visible.sync="dialogVisible"
+      :show-close="false"
+      center
+      :append-to-body="true"
+    >
+      <LivePlayer
+        v-if="isOnline"
+        ref="playerCtrl"
+        :videoUrl="streamUrl"
+        :show-custom-button="false"
+        :muted="false"
+        :controls="false"
+        :autoplay="true"
+        oncontextmenu="return false"
+        fluent
+        :stretch="true"
+        :live="true"
+        aspect="fullscreen"
+        :poster="poster"
+      ></LivePlayer>
+    </el-dialog>
   </div>
 </template>
 
@@ -50,7 +73,8 @@ export default {
     return {
       streamUrl: '',
       isOnline: false,
-      poster: require('../../assets/images/loading.gif')
+      poster: require('../../assets/images/loading.gif'),
+      dialogVisible: false
     }
   },
   props: {
@@ -62,9 +86,21 @@ export default {
     LivePlayer
   },
   mounted () {
-    if (this.dataInfo.urls && this.dataInfo.urls.length > 0) { this.streamUrl = this.dataInfo.urls[0] }
+    if (this.dataInfo.urls && this.dataInfo.urls.length > 0) {
+      this.streamUrl = this.dataInfo.urls[0]
+    }
   },
   methods: {
+    /**
+     *  显示视频放大对话框窗口
+     */
+    showDialog () {
+      if (!this.isOnline) return
+      this.dialogVisible = true
+    },
+    /**
+     *  关闭vue overlay
+     */
     close () {
       if (this.closeOverlay) {
         this.closeOverlay()
@@ -73,6 +109,9 @@ export default {
     updateDroneOnlineStatus (online) {
       this.isOnline = online
     },
+    /**
+     *  切换视频（高点监控可见光/红外切换）
+     */
     changeStream () {
       const url = this.dataInfo.urls.find(u => u !== this.streamUrl)
       this.streamUrl = url
