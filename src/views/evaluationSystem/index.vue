@@ -8,6 +8,8 @@
 import videoMixin from '../videoSystem/mixins/videoMixin'
 import riverMixin from '../decisionSystem/riverMixin'
 import { EventBus } from '@/utils/eventBus.js'
+import createVueCompFunc from '@/utils/createVueComp'
+import droneInfo from './droneBox'
 export default {
   name: 'evaluation',
   data () {
@@ -19,6 +21,7 @@ export default {
   mixins: [videoMixin, riverMixin],
   methods: {
     setMapHeight () {
+      if (!this.$refs.gduMap) return
       const tmpMap = this.$refs.gduMap.map2D
       var h = document.documentElement.clientHeight - 96
       if (h < this.minHeight) this.fullHeight = this.minHeight
@@ -29,11 +32,19 @@ export default {
     },
     // 处理数据，便于地图组件加载显示
     handerVideoDevice (dev) {
+      dev.isOnline = dev.onlineStatus === 'online'
       if (dev.deviceTypeCode === 'GDJK') {
         dev.type = 'RP_Camera'
       } else if (dev.deviceTypeCode === 'WRJ') {
         dev.type = 'RP_Drone'
       }
+      if (dev.isOnline && dev.children && dev.children.length > 0) {
+        dev.urls = []
+        dev.children.forEach(l => {
+          dev.urls.push(l.streamUrl)
+        })
+      }
+
       dev.name = dev.label
       dev.address = dev.deviceAddress
       dev.brand = dev.deviceBrand
@@ -58,6 +69,7 @@ export default {
     },
     // 显示长江大保护数据层信息
     showRpDatas (tmpDatas) {
+      if (!this.$refs.gduMap) return
       this.$refs.gduMap.map2D._dispatchCenterManager.addRpDatas(tmpDatas)
       if (tmpDatas.length > 0) {
         if (this.$refs.gduMap !== undefined) {
@@ -68,9 +80,18 @@ export default {
           this.$refs.gduMap.map2D.setZoom(12)
         }
       }
+    },
+    /**
+     *  动态创建droneInfo组件
+     */
+    createDroneInfoCom (props) {
+      return createVueCompFunc(droneInfo, props)
     }
   },
   mounted () {
+    this.$refs.gduMap.map2D._dispatchCenterManager.setCreateVueCompFunc(
+      this.createDroneInfoCom
+    )
     const me = this
     window.onresize = () => {
       me.setMapHeight()

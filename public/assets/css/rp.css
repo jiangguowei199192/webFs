@@ -7,6 +7,7 @@
   font-size: 14px;
   cursor: default;
 }
+
 /*详情弹窗倒立小三角样式*/
 .rpInvertedTriangle:after, .rpInvertedTriangle:before {
   top: 100%;
@@ -209,7 +210,7 @@
   z-index: 100 !important;
 }
 
-.rpDivBoxComm .rpTitleBox span:nth-child(3)
+.closeBox .rpTitleBox span:nth-child(3)
 {
   position: absolute;
   width: 12px;
