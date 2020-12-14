@@ -154,7 +154,7 @@ export default {
       }
       // 若有文字则后绘制不会被覆盖
       if (bool) {
-        ctx.font = '18px bold Source Han Sans CN'
+        ctx.font = '16px bold Source Han Sans CN'
         ctx.fillStyle = '#fff'
         ctx.textBaseline = 'bottom'
         ctx.fillText(item.labelName, newPoints[0].left, newPoints[0].top - 3)

@@ -350,7 +350,7 @@
         <div class="vertical">
           <span>180</span>
           <div
-            :style="{top:verticalValue< 0 ? 73 + String(verticalValue).slice(1) / 180 * 80 +'px': (73 - verticalValue / 180 * 80)+'px'}"
+            :style="{top:verticalValue< 0 ? 74 + String(verticalValue).slice(1) / 180 * 80 +'px': (74 - verticalValue / 180 * 80)+'px'}"
           >
             <div>{{verticalValue>=0?verticalValue:String(verticalValue).slice(1)}}</div>
             <img :src="rightPic" />
@@ -1767,18 +1767,20 @@ export default {
         // 停止定时器
         clearInterval(this.timer)
         this.timer = null
-        // 显示角度
-        this.getPtzInfo()
-        if (this.showCurindex !== 4) {
+        setTimeout(() => {
+          // 显示角度
+          this.getPtzInfo()
+          if (this.showCurindex !== 4) {
           // 通知后台获取云台信息
-          new MqttService().client.send(
-            'video/webControlPzt',
-            JSON.stringify({
-              deviceCode: this.videoInfo.deviceCode,
-              channelId: this.videoInfo.streamType
-            })
-          )
-        }
+            new MqttService().client.send(
+              'video/webControlPzt',
+              JSON.stringify({
+                deviceCode: this.videoInfo.deviceCode,
+                channelId: this.videoInfo.streamType
+              })
+            )
+          }
+        }, 500)
       }
 
       const params = {
@@ -2046,7 +2048,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: text;
-        a {
+        a{
           position: relative;
           display: inline-block;
           width: 40px;
@@ -2065,6 +2067,9 @@ export default {
             width: 200px;
             height: 200px;
           }
+        }
+        a:last-child{
+          margin-right:0;
         }
       }
       .realPoliceInfo {
