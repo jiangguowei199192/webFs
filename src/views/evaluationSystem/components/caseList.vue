@@ -4,7 +4,7 @@
  * @Author: liangkaiLee
  * @Date: 2020-12-13 13:50:41
  * @LastEditors: liangkaiLee
- * @LastEditTime: 2020-12-14 15:23:21
+ * @LastEditTime: 2020-12-14 19:58:01
 -->
 <template>
   <div>
@@ -18,7 +18,14 @@
       </div>
       <div class="list_content webFsScroll">
         <div
+          style="text-align: center; line-height: 100px"
+          v-if="!todayCaseInfos || todayCaseInfos.length == 0"
+        >
+          <h3 style="color: #1eb0fc">暂无警情</h3>
+        </div>
+        <div
           class="content_item"
+          v-else
           v-for="(case_item, case_index) in todayCaseInfos"
           :key="case_index"
         >
@@ -49,7 +56,7 @@
               <img :src="caseImage" alt="" />
             </div>
             <div class="right fr">
-              <p>
+              <p style="height: 50px" class="divEllipsis">
                 <span style="color: #ff0000">情况说明：</span>
                 <span>{{ case_item.description }}</span>
               </p>
@@ -122,31 +129,39 @@
           label-width="90px"
           :inline="true"
           :rules="handleRules"
-          style="margin-top: 30px; margin-left: 46px; margin-right: 50px"
+          style="margin: 30px 50px 0 46px"
         >
           <el-form-item label="处置结果" prop="record" class="textarea">
             <el-input
               placeholder="请输入...."
               type="textarea"
               v-model="handleForm.record"
-            ></el-input> </el-form-item
-          ><br />
-          <el-form-item label="处置时间" prop="time" class="input">
-            <el-date-picker
-              v-model="handleForm.time"
-              type="datetime"
-              placeholder="请选择"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item label="处置人" prop="people" class="input">
-            <el-input
-              placeholder="请输入"
-              v-model="handleForm.people"
             ></el-input>
           </el-form-item>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 10px;
+            "
+          >
+            <el-form-item label="处置时间" prop="time" class="input">
+              <el-date-picker
+                v-model="handleForm.time"
+                type="datetime"
+                placeholder="请选择"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="处置人" prop="people" class="input">
+              <el-input
+                placeholder="请输入"
+                v-model="handleForm.people"
+              ></el-input>
+            </el-form-item>
+          </div>
         </el-form>
-        <div class="handle_bottom">
+        <div class="handle_bottom" style="margin-top: 20px">
           <div class="btn_cancel" @click.stop="closeHandleBox">取消</div>
           <div class="btn_confirm" @click.stop="submitHandleAdd">确定</div>
         </div>
@@ -176,30 +191,18 @@
             style="margin-top: 7px; width: 17px; height: 22px"
           />
         </div>
-        <div class="list">
-          <span
-            ><img :src="checkImg" alt="" /><img :src="personImg" alt="" />刘守辉
-            江汉渔政</span
-          ><br />
-          <span
-            ><img :src="checkImg" alt="" /><img :src="personImg" alt="" />王明德
-            南岸咀渔政</span
+        <div class="list webFsScroll">
+          <p
+            v-for="(dispatch_item, dispatch_index) in dispatchList"
+            :key="dispatch_index"
           >
-          <span
-            ><img :src="gouImg" alt="" /><img :src="personImg" alt="" />张强
-            王家湾渔政</span
-          >
-          <span
-            ><img :src="checkImg" alt="" /><img :src="personImg" alt="" />付文兵
-            青山渔政</span
-          >
-          <span
-            ><img :src="gouImg" alt="" /><img :src="personImg" alt="" />李国庆
-            徐东大街渔政</span
-          >
+            <el-checkbox></el-checkbox><img :src="personImg" alt="" />{{
+              dispatch_item.name
+            }}
+          </p>
         </div>
       </div>
-      <div class="handle_bottom" style="margin-top: 20px; padding: 12px 0">
+      <div class="handle_bottom" style="padding: 12px 0">
         <div class="btn_cancel" @click.stop="closeDispatchBox">取消</div>
         <div class="btn_confirm" @click.stop="submitDispatchAdd">确定</div>
       </div>
@@ -216,16 +219,11 @@ export default {
 
   data () {
     return {
-      //   标题icon
       titleImg: require('../../../assets/images/control/title.png'),
-      //   聊天icon
       chatImg: require('../../../assets/images/control/speak.png'),
-      //   时间icon
       timeImg: require('../../../assets/images/control/time.png'),
-      //   位置icon
       placeImg: require('../../../assets/images/control/place.png'),
       caseImage: require('../../../assets/images/control/case.png'),
-      // 搜索icon
       searchImg: require('../../../assets/images/policeHistory/search.png'),
       personImg: require('../../../assets/images/control/person.png'),
       checkImg: require('../../../assets/images/control/check.png'),
@@ -234,16 +232,25 @@ export default {
       todayCaseInfos: [],
       handleBoxVisible: false,
       dispatchBoxVisible: false,
+      // 处置表单字段
       handleForm: {
         record: '',
         time: '',
         people: ''
       },
+      // 验证规则
       handleRules: {
         record: [{ required: true, message: '请输入处置记录' }],
         time: [{ required: true, message: '请选择处置时间' }],
         people: [{ required: true, message: '请输入处置人' }]
-      }
+      },
+      dispatchList: [
+        { id: 0, name: '刘守辉 江汉渔政' },
+        { id: 1, name: '王明德 南岸咀渔政' },
+        { id: 2, name: '张强 王家湾渔政' },
+        { id: 3, name: '付文兵 青山渔政' },
+        { id: 4, name: '李国庆 徐东大街渔政' }
+      ]
     }
   },
 
@@ -372,6 +379,7 @@ export default {
     margin-top: 15px;
     height: 670px;
     overflow-y: auto;
+    background: rgba($color: #121e3a, $alpha: 0.85);
     .content_item {
       width: 308px;
       height: 200px;
@@ -405,7 +413,7 @@ export default {
           font-size: 13px;
           p {
             margin-bottom: 10px;
-            text-align-last: left;
+            text-align: left;
             img {
               margin-right: 10px;
             }
@@ -450,7 +458,7 @@ export default {
     line-height: 30px;
     border-bottom: 1px dashed#1eb0fc;
     .close {
-      font-size: 34px;
+      font-size: 30px;
       cursor: pointer;
       margin-top: -5px;
     }
@@ -461,7 +469,7 @@ export default {
       margin-top: 12px;
       font-size: 12px;
       span:nth-child(1) {
-        background: #d1d1d1;
+        background: rgba($color: #fff, $alpha: 0.1);
         font-size: 12px;
         border-radius: 4px;
         padding: 2px 10px;
@@ -489,7 +497,7 @@ export default {
         margin: 0 50px 0 0;
       }
       span:nth-child(2) {
-        background: #d1d1d1;
+        background: rgba($color: #fff, $alpha: 0.1);
         color: #fff;
         border-radius: 4px;
         padding: 2px 10px;
@@ -570,7 +578,7 @@ export default {
       .textarea {
         .el-textarea__inner {
           width: 760px;
-          height: 86px;
+          height: 106px;
           border: 1px solid #0fbfe0;
           background-color: transparent;
           color: rgb(243, 243, 243);
@@ -578,7 +586,7 @@ export default {
       }
       .input {
         .el-input__inner {
-          width: 760px;
+          width: 320px;
           color: white;
           border: solid 1px #0fbfe0;
           background-color: transparent;
@@ -588,32 +596,6 @@ export default {
         color: #0fbfe0;
         font-size: 15px;
       }
-    }
-  }
-  .handle_bottom {
-    padding: 0 40px;
-    display: flex;
-    justify-content: flex-end;
-    .btn_confirm,
-    .btn_cancel {
-      display: block;
-      width: 87px;
-      height: 32px;
-      line-height: 32px;
-      text-align: center;
-      border: 1px solid #1eb0fc;
-      border-radius: 4px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    .btn_confirm {
-      background: #1eb0fc;
-      color: #fff;
-    }
-    .btn_cancel {
-      background: transparent;
-      color: #1eb0fc;
-      margin-right: 20px;
     }
   }
 }
@@ -697,16 +679,18 @@ export default {
         }
         .list {
           height: 500px;
-          span {
-            display: block;
+          overflow-y: auto;
+          p {
+            height: 35px;
             line-height: 35px;
             border-bottom: 1px solid #1eb0fc;
             color: #eee;
+            margin-bottom: 20px;
           }
-          span > img:nth-child(1) {
+          p:nth-child(1) {
             margin-top: 25px;
           }
-          span > img:nth-child(2) {
+          p > img {
             margin: 0 25px 0 30px;
           }
         }
