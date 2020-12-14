@@ -1,10 +1,10 @@
 <!--
  * @Descripttion: 出来混迟早是要还的
- * @version: v_2.0
+ * @version: v_1.0
  * @Author: liangkaiLee
  * @Date: 2020-12-13 13:50:41
  * @LastEditors: liangkaiLee
- * @LastEditTime: 2020-12-13 20:28:26
+ * @LastEditTime: 2020-12-14 15:15:59
 -->
 <template>
   <div>
@@ -58,7 +58,7 @@
             </div>
           </div>
           <div class="item_bottom">
-            <span class="btn_dispatch">分派</span>
+            <span class="btn_dispatch" @click.stop="dispatchBoxShow">分派</span>
             <span class="btn_complete" @click.stop="handleBoxShow"
               >处置完成</span
             >
@@ -67,7 +67,7 @@
       </div>
     </div>
     <!-- 聊天对话框 -->
-    <div class="case_chat" v-show="(chatBoxVisible = true)">
+    <div class="case_chat" ref="case_chat">
       <div class="case_header">
         <div class="fl"><img :src="titleImg" alt="" /></div>
         <h4 class="fl" style="margin-left: 15px">聊天通讯</h4>
@@ -113,7 +113,9 @@
       class="handel_box"
     >
       <div>
-        <div class="handel_header">处置结果</div>
+        <div class="handel_header">
+          <span style="margin-left: 5px">处置结果</span>
+        </div>
         <el-form
           ref="handleRef"
           :model="handleForm"
@@ -134,7 +136,6 @@
               v-model="handleForm.time"
               type="datetime"
               placeholder="请选择"
-              class="timeStyle"
               value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
           </el-form-item>
@@ -151,13 +152,64 @@
         </div>
       </div>
     </el-dialog>
+    <!-- 警力分派弹框 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="dispatchBoxVisible"
+      width="400px"
+      class="dispatch_box"
+    >
+      <div class="dispatch_header">
+        <div class="fl">
+          <img class="fl" :src="titleImg" alt="" />
+          <h4 class="fl" style="margin-left: 15px">分派</h4>
+        </div>
+      </div>
+      <div class="dispatch_content">
+        <el-input
+          placeholder="请输入举报人/举报地点/简要描述进行搜索"
+          class="otherInput"
+        ></el-input>
+        <div class="searchBtn">
+          <img
+            :src="searchImg"
+            style="margin-top: 7px; width: 17px; height: 22px"
+          />
+        </div>
+        <div class="list">
+          <span
+            ><img :src="checkImg" alt="" /><img :src="personImg" alt="" />刘守辉
+            江汉渔政</span
+          ><br />
+          <span
+            ><img :src="checkImg" alt="" /><img :src="personImg" alt="" />王明德
+            南岸咀渔政</span
+          >
+          <span
+            ><img :src="gouImg" alt="" /><img :src="personImg" alt="" />张强
+            王家湾渔政</span
+          >
+          <span
+            ><img :src="checkImg" alt="" /><img :src="personImg" alt="" />付文兵
+            青山渔政</span
+          >
+          <span
+            ><img :src="gouImg" alt="" /><img :src="personImg" alt="" />李国庆
+            徐东大街渔政</span
+          >
+        </div>
+      </div>
+      <div class="handle_bottom" style="margin-top: 20px; padding: 12px 0">
+        <div class="btn_cancel" @click.stop="closeDispatchBox">取消</div>
+        <div class="btn_confirm" @click.stop="submitDispatchAdd">确定</div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { caseListApi } from '@/api/case'
 import globalApi from '@/utils/globalApi'
-import axios from 'axios'
 
 export default {
   name: 'caseList',
@@ -173,10 +225,15 @@ export default {
       //   位置icon
       placeImg: require('../../../assets/images/control/place.png'),
       caseImage: require('../../../assets/images/control/case.png'),
+      // 搜索icon
+      searchImg: require('../../../assets/images/policeHistory/search.png'),
+      personImg: require('../../../assets/images/control/person.png'),
+      checkImg: require('../../../assets/images/control/check.png'),
+      gouImg: require('../../../assets/images/control/gou.png'),
       // 今日案件信息
       todayCaseInfos: [],
-      chatBoxVisible: false,
       handleBoxVisible: false,
+      dispatchBoxVisible: false,
       handleForm: {
         record: '',
         time: '',
@@ -210,9 +267,11 @@ export default {
           headers: { 'Content-Type': 'application/json;charset=UTF-8' }
         })
         .then((res) => {
-          console.log('警情信息接口返回: ', res)
+          // console.log('警情信息接口返回: ', res)
           if (res && res.data && res.data.code === 0) {
-            const tempData = res.data.data.records.filter(r => r.caseStatus === '未处置')
+            const tempData = res.data.data.records.filter(
+              (r) => r.caseStatus === '未处置'
+            )
             tempData.forEach((item, index) => {
               const info = {
                 id: item.id,
@@ -238,7 +297,6 @@ export default {
               this.todayCaseInfos.push(info)
             })
             this.$emit('getTodayCaseDone', this.todayCaseInfos)
-            // this.getCaseImg()
           }
         })
         .catch((err) => {
@@ -246,41 +304,7 @@ export default {
         })
     },
 
-    getCaseImg () {
-      const _this = this
-      this.$nextTick(() => {
-        if (_this.todayCaseInfos.img || _this.todayCaseInfos.img !== null) {
-          _this.todayCaseInfos.forEach((item) => {
-            console.log(item)
-            axios
-              .get(globalApi.headImg + item.img)
-              .then((res) => {
-                console.log('获取的图片: ', res)
-              })
-              .catch((err) => {
-                console.log('加载json数据失败: ' + err)
-              })
-          })
-        }
-      })
-    },
-
-    chatBoxShow () {
-      this.chatDialogVisible = true
-      console.log(this.chatDialogVisible)
-    },
-    // 关闭
-    closeChatBox () {
-      this.chatDialogVisible = false
-      console.log(this.chatDialogVisible)
-    },
-
-    handleBoxShow () {
-      this.handleBoxVisible = true
-    },
-    closeHandleBox () {
-      this.handleBoxVisible = false
-    },
+    // 案件处置
     submitHandleAdd () {
       this.$refs.handleRef.validate((valid) => {
         if (!valid) return
@@ -294,12 +318,44 @@ export default {
         }, 800)
         this.handleForm = {}
       })
+    },
+    submitDispatchAdd () {
+      this.$notify.success({
+        title: '提示',
+        message: '分派成功!',
+        duration: 2 * 1000
+      })
+      setTimeout(() => {
+        this.dispatchBoxVisible = false
+      }, 800)
+    },
+
+    chatBoxShow () {
+      this.$refs.case_chat.style.display = 'block'
+    },
+    closeChatBox () {
+      this.$refs.case_chat.style.display = 'none'
+    },
+    handleBoxShow () {
+      this.handleBoxVisible = true
+    },
+    closeHandleBox () {
+      this.handleBoxVisible = false
+      this.handleForm = {}
+      this.$refs.handleRef.resetFields()
+    },
+    dispatchBoxShow () {
+      this.dispatchBoxVisible = true
+    },
+    closeDispatchBox () {
+      this.dispatchBoxVisible = false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+// 案件列表
 .case_list {
   width: 340px;
   height: 710px;
@@ -318,7 +374,7 @@ export default {
     overflow-y: auto;
     .content_item {
       width: 308px;
-      height: 205px;
+      height: 200px;
       border: 1px solid#1EB0FC;
       padding: 8px;
       margin-bottom: 12px;
@@ -377,15 +433,17 @@ export default {
     }
   }
 }
+// 聊天对话框
 .case_chat {
-  width: 440px;
+  display: none;
+  width: 450px;
   height: 395px;
   background: url(../../../assets/images/control/chat_bg.png) no-repeat
     center/100% 100%;
   text-align: center;
   padding: 20px;
   position: absolute;
-  left: 1150px;
+  left: 1250px;
   bottom: -50px;
   .case_header {
     height: 30px;
@@ -482,8 +540,9 @@ export default {
     }
   }
 }
-
+// 处置结果弹框
 .handel_box.el-dialog__wrapper {
+  background-color: rgba($color: #040404, $alpha: 0.76);
   /deep/.el-dialog {
     .el-dialog__header {
       display: none;
@@ -529,12 +588,32 @@ export default {
         color: #0fbfe0;
         font-size: 15px;
       }
-      .label1 {
-        margin-left: 40px;
-      }
-      .timeStyle {
-        width: 310px;
-      }
+    }
+  }
+  .handle_bottom {
+    padding: 0 40px;
+    display: flex;
+    justify-content: flex-end;
+    .btn_confirm,
+    .btn_cancel {
+      display: block;
+      width: 87px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      border: 1px solid #1eb0fc;
+      border-radius: 4px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .btn_confirm {
+      background: #1eb0fc;
+      color: #fff;
+    }
+    .btn_cancel {
+      background: transparent;
+      color: #1eb0fc;
+      margin-right: 20px;
     }
   }
 }
@@ -562,6 +641,77 @@ export default {
     background: transparent;
     color: #1eb0fc;
     margin-right: 20px;
+  }
+}
+// 警力分派弹框
+.dispatch_box.el-dialog__wrapper {
+  background-color: rgba($color: #040404, $alpha: 0.76);
+  /deep/.el-dialog {
+    .el-dialog__header {
+      display: none;
+    }
+    background: transparent;
+    .el-dialog__body {
+      display: inline-block;
+      padding: 0px;
+      width: 100%;
+      height: 660px;
+      background: url(../../../assets/images/policeHistory/handleBox.png)
+        no-repeat center/100% 100%;
+      padding: 20px 30px;
+      .dispatch_header {
+        height: 35px;
+        line-height: 35px;
+        color: #fff;
+        border-bottom: 1px dashed #1eb0fc;
+        img {
+          margin-top: 7px;
+        }
+      }
+      .dispatch_content {
+        margin-top: 25px;
+        .otherInput {
+          vertical-align: top;
+          width: 300px;
+          height: 35px;
+          /deep/.el-input__inner {
+            width: 310px;
+            height: 35px;
+            color: #c5f3ff;
+            border: solid 1px #1eb0fc;
+            border-radius: 0;
+            background-color: transparent;
+            font-size: 12px;
+          }
+        }
+        .searchBtn {
+          display: inline-block;
+          width: 65px;
+          height: 35px;
+          line-height: 35px;
+          text-align: center;
+          margin-left: 25px;
+          background-color: #086484;
+          color: #fff;
+          cursor: pointer;
+        }
+        .list {
+          height: 500px;
+          span {
+            display: block;
+            line-height: 35px;
+            border-bottom: 1px solid #1eb0fc;
+            color: #eee;
+          }
+          span > img:nth-child(1) {
+            margin-top: 25px;
+          }
+          span > img:nth-child(2) {
+            margin: 0 25px 0 30px;
+          }
+        }
+      }
+    }
   }
 }
 </style>
