@@ -77,7 +77,7 @@ export default {
       timeObj: '', // 当前时间
       curCity: '', // 所在城市
       weatherReport: '', // 天气情况
-      isActive: 1, // 默认激活视频侦查系统
+      isActive: 2, // 默认激活视频侦查系统
       systems: [
         {
           content: '可视化调度'
@@ -232,7 +232,7 @@ export default {
     },
     // 视频侦查二级菜单跳转
     jumpToVideoUrl (type) {
-      this.isActive = 1
+      this.isActive = 2
       this.curActive = type
       if (type === 1) this.$router.push({ path: '/videoSystem' })
       else this.$router.push({ path: '/playback' })
@@ -323,8 +323,8 @@ export default {
   .box {
     display: flex;
     // 临时显示菜单
-    // justify-content: space-between;
-    justify-content: center;
+    justify-content: space-between;
+    // justify-content: center;
     font-size: 24px;
     font-weight: 500;
     .list {
@@ -373,7 +373,7 @@ export default {
       line-height: 66px;
       text-align: center;
       // 临时显示菜单 添加
-      margin: 0 44px;
+      // margin: 0 44px;
       font-size: 36px;
       font-weight: bold;
       margin-top: -13px;
