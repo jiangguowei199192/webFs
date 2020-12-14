@@ -4,7 +4,7 @@
  * @Author: liangkaiLee
  * @Date: 2020-12-13 13:50:41
  * @LastEditors: liangkaiLee
- * @LastEditTime: 2020-12-14 15:15:59
+ * @LastEditTime: 2020-12-14 15:23:21
 -->
 <template>
   <div>
@@ -443,7 +443,7 @@ export default {
   text-align: center;
   padding: 20px;
   position: absolute;
-  left: 1250px;
+  left: 1150px;
   bottom: -50px;
   .case_header {
     height: 30px;
