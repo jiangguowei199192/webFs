@@ -105,7 +105,7 @@
       </div>
     </div>
     <plan v-show="bShowPaln" ref="plan"></plan>
-    <RealtimeDataMenu v-show="bShowPoliceStatistics"></RealtimeDataMenu>
+    <RealtimeDataMenu v-if="bShowPoliceStatistics"></RealtimeDataMenu>
     <div class="measureTools" v-if="bShowAllTools && bShowMeasure">
       <div
         class="lineBtn"
