@@ -1277,16 +1277,16 @@ export default {
     setRpLayerVisible (type) {
       if (type === 'Institution') {
         this.bShowRpLayerInstitution = !this.bShowRpLayerInstitution
-        this.map2D.riverProtectionManager.setLayerInstitutionVisible(this.bShowRpLayerInstitution)
+        this.map2D._dispatchCenterManager.setLayerInstitutionVisible(this.bShowRpLayerInstitution)
       } else if (type === 'Police') {
         this.bShowRpLayerPolice = !this.bShowRpLayerPolice
-        this.map2D.riverProtectionManager.setLayerPoliceVisible(this.bShowRpLayerPolice)
+        this.map2D._dispatchCenterManager.setLayerPoliceVisible(this.bShowRpLayerPolice)
       } else if (type === 'Drone') {
         this.bShowRpLayerDrone = !this.bShowRpLayerDrone
-        this.map2D.riverProtectionManager.setLayerDroneVisible(this.bShowRpLayerDrone)
+        this.map2D._dispatchCenterManager.setLayerDroneVisible(this.bShowRpLayerDrone)
       } else if (type === 'Camera') {
         this.bShowRpLayerCamera = !this.bShowRpLayerCamera
-        this.map2D.riverProtectionManager.setLayerCameraVisible(this.bShowRpLayerCamera)
+        this.map2D._dispatchCenterManager.setLayerCameraVisible(this.bShowRpLayerCamera)
       }
     }
   }

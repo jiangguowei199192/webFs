@@ -38,6 +38,8 @@ import MqttService from '@/utils/mqttService'
 import videoMixin from '../videoSystem/mixins/videoMixin'
 import regionMixin from './regionMixin'
 import riverMixin from './riverMixin'
+import createVueCompFunc from '@/utils/createVueComp'
+import droneInfo from '../evaluationSystem/droneBox'
 import {
   Notification
 } from 'element-ui'
@@ -62,11 +64,19 @@ export default {
   methods: {
     // 处理数据，便于地图组件加载显示
     handerVideoDevice (dev) {
+      dev.isOnline = dev.onlineStatus === 'online'
       if (dev.deviceTypeCode === 'GDJK') {
         dev.type = 'RP_Camera'
       } else if (dev.deviceTypeCode === 'WRJ') {
         dev.type = 'RP_Drone'
       }
+      if (dev.isOnline && dev.children && dev.children.length > 0) {
+        dev.urls = []
+        dev.children.forEach(l => {
+          dev.urls.push(l.streamUrl)
+        })
+      }
+
       dev.name = dev.label
       dev.address = dev.deviceAddress
       dev.brand = dev.deviceBrand
@@ -76,7 +86,7 @@ export default {
     // 新增显示高点或无人机设备
     addDeviceCallback (devInfo) {
       this.handerVideoDevice(devInfo)
-      this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas([devInfo])
+      this.$refs.gduMap.map2D._dispatchCenterManager.addRpDatas([devInfo])
     },
     // 显示高点设备和无人机设备
     getAllDeviceDoneCallback (cameraDevs, droneDevs) {
@@ -91,6 +101,16 @@ export default {
     },
     // 显示长江大保护数据层信息
     showRpDatas (tmpDatas) {
+      this.$refs.gduMap.map2D._dispatchCenterManager.addRpDatas(tmpDatas)
+      if (tmpDatas.length > 0) {
+        if (this.$refs.gduMap !== undefined) {
+          this.$refs.gduMap.map2D.zoomToCenter(tmpDatas[0].longitude, tmpDatas[0].latitude)
+          this.$refs.gduMap.map2D.setZoom(12)
+        }
+      }
+    },
+    // 显示长江大保护数据层信息
+    showWarningDatas (tmpDatas) {
       this.$refs.gduMap.map2D.riverProtectionManager.addRpDatas(tmpDatas)
       if (tmpDatas.length > 0) {
         if (this.$refs.gduMap !== undefined) {
@@ -98,6 +118,12 @@ export default {
           this.$refs.gduMap.map2D.setZoom(12)
         }
       }
+    },
+    /**
+     *  动态创建droneInfo组件
+     */
+    createDroneInfoCom (props) {
+      return createVueCompFunc(droneInfo, props)
     },
     // 显示船只实时位置
     showRpShips (tmpDatas) {
@@ -152,7 +178,7 @@ export default {
         }
       }
       if (tmpData !== null) {
-        this.$refs.gduMap.map2D.riverProtectionManager.findAndShowData(tmpData)
+        this.$refs.gduMap.map2D._dispatchCenterManager.findAndShowData(tmpData)
         this.$refs.gduMap.map2D.zoomToCenter(tmpData.longitude, tmpData.latitude)
       } else {
         Notification({
@@ -179,6 +205,9 @@ export default {
     window.onresize = null
   },
   mounted () {
+    this.$refs.gduMap.map2D._dispatchCenterManager.setCreateVueCompFunc(
+      this.createDroneInfoCom
+    )
     // this.$refs.gduMap.map2D.zoomToCenter(114.65511872631607, 30.68961010828556)
     // this.$refs.gduMap.map2D.setZoom(16)
     // Test Code

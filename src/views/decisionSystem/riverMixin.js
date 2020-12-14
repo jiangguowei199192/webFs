@@ -16,8 +16,8 @@ const riverMixin = {
     })
     EventBus.$on('addNewWarningSuccess', data => {
       this.handerWarningData(data)
-      if (this.showRpDatas) {
-        this.showRpDatas([data])
+      if (this.showWarningDatas) {
+        this.showWarningDatas([data])
       }
     })
     if (!this.isDispatch) { this.getWarningList() }
@@ -72,8 +72,8 @@ const riverMixin = {
           this.warningList.forEach(data => {
             this.handerWarningData(data)
           })
-          if (this.showRpDatas) {
-            this.showRpDatas(this.warningList)
+          if (this.showWarningDatas) {
+            this.showWarningDatas(this.warningList)
           }
           EventBus.$emit('getWarningList_Done', true)
         }
