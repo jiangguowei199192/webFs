@@ -1642,7 +1642,7 @@ export default {
           }
           // 更新坐标角度
           this.getPtzInfo()
-        }, 2000)
+        }, 1000)
       }
       const params = {
         device_id: this.videoInfo.deviceCode,

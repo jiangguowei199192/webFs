@@ -59,8 +59,8 @@ export default {
         this.$emit('closeMarkForm')
         return
       }
-      startX = $event.pageX
-      startY = $event.pageY
+      startX = $event.screenX
+      startY = $event.screenY
 
       // isdown = 1
       // this.$emit('canvasStart')
@@ -81,8 +81,8 @@ export default {
       isdown = 0
       if (event.button === 0 && !isdown) {
         points.push({
-          x: event.pageX,
-          y: event.pageY
+          x: event.screenX,
+          y: event.screenY
         })
         console.log(points)
         this.drawPolygon(points)
@@ -149,7 +149,7 @@ export default {
       }
       // 绘制实心（展示面）
       if (bool && item.label === '22') {
-        ctx.fillStyle = item.fillColor || '#00ff48' // 填充颜色
+        ctx.fillStyle = this.hexToRgba(item.fillColor, item.opacity / 100) || '#00ff48' // 填充颜色
         ctx.fill()
       }
       // 若有文字则后绘制不会被覆盖
