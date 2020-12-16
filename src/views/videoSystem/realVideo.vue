@@ -1423,10 +1423,17 @@ export default {
     deviceOffline (device) {
       // 只要有下线
       if (this.isOnline) {
-        this.selectedIndex = 200
-      }
-      if (device.id === this.curSelectedVideo.deviceCode) {
-        this.curSelectedVideo = {}
+        if (device.id === this.curSelectedVideo.deviceCode) {
+          this.curSelectedVideo = {}
+          this.selectedIndex = 200
+        } else {
+          // 防止下线设备在当前选中的设备之前，重新设置选中的设备
+          this.onlineArray.forEach((item, index) => {
+            if (item.id === this.curSelectedVideo.deviceCode) {
+              this.selectedIndex = index
+            }
+          })
+        }
       }
       this.totalVideosArray.forEach((item, index) => {
         if (item.deviceCode === device.id) {
@@ -1582,7 +1589,7 @@ export default {
   },
   mounted () {
     this.getPlayerStyle()
-    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', (info) => {
+    EventBus.$on('video/deviceIid/channleID/datalink/firewarning', info => {
       this.isBounce = true
       setTimeout(() => {
         this.isBounce = false
@@ -1630,11 +1637,7 @@ export default {
                 item.onePointArray
               )
             } else {
-              this.$set(
-                this.totalVideosArray[index],
-                'onePointArray',
-                []
-              )
+              this.$set(this.totalVideosArray[index], 'onePointArray', [])
             }
             if (item.pointsArray) {
               this.$set(
@@ -1643,11 +1646,7 @@ export default {
                 item.pointsArray
               )
             } else {
-              this.$set(
-                this.totalVideosArray[index],
-                'pointsArray',
-                []
-              )
+              this.$set(this.totalVideosArray[index], 'pointsArray', [])
             }
           })
         }
@@ -1665,11 +1664,7 @@ export default {
                 item.onePointArray
               )
             } else {
-              this.$set(
-                this.curVideosArray[index],
-                'onePointArray',
-                []
-              )
+              this.$set(this.curVideosArray[index], 'onePointArray', [])
             }
             if (item.pointsArray) {
               this.$set(
@@ -1678,11 +1673,7 @@ export default {
                 item.pointsArray
               )
             } else {
-              this.$set(
-                this.curVideosArray[index],
-                'pointsArray',
-                []
-              )
+              this.$set(this.curVideosArray[index], 'pointsArray', [])
             }
           })
         }
@@ -1704,9 +1695,16 @@ export default {
 </script>
 <style lang="less" scoped>
 @keyframes bounce-up {
- 25% {transform: scale(2)}
- 50%, 100% {transform: scale(1)}
- 75% {transform: scale(0.8)}
+  25% {
+    transform: scale(2);
+  }
+  50%,
+  100% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(0.8);
+  }
 }
 .videoContainer {
   box-sizing: border-box;
