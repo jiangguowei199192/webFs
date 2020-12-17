@@ -7,6 +7,7 @@
   >-->
   <div class="ar" v-if="showAR" @dblclick.stop="stopEvent">
     <canvas id="myCanvas" width="1920" height="1080">您的浏览器不支持 HTML5 canvas 标签。</canvas>
+    <img src="@/assets/images/AR/location.png" alt="" id="canvasImg" style="display:none">
   </div>
 </template>
 
@@ -72,6 +73,7 @@ export default {
         this.tagType === '3' ||
         this.tagType === '4'
       ) {
+        this.drawImg(startX, startY)
         const curPositionObj = { x: startX, y: startY }
         const arr = []
         arr.push(curPositionObj)
@@ -87,6 +89,16 @@ export default {
         console.log(points)
         this.drawPolygon(points)
       }
+    },
+    // 绘制图片
+    drawImg (x, y) {
+      var mycanvas = document.getElementById('myCanvas')
+      var ctx = mycanvas.getContext('2d')
+
+      // 内存中先加载，然后当内存加载完毕时，再把内存中的数据填充到我们的 dom元素中，这样能够快速的去
+      // 反应，比如网易的图片
+      var img = document.querySelector('#canvasImg')
+      ctx.drawImage(img, x - 30, y - 30)
     },
     drawPolygon (points, bool, item) {
       const myCanvas = document.getElementById('myCanvas')
@@ -113,7 +125,10 @@ export default {
         ctx.strokeStyle = '#ffde00'
         ctx.lineWidth = 3
       }
+      ctx.lineJoin = 'round'
+      ctx.lineCap = 'round'
       ctx.beginPath()
+
       // 虚线
       if (bool) {
         ctx.setLineDash([item.lineType])
@@ -149,7 +164,8 @@ export default {
       }
       // 绘制实心（展示面）
       if (bool && item.label === '22') {
-        ctx.fillStyle = this.hexToRgba(item.fillColor, item.opacity / 100) || '#00ff48' // 填充颜色
+        ctx.fillStyle =
+          this.hexToRgba(item.fillColor, item.opacity / 100) || '#00ff48' // 填充颜色
         ctx.fill()
       }
       // 若有文字则后绘制不会被覆盖
