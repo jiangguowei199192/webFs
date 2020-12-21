@@ -738,10 +738,10 @@ export default {
         tagName: '',
         tagType: '0',
         lineType: '0',
-        lineWidth: 1,
+        lineWidth: 3,
         lineColor: '#ffde00',
         fillColor: '#00ff48',
-        opacity: 95
+        opacity: 60
       },
       rules: {
         tagName: [
@@ -2493,7 +2493,7 @@ export default {
         font-size: 14px;
         font-family: Source Han Sans CN;
         font-weight: 400;
-        color: #f8b652;
+        color: #fff;
       }
     }
     .horizontal {
@@ -2506,7 +2506,7 @@ export default {
       }
       span {
         position: absolute;
-        color: #00c4e0;
+        color: #fff;
       }
       span:nth-child(1) {
         left: -13px;
@@ -2530,7 +2530,7 @@ export default {
       }
       span {
         position: absolute;
-        color: #00c4e0;
+        color: #fff;
       }
       span:nth-child(1) {
         left: 25px;
