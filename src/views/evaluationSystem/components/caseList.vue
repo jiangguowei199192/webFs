@@ -78,7 +78,7 @@
           </div>
           <div class="item_bottom">
             <span class="btn_dispatch" @click.stop="dispatchBoxShow">分派</span>
-            <span class="btn_complete" @click.stop="handleBoxShow">处置完成</span>
+            <span class="btn_complete" @click.stop="handleBoxShow(case_item)">处置完成</span>
           </div>
         </div>
       </div>
@@ -412,6 +412,7 @@ export default {
   methods: {
     //   获取今日案件信息
     getTodayCase () {
+      this.todayCaseInfos = []
       const param = {
         caseBelong: '',
         content: '',
@@ -431,6 +432,10 @@ export default {
               r => r.caseStatus === '未处置'
             )
             tempData.forEach((item, index) => {
+              let tmpImg = null
+              if (item.caseImg !== null) {
+                tmpImg = globalApi.headImg + item.caseImg
+              }
               const info = {
                 id: item.id,
                 xuHao: index + 1,
@@ -438,7 +443,7 @@ export default {
                 source: item.infoSource,
                 people: item.reportMan,
                 phone: item.reportTel,
-                img: globalApi.headImg + item.caseImg,
+                img: tmpImg,
                 address: item.reportAddr,
                 time: item.reportTime,
                 belong: item.caseBelong,
@@ -466,15 +471,45 @@ export default {
     submitHandleAdd () {
       this.$refs.handleRef.validate(valid => {
         if (!valid) return
-        this.$notify.success({
-          title: '提示',
-          message: '新增成功!',
-          duration: 2 * 1000
-        })
-        setTimeout(() => {
-          this.handleBoxVisible = false
-        }, 800)
-        this.handleForm = {}
+
+        var param = {
+          id: this.curHandleItem.id,
+          dispositionMan: this.handleForm.people,
+          dispositionRecord: this.handleForm.record,
+          dispositionTime: this.handleForm.time
+        }
+        this.$axios
+          .post(policeApi.dispose, param, {
+            headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+          })
+          .then((res) => {
+            if (res && res.data && res.data.code === 0) {
+              this.handleBoxVisible = false
+              this.getTodayCase()
+              Notification({
+                title: '提示',
+                message: '处置成功',
+                type: 'success',
+                duration: 5 * 1000
+              })
+            } else {
+              Notification({
+                title: '提示',
+                message: '处置失败',
+                type: 'warning',
+                duration: 5 * 1000
+              })
+            }
+          })
+          .catch(err => {
+            Notification({
+              title: '提示',
+              message: '处置异常',
+              type: 'error',
+              duration: 5 * 1000
+            })
+            console.log('handle exception:', err)
+          })
       })
     },
     submitDispatchAdd () {
@@ -491,12 +526,14 @@ export default {
     chatBoxShowOrHide () {
       this.bShowChat = !this.bShowChat
     },
-    handleBoxShow () {
+    handleBoxShow (item) {
+      this.curHandleItem = item
       this.handleBoxVisible = true
     },
     closeHandleBox () {
       this.handleBoxVisible = false
       this.handleForm = {}
+      this.curHandleItem = {}
       this.$refs.handleRef.resetFields()
     },
     dispatchBoxShow () {
@@ -574,41 +611,37 @@ export default {
         this.showNewPolice = false
 
         var lonlat = this.getSelectedLocation()
-        var param = {
-          infoSource: this.newPoliceForm.source,
-          reportMan: this.newPoliceForm.people,
-          reportTel: this.newPoliceForm.phone,
-          reportAddr: this.newPoliceForm.address,
-          latitude: lonlat[1],
-          longitude: lonlat[0],
-          reportTime: this.newPoliceForm.time,
-          caseBelong: this.newPoliceForm.belong,
-          caseDesc: this.newPoliceForm.description,
-          importantRecord: this.newPoliceForm.record
-        }
-        this.$axios
-          .post(policeApi.add, param, {
-            headers: { 'Content-Type': 'application/json;charset=UTF-8' }
-          })
-          .then(res => {
-            console.log('policeApi.add:', res)
-            if (res && res.data && res.data.code === 0) {
-              this.getTodayCase()
-              Notification({
-                title: '提示',
-                message: '新增成功',
-                type: 'success',
-                duration: 5 * 1000
-              })
-              return
-            }
+        const formData = new FormData()
+        formData.append('infoSource', this.newPoliceForm.source)
+        formData.append('reportMan', this.newPoliceForm.people)
+        formData.append('reportTel', this.newPoliceForm.phone)
+        formData.append('reportAddr', this.newPoliceForm.address)
+        formData.append('latitude', lonlat[1])
+        formData.append('longitude', lonlat[0])
+        formData.append('reportTime', this.newPoliceForm.time)
+        formData.append('caseBelong', this.newPoliceForm.belong)
+        formData.append('caseDesc', this.newPoliceForm.description)
+        formData.append('importantRecord', this.newPoliceForm.record)
+        formData.append('file', '')
+        const config = { headers: { 'Content-Type': 'multipart/form-data' } }
+        this.$axios.post(policeApi.add, formData, config).then((res) => {
+          if (res && res.data && res.data.code === 0) {
+            this.getTodayCase()
             Notification({
               title: '提示',
-              message: '新增失败',
-              type: 'warning',
+              message: '新增成功',
+              type: 'success',
               duration: 5 * 1000
             })
+            return
+          }
+          Notification({
+            title: '提示',
+            message: '新增失败',
+            type: 'warning',
+            duration: 5 * 1000
           })
+        })
       })
     },
     newPoliceCancel () {

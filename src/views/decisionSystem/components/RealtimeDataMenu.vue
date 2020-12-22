@@ -303,21 +303,20 @@ export default {
         this.showNewPolice = false
 
         var lonlat = this.getSelectedLocation()
-        var param = {
-          infoSource: this.newPoliceForm.source,
-          reportMan: this.newPoliceForm.people,
-          reportTel: this.newPoliceForm.phone,
-          reportAddr: this.newPoliceForm.address,
-          latitude: lonlat[1],
-          longitude: lonlat[0],
-          reportTime: this.newPoliceForm.time,
-          caseBelong: this.newPoliceForm.belong,
-          caseDesc: this.newPoliceForm.description,
-          importantRecord: this.newPoliceForm.record
-        }
-        this.$axios.post(policeApi.add, param, {
-          headers: { 'Content-Type': 'application/json;charset=UTF-8' }
-        }).then((res) => {
+        const formData = new FormData()
+        formData.append('infoSource', this.newPoliceForm.source)
+        formData.append('reportMan', this.newPoliceForm.people)
+        formData.append('reportTel', this.newPoliceForm.phone)
+        formData.append('reportAddr', this.newPoliceForm.address)
+        formData.append('latitude', lonlat[1])
+        formData.append('longitude', lonlat[0])
+        formData.append('reportTime', this.newPoliceForm.time)
+        formData.append('caseBelong', this.newPoliceForm.belong)
+        formData.append('caseDesc', this.newPoliceForm.description)
+        formData.append('importantRecord', this.newPoliceForm.record)
+        formData.append('file', '')
+        const config = { headers: { 'Content-Type': 'multipart/form-data' } }
+        this.$axios.post(policeApi.add, formData, config).then((res) => {
           if (res && res.data && res.data.code === 0) {
             setTimeout(() => {
               EventBus.$emit('addNewWarningSuccess', res.data.data)

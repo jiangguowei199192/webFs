@@ -96,6 +96,8 @@ export default {
      *  获取案件列表完毕
      */
     getTodayCaseDone (files) {
+      if (!this.$refs.gduMap) return
+      this.$refs.gduMap.map2D._dispatchCenterManager.removeAllWarning()
       this.showRpDatas(files)
     }
   },
