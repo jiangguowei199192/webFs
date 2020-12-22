@@ -269,15 +269,16 @@ export default {
 
     newPolice () {
       this.showNewPolice = true
-      this.newPoliceForm.phone = ''
-      this.newPoliceForm.belong = ''
-      this.newPoliceForm.description = ''
-      this.newPoliceForm.record = ''
-      this.$refs.newPoliceRef.resetFields()
 
       var that = this
       setTimeout(() => {
-        const tmpMap = this.$refs.gduMap.map2D
+        that.newPoliceForm.phone = ''
+        that.newPoliceForm.belong = ''
+        that.newPoliceForm.description = ''
+        that.newPoliceForm.record = ''
+        that.$refs.newPoliceRef.resetFields()
+
+        const tmpMap = that.$refs.gduMap.map2D
         tmpMap.clickEvent.addEventListener((lonlat) => {
           that.newPoliceForm.lon = lonlat[0]
 

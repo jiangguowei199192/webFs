@@ -54,6 +54,7 @@
 import { loginApi } from '@/api/login'
 import { Notification } from 'element-ui'
 import globalApi from '../../utils/globalApi'
+import AMapHelper from '../../axios/amapapis'
 export default {
   name: 'login',
   data () {
@@ -96,6 +97,7 @@ export default {
       }
       this.$axios.post(loginApi.login, info).then((res) => {
         if (res.data.code === 0) {
+          this.checkMapNetwork()
           if (this.checked) {
             // 记住密码
             localStorage.setItem('username', this.loginInfo.username)
@@ -114,6 +116,21 @@ export default {
           this.$router.push({ path: '/videoSystem' })
         }
       })
+    },
+    async checkMapNetwork () {
+      await AMapHelper.getLocation({})
+        .then((res) => {
+          if (res.data.status === '1') {
+            localStorage.location_city_adcode = res.data.adcode
+            localStorage.bNetWorkConn = 'true'
+            console.log('localStorage.bNetWorkConn:', localStorage.bNetWorkConn)
+          }
+        })
+        .catch((err) => {
+          localStorage.bNetWorkConn = 'false'
+          console.log('localStorage.bNetWorkConn:', localStorage.bNetWorkConn)
+          console.log('AMapHelper.getLocation Err : ' + err)
+        })
     }
   },
   created () {},
