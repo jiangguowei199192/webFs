@@ -16,7 +16,13 @@
         </div>
         <h4 class="fl" style="margin-left: 15px">案件列表</h4>
         <img style="cursor: pointer" class="fr" :src="chatImg" alt @click.stop="chatBoxShowOrHide" />
-        <img style="cursor:pointer;margin-right:16px" class="fr" :src="addImg" alt @click.stop="newPolice" />
+        <img
+          style="cursor:pointer;margin-right:16px"
+          class="fr"
+          :src="addImg"
+          alt
+          @click.stop="newPolice"
+        />
       </div>
       <div class="list_content webFsScroll">
         <div
@@ -218,7 +224,12 @@
       </div>
     </el-dialog>
     <!-- 新建警情 -->
-    <el-dialog :visible.sync="showNewPolice" :close-on-click-modal="false" width="960px" class="newPoliceDlg">
+    <el-dialog
+      :visible.sync="showNewPolice"
+      :close-on-click-modal="false"
+      width="960px"
+      class="newPoliceDlg"
+    >
       <div>
         <div class="npdTitleSty">新增案件</div>
         <el-form
@@ -230,35 +241,19 @@
           style="margin-top: 40px; margin-left: 46px; margin-right: 50px"
         >
           <el-form-item label="案件编号" class="input1">
-            <el-input
-              placeholder="自动生成"
-              :disabled="true"
-              v-model="newPoliceForm.number"
-            ></el-input>
+            <el-input placeholder="自动生成" :disabled="true" v-model="newPoliceForm.number"></el-input>
           </el-form-item>
           <el-form-item label="信息来源" prop="source" class="input1 label1">
-            <el-input
-              placeholder="请输入"
-              v-model="newPoliceForm.source"
-            ></el-input>
+            <el-input placeholder="请输入" v-model="newPoliceForm.source"></el-input>
           </el-form-item>
           <el-form-item label="举报人" prop="people" class="input1">
-            <el-input
-              placeholder="请输入"
-              v-model="newPoliceForm.people"
-            ></el-input>
+            <el-input placeholder="请输入" v-model="newPoliceForm.people"></el-input>
           </el-form-item>
           <el-form-item label="举报电话" class="input1 label1">
-            <el-input
-              placeholder="请输入"
-              v-model="newPoliceForm.phone"
-            ></el-input>
+            <el-input placeholder="请输入" v-model="newPoliceForm.phone"></el-input>
           </el-form-item>
           <el-form-item label="举报地址" prop="address" class="input2">
-            <el-input
-              placeholder="请输入"
-              v-model="newPoliceForm.address"
-            ></el-input>
+            <el-input placeholder="请输入" v-model="newPoliceForm.address"></el-input>
             <!-- <div style="width: 760px; height: 140px; margin-top: 5px;">
               <gMap
                 ref="gduMap"
@@ -269,7 +264,7 @@
                 :bShowLonLat="false"
                 :bAutoLocate="false"
               ></gMap>
-            </div> -->
+            </div>-->
           </el-form-item>
           <el-form-item label="    " prop="lon">
             <div style="width: 760px; height: 140px;">
@@ -304,16 +299,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="简要描述" class="input2">
-            <el-input
-              placeholder="请输入"
-              v-model="newPoliceForm.description"
-            ></el-input>
+            <el-input placeholder="请输入" v-model="newPoliceForm.description"></el-input>
           </el-form-item>
           <el-form-item label="重点记录" class="input2">
-            <el-input
-              placeholder="请输入"
-              v-model="newPoliceForm.record"
-            ></el-input>
+            <el-input placeholder="请输入" v-model="newPoliceForm.record"></el-input>
           </el-form-item>
         </el-form>
         <div style="height: 32px">
@@ -382,7 +371,7 @@ export default {
         {
           isLeft: true,
           person: '青山渔政 张三',
-          messages: ['已收到指令', '正在前往案发中心处置']
+          messages: ['已收到指令', '正在前往案发中心处置,随时上报案件处理情况']
         }
       ],
 
@@ -542,7 +531,7 @@ export default {
 
     // 获取组织树
     async getDeptTree () {
-      this.$axios.post(loginApi.getDeptTree).then((res) => {
+      this.$axios.post(loginApi.getDeptTree).then(res => {
         if (res && res.data && res.data.code === 0) {
           this.deptTree = res.data.data[0].children
         }
@@ -561,7 +550,7 @@ export default {
         that.$refs.newPoliceRef.resetFields()
 
         const tmpMap = that.$refs.gduMap.map2D
-        tmpMap.clickEvent.addEventListener((lonlat) => {
+        tmpMap.clickEvent.addEventListener(lonlat => {
           that.newPoliceForm.lon = lonlat[0]
 
           tmpMap.customMarkerLayerManager.clear()
@@ -578,7 +567,7 @@ export default {
       }, 500)
     },
     newPoliceConfirm () {
-      this.$refs.newPoliceRef.validate((valid) => {
+      this.$refs.newPoliceRef.validate(valid => {
         if (!valid) {
           return false
         }
@@ -597,27 +586,29 @@ export default {
           caseDesc: this.newPoliceForm.description,
           importantRecord: this.newPoliceForm.record
         }
-        this.$axios.post(policeApi.add, param, {
-          headers: { 'Content-Type': 'application/json;charset=UTF-8' }
-        }).then((res) => {
-          console.log('policeApi.add:', res)
-          if (res && res.data && res.data.code === 0) {
-            this.getTodayCase()
+        this.$axios
+          .post(policeApi.add, param, {
+            headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+          })
+          .then(res => {
+            console.log('policeApi.add:', res)
+            if (res && res.data && res.data.code === 0) {
+              this.getTodayCase()
+              Notification({
+                title: '提示',
+                message: '新增成功',
+                type: 'success',
+                duration: 5 * 1000
+              })
+              return
+            }
             Notification({
               title: '提示',
-              message: '新增成功',
-              type: 'success',
+              message: '新增失败',
+              type: 'warning',
               duration: 5 * 1000
             })
-            return
-          }
-          Notification({
-            title: '提示',
-            message: '新增失败',
-            type: 'warning',
-            duration: 5 * 1000
           })
-        })
       })
     },
     newPoliceCancel () {
@@ -738,8 +729,7 @@ export default {
     }
   }
   .case_content {
-    text-align: center;
-    height: 248px;
+    height: 258px;
     overflow-y: auto;
     padding: 0px 10px 0px 0px;
     .talk_box {
@@ -768,7 +758,8 @@ export default {
         }
       }
       .msg {
-        height: 28px;
+        display: block;
+        min-height: 28px;
         box-sizing: border-box;
         border: 1px solid#1eb0fc;
         border-radius: 4px;
@@ -777,6 +768,10 @@ export default {
         font-size: 12px;
         margin: auto;
         margin-top: 10px;
+        max-width: 200px;
+        word-break: break-all;
+        white-space: pre-wrap !important;
+        text-align: left;
       }
       .left_talk {
         margin-left: 0px;
