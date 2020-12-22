@@ -15,7 +15,8 @@
           <img :src="titleImg" alt />
         </div>
         <h4 class="fl" style="margin-left: 15px">案件列表</h4>
-        <img style="cursor: pointer" class="fr" :src="chatImg" alt @click.stop="chatBoxShow" />
+        <img style="cursor: pointer" class="fr" :src="chatImg" alt @click.stop="chatBoxShowOrHide" />
+        <img style="cursor:pointer;margin-right:16px" class="fr" :src="addImg" alt @click.stop="newPolice" />
       </div>
       <div class="list_content webFsScroll">
         <div
@@ -44,7 +45,7 @@
               class="fr"
               :src="chatImg"
               alt=""
-              @click.stop="chatBoxShow"
+              @click.stop="chatBoxShowOrHide"
             />-->
           </div>
           <div class="item_center">
@@ -77,13 +78,13 @@
       </div>
     </div>
     <!-- 聊天对话框 -->
-    <div class="case_chat" ref="case_chat">
+    <div class="case_chat" ref="case_chat" v-show="bShowChat">
       <div class="case_header">
         <div class="fl">
           <img :src="titleImg" alt />
         </div>
         <h4 class="fl" style="margin-left: 15px">聊天通讯</h4>
-        <div class="close fr" @click.stop="closeChatBox">×</div>
+        <div class="close fr" @click.stop="chatBoxShowOrHide">×</div>
       </div>
       <div class="case_content webFsScroll">
         <div v-for="(talk,index) in talks" :key="index" class="talk_box">
@@ -216,12 +217,121 @@
         <div class="btn_confirm" @click.stop="submitDispatchAdd">确定</div>
       </div>
     </el-dialog>
+    <!-- 新建警情 -->
+    <el-dialog :visible.sync="showNewPolice" :close-on-click-modal="false" width="960px" class="newPoliceDlg">
+      <div>
+        <div class="npdTitleSty">新增案件</div>
+        <el-form
+          ref="newPoliceRef"
+          :model="newPoliceForm"
+          label-width="90px"
+          :inline="true"
+          :rules="newPoliceRules"
+          style="margin-top: 40px; margin-left: 46px; margin-right: 50px"
+        >
+          <el-form-item label="案件编号" class="input1">
+            <el-input
+              placeholder="自动生成"
+              :disabled="true"
+              v-model="newPoliceForm.number"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="信息来源" prop="source" class="input1 label1">
+            <el-input
+              placeholder="请输入"
+              v-model="newPoliceForm.source"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="举报人" prop="people" class="input1">
+            <el-input
+              placeholder="请输入"
+              v-model="newPoliceForm.people"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="举报电话" class="input1 label1">
+            <el-input
+              placeholder="请输入"
+              v-model="newPoliceForm.phone"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="举报地址" prop="address" class="input2">
+            <el-input
+              placeholder="请输入"
+              v-model="newPoliceForm.address"
+            ></el-input>
+            <!-- <div style="width: 760px; height: 140px; margin-top: 5px;">
+              <gMap
+                ref="gduMap"
+                handleType="devMap"
+                :bShowSimpleSearchTools="true"
+                :bShowBasic="false"
+                :bShowMeasure="false"
+                :bShowLonLat="false"
+                :bAutoLocate="false"
+              ></gMap>
+            </div> -->
+          </el-form-item>
+          <el-form-item label="    " prop="lon">
+            <div style="width: 760px; height: 140px;">
+              <gMap
+                ref="gduMap"
+                handleType="devMap"
+                :bShowSimpleSearchTools="true"
+                :bShowBasic="false"
+                :bShowMeasure="false"
+                :bShowLonLat="false"
+                :bAutoLocate="false"
+              ></gMap>
+            </div>
+          </el-form-item>
+          <el-form-item label="举报时间" prop="time" class="input1">
+            <el-date-picker
+              v-model="newPoliceForm.time"
+              type="datetime"
+              placeholder="请选择"
+              class="timeStyle"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="案件所属" class="input1 label1">
+            <el-select placeholder="请选择" v-model="newPoliceForm.belong">
+              <el-option
+                v-for="(item, index) in deptTree"
+                :key="index"
+                :label="item.deptName"
+                :value="item.deptCode"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="简要描述" class="input2">
+            <el-input
+              placeholder="请输入"
+              v-model="newPoliceForm.description"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="重点记录" class="input2">
+            <el-input
+              placeholder="请输入"
+              v-model="newPoliceForm.record"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <div style="height: 32px">
+          <div class="npdConfirm" @click="newPoliceConfirm">确定</div>
+          <div class="npdCancel" @click="newPoliceCancel">取消</div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { caseListApi } from '@/api/case'
 import globalApi from '@/utils/globalApi'
+import { policeApi } from '@/api/police.js'
+import { Notification } from 'element-ui'
+import { loginApi } from '@/api/login'
+// import { EventBus } from '@/utils/eventBus.js'
 
 export default {
   name: 'caseList',
@@ -231,6 +341,7 @@ export default {
       msg: '',
       fileTypes: ['mp4', 'png', 'jpg', 'jpeg'],
       titleImg: require('../../../assets/images/control/title.png'),
+      addImg: require('../../../assets/images/control/add_case.png'),
       chatImg: require('../../../assets/images/control/speak.png'),
       timeImg: require('../../../assets/images/control/time.png'),
       placeImg: require('../../../assets/images/control/place.png'),
@@ -273,8 +384,36 @@ export default {
           person: '青山渔政 张三',
           messages: ['已收到指令', '正在前往案发中心处置']
         }
-      ]
+      ],
+
+      bShowChat: false,
+
+      showNewPolice: false,
+      newPoliceForm: {
+        number: '', // 案件编号
+        source: '', // 信息来源
+        people: '', // 举报人
+        phone: '', // 举报电话
+        address: '', // 举报地址
+        time: '', // 举报时间
+        belong: '', // 案件所属
+        description: '', // 简要描述
+        record: '', // 重点记录
+        lon: ''
+      },
+      newPoliceRules: {
+        source: [{ required: true, message: '请输入信息来源' }],
+        people: [{ required: true, message: '请输入举报人' }],
+        address: [{ required: true, message: '请输入举报地址' }],
+        time: [{ required: true, message: '请选择举报时间' }],
+        lon: [{ required: true, message: '请选择坐标' }]
+      },
+      deptTree: ''
     }
+  },
+
+  created () {
+    this.getDeptTree()
   },
 
   mounted () {
@@ -360,11 +499,8 @@ export default {
       }, 800)
     },
 
-    chatBoxShow () {
-      this.$refs.case_chat.style.display = 'block'
-    },
-    closeChatBox () {
-      this.$refs.case_chat.style.display = 'none'
+    chatBoxShowOrHide () {
+      this.bShowChat = !this.bShowChat
     },
     handleBoxShow () {
       this.handleBoxVisible = true
@@ -401,6 +537,99 @@ export default {
           title: '警告',
           message: '只能上传图片或者视频'
         })
+      }
+    },
+
+    // 获取组织树
+    async getDeptTree () {
+      this.$axios.post(loginApi.getDeptTree).then((res) => {
+        if (res && res.data && res.data.code === 0) {
+          this.deptTree = res.data.data[0].children
+        }
+      })
+    },
+
+    newPolice () {
+      this.showNewPolice = true
+
+      var that = this
+      setTimeout(() => {
+        that.newPoliceForm.phone = ''
+        that.newPoliceForm.belong = ''
+        that.newPoliceForm.description = ''
+        that.newPoliceForm.record = ''
+        that.$refs.newPoliceRef.resetFields()
+
+        const tmpMap = that.$refs.gduMap.map2D
+        tmpMap.clickEvent.addEventListener((lonlat) => {
+          that.newPoliceForm.lon = lonlat[0]
+
+          tmpMap.customMarkerLayerManager.clear()
+          tmpMap.customMarkerLayerManager.addMarker({
+            name: null,
+            lon: lonlat[0],
+            lat: lonlat[1],
+            _bWgs2Gcj: false
+          })
+        })
+        tmpMap._map.updateSize()
+        tmpMap.zoomToCenter(114.31667, 30.51667)
+        tmpMap.setZoom(10)
+      }, 500)
+    },
+    newPoliceConfirm () {
+      this.$refs.newPoliceRef.validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        this.showNewPolice = false
+
+        var lonlat = this.getSelectedLocation()
+        var param = {
+          infoSource: this.newPoliceForm.source,
+          reportMan: this.newPoliceForm.people,
+          reportTel: this.newPoliceForm.phone,
+          reportAddr: this.newPoliceForm.address,
+          latitude: lonlat[1],
+          longitude: lonlat[0],
+          reportTime: this.newPoliceForm.time,
+          caseBelong: this.newPoliceForm.belong,
+          caseDesc: this.newPoliceForm.description,
+          importantRecord: this.newPoliceForm.record
+        }
+        this.$axios.post(policeApi.add, param, {
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+        }).then((res) => {
+          console.log('policeApi.add:', res)
+          if (res && res.data && res.data.code === 0) {
+            this.getTodayCase()
+            Notification({
+              title: '提示',
+              message: '新增成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+            return
+          }
+          Notification({
+            title: '提示',
+            message: '新增失败',
+            type: 'warning',
+            duration: 5 * 1000
+          })
+        })
+      })
+    },
+    newPoliceCancel () {
+      this.showNewPolice = false
+    },
+    getSelectedLocation () {
+      const tmpMap = this.$refs.gduMap
+      const tmpFs = tmpMap.map2D.customMarkerLayerManager._source.getFeatures()
+      if (tmpFs.length > 0) {
+        return tmpFs[0].getGeometry().getCoordinates()
+      } else {
+        return [tmpMap.lon, tmpMap.lat]
       }
     }
   }
@@ -489,7 +718,6 @@ export default {
 }
 // 聊天对话框
 .case_chat {
-  display: none;
   width: 450px;
   height: 395px;
   background: url(../../../assets/images/control/chat_bg.png) no-repeat
@@ -800,5 +1028,89 @@ export default {
       }
     }
   }
+}
+
+.newPoliceDlg.el-dialog__wrapper {
+  /deep/.el-dialog {
+    .el-dialog__header {
+      display: none;
+    }
+    background: transparent;
+    .el-dialog__body {
+      display: inline-block;
+      padding: 0px;
+      width: 100%;
+      height: 679px;
+      background: url(../../../assets/images/RealtimeDataMenu/newPoliceBox.png)
+        no-repeat;
+      background-size: 100%;
+      .npdTitleSty {
+        width: 166px;
+        height: 34px;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 42px;
+        background: url(../../../assets/images/header-bg.png) no-repeat;
+        background-size: 100%;
+        padding-left: 30px;
+        margin: 26px 0 0 24px;
+      }
+      .input1 {
+        .el-input__inner {
+          color: white;
+          width: 310px;
+          border: solid 1px #0fbfe0;
+          background-color: transparent;
+        }
+      }
+      .input2 {
+        .el-input__inner {
+          width: 760px;
+          color: white;
+          border: solid 1px #0fbfe0;
+          background-color: transparent;
+        }
+      }
+      .el-form-item__label {
+        color: #0fbfe0;
+        font-size: 16px;
+      }
+      .label1 {
+        margin-left: 40px;
+      }
+      .timeStyle {
+        width: 310px;
+      }
+    }
+  }
+}
+
+.npdConfirm {
+  float: right;
+  width: 87px;
+  height: 32px;
+  background: #1eb0fc;
+  color: white;
+  margin-right: 65px;
+  font-size: 18px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.npdCancel {
+  float: right;
+  width: 87px;
+  height: 32px;
+  background: transparent;
+  color: #1eb0fc;
+  margin-right: 32px;
+  font-size: 18px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 4px;
+  border: solid 1px #1eb0fc;
+  cursor: pointer;
 }
 </style>
