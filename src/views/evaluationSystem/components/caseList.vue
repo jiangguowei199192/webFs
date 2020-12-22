@@ -17,7 +17,7 @@
         <h4 class="fl" style="margin-left: 15px">案件列表</h4>
         <img style="cursor: pointer" class="fr" :src="chatImg" alt @click.stop="chatBoxShowOrHide" />
         <img
-          style="cursor:pointer;margin-right:16px"
+          style="cursor:pointer;margin-right:16px;margin-top:-2px"
           class="fr"
           :src="addImg"
           alt
