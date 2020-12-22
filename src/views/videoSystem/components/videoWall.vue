@@ -358,6 +358,20 @@
           <span>180</span>
         </div>
       </div>
+      <!-- 自动巡航 -->
+      <div class="cruise" v-show="videoInfo.isShowOperate||false">
+        <template v-if="!showAR">
+          <img :src="cruiseOpen?cruiseClosePic:cruiseOpenPic" @click.stop="changeCruise" />
+        </template>
+        <template v-else>
+          <img
+            class="disabled"
+            src="../../../assets/images/AR/cruise_disabled.png"
+            title="
+AR功能开启中，巡航操作暂不可用。"
+          />
+        </template>
+      </div>
       <!-- 显示AR标签 -->
       <div
         class="fullScreenAr"
@@ -639,6 +653,10 @@ export default {
 
       showAR: false, // 显示AR
       showCurindex: 1000, // 显示弹框
+      // 新增巡航图标
+      cruiseOpen: true,
+      cruiseOpenPic: require('@/assets/images/AR/cruise_on.png'),
+      cruiseClosePic: require('@/assets/images/AR/cruise_off.png'),
       upPic: require('@/assets/images/AR/up.png'),
       rightPic: require('@/assets/images/AR/right.png'),
       horizontalValue: 0, // 水平角度
@@ -988,6 +1006,22 @@ export default {
           this.verticalValue = data.nPTZTilt
         }
       })
+    },
+    // 开启/关闭巡航
+    changeCruise () {
+      const params = {
+        deviceCode: this.videoInfo.deviceCode,
+        channelId: this.videoInfo.streamType,
+        // 当前是开启 则关闭
+        action: this.cruiseOpen ? 2 : 1
+      }
+      this.cruiseOpen = !this.cruiseOpen
+      this.$axios.post(api.ptzLoopControl, params).then(res => {
+        if (res && res.data && res.data.code === 0) {
+          console.log('巡航操作成功')
+        }
+      })
+      // this.cruiseOpen = !this.cruiseOpen
     },
     // 显示与隐藏AR
     changeAR () {
@@ -1631,7 +1665,7 @@ export default {
       if (this.showAR) {
         this.timer = setInterval(() => {
           if (this.showCurindex !== 4) {
-          // 按住期间执行的代码
+            // 按住期间执行的代码
             new MqttService().client.send(
               'video/webControlPzt',
               JSON.stringify({
@@ -1771,7 +1805,7 @@ export default {
           // 显示角度
           this.getPtzInfo()
           if (this.showCurindex !== 4) {
-          // 通知后台获取云台信息
+            // 通知后台获取云台信息
             new MqttService().client.send(
               'video/webControlPzt',
               JSON.stringify({
@@ -2048,7 +2082,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: text;
-        a{
+        a {
           position: relative;
           display: inline-block;
           width: 40px;
@@ -2068,8 +2102,8 @@ export default {
             height: 200px;
           }
         }
-        a:last-child{
-          margin-right:0;
+        a:last-child {
+          margin-right: 0;
         }
       }
       .realPoliceInfo {
@@ -2540,6 +2574,15 @@ export default {
         left: 25px;
         top: 164px;
       }
+    }
+  }
+  div.cruise {
+    position: absolute;
+    z-index: 20;
+    bottom: 51px;
+    right: 225px;
+    img.disabled {
+      cursor: text;
     }
   }
   .fullScreenOperate {
