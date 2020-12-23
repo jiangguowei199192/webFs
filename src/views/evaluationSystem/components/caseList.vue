@@ -96,14 +96,35 @@
         <div v-for="(talk,index) in talks" :key="index" class="talk_box">
           <div class="name_box">
             <span>2020-12-15 13:24:36</span>
-            <span :class="[talk.isLeft ? 'left':'right']">{{talk.person}}</span>
+            <span :class="[talk.isRight === true ? 'right':'left']">{{talk.person}}</span>
           </div>
-          <span
-            :class="[talk.isLeft ? 'left_talk':'right_talk']"
-            v-for="(msg,index2) in talk.messages"
-            :key="index2"
-            class="msg"
-          >{{msg}}</span>
+          <div v-for="(msg,index2) in talk.messages" :key="index2">
+            <img
+              class="img"
+              src="http://58.49.169.235:50026/fmsUploads/images/1606916789420.jpg"
+              v-if="talk.type ==='img'"
+            />
+            <div class="playerBox" v-if="talk.type ==='video'">
+              <LivePlayer
+                videoUrl="ws://58.49.169.235:50010/live/5H00983PAKCC2CC0.flv"
+                :show-custom-button="false"
+                :muted="false"
+                :controls="false"
+                :autoplay="true"
+                oncontextmenu="return false"
+                fluent
+                :stretch="true"
+                :live="false"
+                aspect="fullscreen"
+                :poster="poster"
+              ></LivePlayer>
+            </div>
+            <span
+              v-else
+              :class="[talk.isRight === true ? 'right_talk' :'left_talk']"
+              class="msg"
+            >{{msg}}</span>
+          </div>
         </div>
         <!-- <div>
           <span>2020-12-15 13:24:36</span>
@@ -132,11 +153,12 @@
           placeholder="请在此输入文字...."
           type="textarea"
           resize="none"
-          v-model="msg"
+          v-model.trim="msg"
+          maxlength="100"
         ></el-input>
         <div class="bottom_btn">
           <span class="btn_clear" @click.stop="msg = ''">清空</span>
-          <span class="btn_send">发送</span>
+          <span class="btn_send" @click.stop="sendMessage">发送</span>
         </div>
         <span class="link" @click.stop="upload"></span>
         <input type="file" ref="uploadFile" style="display:none" @change="fileChange" />
@@ -320,6 +342,9 @@ import globalApi from '@/utils/globalApi'
 import { policeApi } from '@/api/police.js'
 import { Notification } from 'element-ui'
 import { loginApi } from '@/api/login'
+import MqttService from '@/utils/mqttService'
+import { stringIsNullOrEmpty } from '@/utils/validate'
+import LivePlayer from '@liveqing/liveplayer'
 // import { EventBus } from '@/utils/eventBus.js'
 
 export default {
@@ -327,6 +352,7 @@ export default {
 
   data () {
     return {
+      poster: require('../../../assets/images/loading.gif'),
       msg: '',
       fileTypes: ['mp4', 'png', 'jpg', 'jpeg'],
       titleImg: require('../../../assets/images/control/title.png'),
@@ -364,19 +390,22 @@ export default {
       ],
       talks: [
         {
-          isLeft: false,
           person: '武汉渔政 张三',
           messages: ['将非法捕捞预警指派给王军']
         },
         {
-          isLeft: true,
           person: '青山渔政 张三',
           messages: ['已收到指令', '正在前往案发中心处置,随时上报案件处理情况']
+        },
+        {
+          person: '青山渔政 李四',
+          messages: ['已收到指令'],
+          type: 'video'
         }
       ],
-
+      serverUrl: globalApi.headImg,
       bShowChat: false,
-
+      username: '',
       showNewPolice: false,
       newPoliceForm: {
         number: '', // 案件编号
@@ -400,13 +429,16 @@ export default {
       deptTree: ''
     }
   },
-
+  components: {
+    LivePlayer
+  },
   created () {
     this.getDeptTree()
   },
 
   mounted () {
     this.getTodayCase()
+    this.username = JSON.parse(localStorage.getItem('userDetail')).username
   },
 
   methods: {
@@ -482,7 +514,7 @@ export default {
           .post(policeApi.dispose, param, {
             headers: { 'Content-Type': 'application/json;charset=UTF-8' }
           })
-          .then((res) => {
+          .then(res => {
             if (res && res.data && res.data.code === 0) {
               this.handleBoxVisible = false
               this.getTodayCase()
@@ -624,7 +656,7 @@ export default {
         formData.append('importantRecord', this.newPoliceForm.record)
         formData.append('file', '')
         const config = { headers: { 'Content-Type': 'multipart/form-data' } }
-        this.$axios.post(policeApi.add, formData, config).then((res) => {
+        this.$axios.post(policeApi.add, formData, config).then(res => {
           if (res && res.data && res.data.code === 0) {
             this.getTodayCase()
             Notification({
@@ -655,6 +687,26 @@ export default {
       } else {
         return [tmpMap.lon, tmpMap.lat]
       }
+    },
+    /**
+     *  发送消息
+     */
+    sendMessage () {
+      if (stringIsNullOrEmpty(this.msg)) return
+      // new MqttService().client.send(
+      //   'web/river/caseHandling',
+      //   JSON.stringify({
+      //     username: this.username,
+      //     type: 'txt', // type：txt img video
+      //     msg: this.msg // 如果type是img、video , msg就是图片和video的地址
+      //   })
+      // )
+      this.talks.push({
+        person: '我',
+        isRight: true,
+        messages: [this.msg]
+      })
+      this.msg = ''
     }
   }
 }
@@ -811,6 +863,18 @@ export default {
       }
       .right_talk {
         margin-right: 0px;
+      }
+      .img {
+        margin-top: 10px;
+        display: inline-block;
+        width: 148px;
+        height: 78px;
+      }
+      .playerBox {
+        margin-top: 10px;
+        width: 148px;
+        height: 78px;
+        position: relative;
       }
     }
     // div {

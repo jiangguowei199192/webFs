@@ -261,6 +261,7 @@ export default {
         .get(loginApi.getUserDetail)
         .then(res => {
           if (res.data.code === 0) {
+            localStorage.setItem('userDetail', JSON.stringify(res.data.data))
             tmpAxios
               .get(loginApi.getDeptByDeptCode, {
                 params: { deptCode: res.data.data.deptCode }
