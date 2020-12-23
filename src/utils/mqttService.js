@@ -60,6 +60,8 @@ var mqttService;
       instance.client.subscribe('gdu/#')
       // 雷达实时信息
       instance.client.subscribe('radar/realTimeInfo')
+      // 案件聊天信息
+      instance.client.subscribe('web/river/caseHandling')
     }
 
     // mqtt client失去连接后的callback
@@ -80,7 +82,7 @@ var mqttService;
       if (message.topic.substr(0, 4) === 'gdu/') {
         EventBus.$emit('droneInfos', message)
       } else {
-        // console.log('onMessageArrived---------topic:' + message.topic + '----------' + message.payloadString)
+        console.log('onMessageArrived---------topic:' + message.topic + '----------' + message.payloadString)
       }
     }
 

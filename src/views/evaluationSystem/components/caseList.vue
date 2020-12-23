@@ -95,18 +95,19 @@
       <div ref="chatBox" class="case_content webFsScroll">
         <div v-for="(talk,index) in talks" :key="index" class="talk_box">
           <div class="name_box">
-            <span>2020-12-15 13:24:36</span>
+            <span>{{timeFormat2(talk.time)}}</span>
             <span :class="[talk.isRight === true ? 'right':'left']">{{talk.person}}</span>
           </div>
-          <div v-for="(msg,index2) in talk.messages" :key="index2">
-            <img
-              class="img"
-              src="http://58.49.169.235:50026/fmsUploads/images/1606916789420.jpg"
-              v-if="talk.type ==='img'"
-            />
+          <div
+            v-for="(msg,index2) in talk.messages"
+            :key="index2"
+            class="msg-box"
+            :class="[talk.isRight === true ? 'right_talk' :'left_talk']"
+          >
+            <img class="img" :src="msg" v-if="talk.type ==='img'" />
             <div class="playerBox" v-if="talk.type ==='video'">
               <LivePlayer
-                videoUrl="ws://58.49.169.235:50010/live/5H00983PAKCC2CC0.flv"
+                :videoUrl="msg"
                 :show-custom-button="false"
                 :muted="false"
                 :controls="false"
@@ -119,11 +120,7 @@
                 :poster="poster"
               ></LivePlayer>
             </div>
-            <span
-              v-else
-              :class="[talk.isRight === true ? 'right_talk' :'left_talk']"
-              class="msg"
-            >{{msg}}</span>
+            <span v-else class="msg">{{msg}}</span>
           </div>
         </div>
         <!-- <div>
@@ -345,7 +342,8 @@ import { loginApi } from '@/api/login'
 import MqttService from '@/utils/mqttService'
 import { stringIsNullOrEmpty } from '@/utils/validate'
 import LivePlayer from '@liveqing/liveplayer'
-// import { EventBus } from '@/utils/eventBus.js'
+import { timeFormat2 } from '@/utils/date'
+import { EventBus } from '@/utils/eventBus.js'
 
 export default {
   name: 'caseList',
@@ -391,21 +389,25 @@ export default {
       talks: [
         {
           person: '武汉渔政 张三',
-          messages: ['将非法捕捞预警指派给王军']
+          messages: ['将非法捕捞预警指派给王军'],
+          time: new Date().getTime()
         },
         {
           person: '青山渔政 张三',
-          messages: ['已收到指令', '正在前往案发中心处置,随时上报案件处理情况']
+          messages: ['已收到指令', '正在前往案发中心处置,随时上报案件处理情况'],
+          time: new Date().getTime()
         },
         {
           person: '青山渔政 李四',
-          messages: ['已收到指令'],
-          type: 'video'
+          messages: ['ws://58.49.169.235:50010/live/5H00983PAKCC2CC0.flv'],
+          type: 'video',
+          time: new Date().getTime()
         }
       ],
       serverUrl: globalApi.headImg,
       bShowChat: false,
       username: '',
+      userDetail: '',
       showNewPolice: false,
       newPoliceForm: {
         number: '', // 案件编号
@@ -438,10 +440,22 @@ export default {
 
   mounted () {
     this.getTodayCase()
-    this.username = JSON.parse(localStorage.getItem('userDetail')).username
+    this.userDetail = JSON.parse(localStorage.getItem('userDetail'))
+    this.username = this.userDetail.deptName + ' ' + this.userDetail.username
+    const me = this
+    // 案件聊天信息
+    EventBus.$on('caseHandling', info => {
+      if (info.userid === this.userDetail.id) return
+      me.caseHandling(info)
+    })
+  },
+
+  destroyed () {
+    EventBus.$off('caseHandling')
   },
 
   methods: {
+    timeFormat2,
     //   获取今日案件信息
     getTodayCase () {
       this.todayCaseInfos = []
@@ -690,22 +704,38 @@ export default {
       }
     },
     /**
+     *  接收案件消息
+     */
+    caseHandling (info) {
+      this.talks.push({
+        person: info.username,
+        messages: [info.msg],
+        time: new Date().getTime(),
+        type: info.type
+      })
+      this.chatBoxToBottom()
+    },
+    /**
      *  发送消息
      */
     sendMessage () {
       if (stringIsNullOrEmpty(this.msg)) return
-      // new MqttService().client.send(
-      //   'web/river/caseHandling',
-      //   JSON.stringify({
-      //     username: this.username,
-      //     type: 'txt', // type：txt img video
-      //     msg: this.msg // 如果type是img、video , msg就是图片和video的地址
-      //   })
-      // )
+      const time = new Date().getTime()
+      new MqttService().client.send(
+        'web/river/caseHandling',
+        JSON.stringify({
+          sendTime: time,
+          userid: this.userDetail.id,
+          username: this.username,
+          type: 'txt', // type：txt img video
+          msg: this.msg // 如果type是img、video , msg就是图片和video的地址
+        })
+      )
       this.talks.push({
         person: '我',
         isRight: true,
-        messages: [this.msg]
+        messages: [this.msg],
+        time: time
       })
       this.msg = ''
       this.chatBoxToBottom()
@@ -849,39 +879,39 @@ export default {
           right: 8px;
         }
       }
-      .msg {
-        display: block;
-        min-height: 28px;
-        box-sizing: border-box;
-        border: 1px solid#1eb0fc;
-        border-radius: 4px;
-        line-height: 28px;
-        padding: 0px 10px;
-        font-size: 12px;
-        margin: auto;
-        margin-top: 10px;
-        max-width: 200px;
-        word-break: break-all;
-        white-space: pre-wrap !important;
-        text-align: left;
+      .msg-box {
+        .msg {
+          display: inline-block;
+          min-height: 28px;
+          box-sizing: border-box;
+          border: 1px solid#1eb0fc;
+          border-radius: 4px;
+          line-height: 28px;
+          padding: 0px 10px;
+          font-size: 12px;
+          margin-top: 10px;
+          max-width: 200px;
+          word-break: break-all;
+          white-space: pre-wrap !important;
+        }
+        .img {
+          margin-top: 10px;
+          display: inline-block;
+          width: 148px;
+          height: 78px;
+        }
+        .playerBox {
+          margin-top: 10px;
+          width: 148px;
+          height: 78px;
+          position: relative;
+        }
       }
       .left_talk {
-        margin-left: 0px;
+        text-align: left;
       }
       .right_talk {
-        margin-right: 0px;
-      }
-      .img {
-        margin-top: 10px;
-        display: inline-block;
-        width: 148px;
-        height: 78px;
-      }
-      .playerBox {
-        margin-top: 10px;
-        width: 148px;
-        height: 78px;
-        position: relative;
+        text-align: right;
       }
     }
     // div {
