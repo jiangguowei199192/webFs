@@ -223,15 +223,20 @@
         </div>
       </div>
       <div class="dispatch_content">
-        <el-input v-model="dispatchInput" placeholder="请输入举报人/举报地点/简要描述进行搜索" class="otherInput"></el-input>
-        <div class="searchBtn">
+        <el-input
+          v-model="dispatchInput"
+          placeholder="请输入所属部门进行搜索"
+          class="otherInput"
+          @keyup.enter.native="getDesignateUserList"
+        ></el-input>
+        <div class="searchBtn" @click="getDesignateUserList">
           <img :src="searchImg" style="margin-top: 7px; width: 17px; height: 22px" />
         </div>
         <div class="list webFsScroll">
           <div v-for="(dispatch_item, dispatch_index) in dispatchList" :key="dispatch_index">
             <el-checkbox v-model="dispatch_item.isChecked"></el-checkbox>
             <img :src="personImg" alt />
-            {{dispatch_item.name}}
+            <span :title="dispatch_item.name">{{dispatch_item.name}}</span>
           </div>
         </div>
       </div>
@@ -458,6 +463,7 @@ export default {
     timeFormat2,
     // 获取案件指派人员列表
     getDesignateUserList () {
+      this.dispatchList = []
       const param = {
         deptName: this.dispatchInput
       }
@@ -647,6 +653,7 @@ export default {
     },
     dispatchBoxShow (item) {
       this.curDispatchItem = item
+      this.dispatchList.forEach(r => r.isChecked = false)
       this.dispatchBoxVisible = true
     },
     closeDispatchBox () {
@@ -1211,6 +1218,10 @@ export default {
             border-bottom: 1px solid #1eb0fc;
             color: #eee;
             margin-bottom: 20px;
+            word-break:keep-all;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
           }
           div > img {
             margin: 0 25px 0 30px;
