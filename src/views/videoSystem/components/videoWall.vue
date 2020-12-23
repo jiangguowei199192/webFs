@@ -361,7 +361,7 @@
       <!-- 自动巡航 -->
       <div class="cruise" v-show="videoInfo.isShowOperate||false">
         <template v-if="!showAR">
-          <img :src="cruiseOpen?cruiseClosePic:cruiseOpenPic" @click.stop="changeCruise" />
+          <img :src="cruiseOpen?cruiseClosePic:cruiseOpenPic" @click.stop="changeCruise" :title="cruiseOpen?'关闭巡航':'开启巡航'"/>
         </template>
         <template v-else>
           <img
@@ -410,6 +410,7 @@ AR功能开启中，巡航操作暂不可用。"
             <span>X{{step}}</span>
           </div>
           <div @mousedown="startChange(9999)" @mouseup="stopChange(9999)"></div>
+          <span id="zoomValue">X{{zoomValue}}</span>
         </div>
       </div>
       <!-- 无人机指挥 -->
@@ -661,6 +662,7 @@ export default {
       rightPic: require('@/assets/images/AR/right.png'),
       horizontalValue: 0, // 水平角度
       verticalValue: 0, // 垂直角度
+      zoomValue: 0, // 变倍值
 
       arPic: require('@/assets/images/AR/ar.png'),
       arSelectedPic: require('@/assets/images/AR/ar_selected.png'),
@@ -1004,6 +1006,15 @@ export default {
           const data = res.data.data
           this.horizontalValue = data.nPTZPan
           this.verticalValue = data.nPTZTilt
+          this.zoomValue = data.nZoomValue
+          document
+            .querySelector('.extra #zoomValue')
+            .style.opacity = 1
+          setTimeout(() => {
+            document
+              .querySelector('.extra #zoomValue')
+              .style.opacity = 0
+          }, 2000)
         }
       })
     },
@@ -1318,6 +1329,7 @@ export default {
             console.log('关闭AR')
           }
           me.showAR && (me.showAR = false)
+          !me.cruiseOpen && (me.cruiseOpen = true)
         }
       })
     },
@@ -3196,6 +3208,20 @@ export default {
       position: absolute;
       top: 0;
       right: 0;
+      > span {
+        display: inline-block;
+        width: 58px;
+        height: 26px;
+        background: #1eb0fc;
+        border-radius: 4px;
+        line-height: 26px;
+        text-align: center;
+        position: relative;
+        left: -110px;
+        top: -260px;
+        opacity: 0;
+        transition: all 3s linear;
+      }
       div {
         width: 36px;
         height: 36px;
