@@ -92,7 +92,7 @@
         <h4 class="fl" style="margin-left: 15px">聊天通讯</h4>
         <div class="close fr" @click.stop="chatBoxShowOrHide">×</div>
       </div>
-      <div class="case_content webFsScroll">
+      <div ref="chatBox" class="case_content webFsScroll">
         <div v-for="(talk,index) in talks" :key="index" class="talk_box">
           <div class="name_box">
             <span>2020-12-15 13:24:36</span>
@@ -557,6 +557,7 @@ export default {
 
     chatBoxShowOrHide () {
       this.bShowChat = !this.bShowChat
+      if (this.bShowChat) this.chatBoxToBottom()
     },
     handleBoxShow (item) {
       this.curHandleItem = item
@@ -707,6 +708,12 @@ export default {
         messages: [this.msg]
       })
       this.msg = ''
+      this.chatBoxToBottom()
+    },
+    chatBoxToBottom () {
+      this.$nextTick(() => {
+        this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight
+      })
     }
   }
 }
