@@ -39,6 +39,8 @@ service.interceptors.request.use((config) => {
     config.url !== '/fms-river-protection/riverCase/selectListUserPolice' &&
     config.url !== '/fms-river-protection/riverCase/add' &&
     config.url !== '/fms-river-protection/riverCase/selectPage' &&
+    config.url !== '/fms-river-protection/riverDesignate/selectDesignateUserList' &&
+    config.url !== '/fms-river-protection/riverDesignate/designateUsers' &&
     config.url !== '/fms-river-protection/riverCase/deleteBatch' &&
     config.url !== '/fms-river-protection/riverCase/dispose') {
     // 判断请求方式是否为POST，进行转换格式
@@ -58,6 +60,7 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use(
   (response) => {
     if (response.data.code !== 0) {
+      console.log('response err:', response.data)
       Notification({
         title: '错误',
         message: response.data.msg,

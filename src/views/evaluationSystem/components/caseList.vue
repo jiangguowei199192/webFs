@@ -77,7 +77,7 @@
             </div>
           </div>
           <div class="item_bottom">
-            <span class="btn_dispatch" @click.stop="dispatchBoxShow">分派</span>
+            <span class="btn_dispatch" @click.stop="dispatchBoxShow(case_item)">分派</span>
             <span class="btn_complete" @click.stop="handleBoxShow(case_item)">处置完成</span>
           </div>
         </div>
@@ -223,18 +223,16 @@
         </div>
       </div>
       <div class="dispatch_content">
-        <el-input placeholder="请输入举报人/举报地点/简要描述进行搜索" class="otherInput"></el-input>
+        <el-input v-model="dispatchInput" placeholder="请输入举报人/举报地点/简要描述进行搜索" class="otherInput"></el-input>
         <div class="searchBtn">
           <img :src="searchImg" style="margin-top: 7px; width: 17px; height: 22px" />
         </div>
         <div class="list webFsScroll">
-          <p v-for="(dispatch_item, dispatch_index) in dispatchList" :key="dispatch_index">
-            <el-checkbox></el-checkbox>
+          <div v-for="(dispatch_item, dispatch_index) in dispatchList" :key="dispatch_index">
+            <el-checkbox v-model="dispatch_item.isChecked"></el-checkbox>
             <img :src="personImg" alt />
-            {{
-            dispatch_item.name
-            }}
-          </p>
+            {{dispatch_item.name}}
+          </div>
         </div>
       </div>
       <div class="handle_bottom" style="padding: 12px 0">
@@ -379,6 +377,7 @@ export default {
         time: [{ required: true, message: '请选择处置时间' }],
         people: [{ required: true, message: '请输入处置人' }]
       },
+      dispatchInput: '',
       dispatchList: [
         { id: 0, name: '刘守辉 江汉渔政' },
         { id: 1, name: '王明德 南岸咀渔政' },
@@ -436,6 +435,7 @@ export default {
   },
   created () {
     this.getDeptTree()
+    this.getDesignateUserList()
   },
 
   mounted () {
@@ -456,7 +456,28 @@ export default {
 
   methods: {
     timeFormat2,
-    //   获取今日案件信息
+    // 获取案件指派人员列表
+    getDesignateUserList () {
+      const param = {
+        deptName: this.dispatchInput
+      }
+      const config = { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
+      this.$axios
+        .post(caseListApi.queryDesignateUserList, param, config)
+        .then(res => {
+          const tempData = res.data.data.filter(r => {
+            r.isChecked = false
+            r.name = r.username + ' - ' + r.deptName
+            return (r.deptName !== null)
+          })
+          this.dispatchList = tempData
+          console.log('getDesignateUserList:', tempData)
+        })
+        .catch(err => {
+          console.log('getDesignateUserList.Excp:' + err)
+        })
+    },
+    // 获取今日案件信息
     getTodayCase () {
       this.todayCaseInfos = []
       const param = {
@@ -559,14 +580,55 @@ export default {
       })
     },
     submitDispatchAdd () {
-      this.$notify.success({
-        title: '提示',
-        message: '分派成功!',
-        duration: 2 * 1000
+      const tmpIds = []
+      this.dispatchList.forEach(r => {
+        if (r.isChecked === true) {
+          tmpIds.push(r.id)
+        }
       })
-      setTimeout(() => {
-        this.dispatchBoxVisible = false
-      }, 800)
+      if (tmpIds.length < 1) {
+        Notification({
+          title: '提示',
+          message: '请先选择分派人员',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        return
+      }
+      var param = {
+        caseId: this.curDispatchItem.id,
+        userIds: tmpIds
+      }
+      const config = { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
+      this.$axios
+        .post(caseListApi.designateCaseToUsers, param, config)
+        .then(res => {
+          if (res && res.data && res.data.code === 0) {
+            this.dispatchBoxVisible = false
+            Notification({
+              title: '提示',
+              message: '分派成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+          } else {
+            Notification({
+              title: '提示',
+              message: '分派失败',
+              type: 'warning',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          Notification({
+            title: '提示',
+            message: '分派异常',
+            type: 'error',
+            duration: 5 * 1000
+          })
+          console.log('handle exception:', err)
+        })
     },
 
     chatBoxShowOrHide () {
@@ -583,10 +645,12 @@ export default {
       this.curHandleItem = {}
       this.$refs.handleRef.resetFields()
     },
-    dispatchBoxShow () {
+    dispatchBoxShow (item) {
+      this.curDispatchItem = item
       this.dispatchBoxVisible = true
     },
     closeDispatchBox () {
+      this.curDispatchItem = {}
       this.dispatchBoxVisible = false
     },
     /**
@@ -1138,19 +1202,17 @@ export default {
           cursor: pointer;
         }
         .list {
-          height: 500px;
+          margin-top: 25px;
+          height: 475px;
           overflow-y: auto;
-          p {
+          div {
             height: 35px;
             line-height: 35px;
             border-bottom: 1px solid #1eb0fc;
             color: #eee;
             margin-bottom: 20px;
           }
-          p:nth-child(1) {
-            margin-top: 25px;
-          }
-          p > img {
+          div > img {
             margin: 0 25px 0 30px;
           }
         }
