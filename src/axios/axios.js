@@ -38,6 +38,7 @@ service.interceptors.request.use((config) => {
     config.url !== '/fms-river-protection/riverCase/selectListDeptInfo' &&
     config.url !== '/fms-river-protection/riverCase/selectListUserPolice' &&
     config.url !== '/fms-river-protection/riverCase/add' &&
+    config.url !== '/fms-river-protection/chat/uploadFile' &&
     config.url !== '/fms-river-protection/riverCase/selectPage' &&
     config.url !== '/fms-river-protection/riverDesignate/selectDesignateUserList' &&
     config.url !== '/fms-river-protection/riverDesignate/designateUsers' &&

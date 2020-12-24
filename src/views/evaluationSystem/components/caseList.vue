@@ -96,7 +96,11 @@
             :class="[talk.isRight === true ? 'right_talk' :'left_talk']"
           >
             <img class="img" :src="msg" v-if="talk.type ==='img'" />
-            <div class="playerBox" v-if="talk.type ==='video'">
+            <div
+              class="playerBox"
+              :class="{videoRight:talk.isRight === true}"
+              v-else-if="talk.type ==='video'"
+            >
               <LivePlayer
                 :videoUrl="msg"
                 :show-custom-button="false"
@@ -123,6 +127,7 @@
           resize="none"
           v-model.trim="msg"
           maxlength="100"
+          @keyup.enter.native="sendMessage"
         ></el-input>
         <div class="bottom_btn">
           <span class="btn_clear" @click.stop="msg = ''">清空</span>
@@ -455,7 +460,7 @@ export default {
           const tempData = res.data.data.filter(r => {
             r.isChecked = false
             r.name = r.username + ' ' + r.deptName
-            return (r.deptName !== null)
+            return r.deptName !== null
           })
           this.dispatchList = tempData
           console.log('getDesignateUserList:', tempData)
@@ -657,6 +662,7 @@ export default {
     fileChange (e) {
       if (e.target.files.length <= 0) return
       const f = e.target.files[0]
+      this.$refs.uploadFile.value = null
       const fileType = f.name
         .substring(f.name.lastIndexOf('.') + 1, f.name.length)
         .toLowerCase()
@@ -667,6 +673,24 @@ export default {
           message: '只能上传图片或者视频'
         })
       }
+
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } }
+      const formData = new FormData()
+      formData.append('chatFile', f)
+      this.$axios
+        .post(caseListApi.chatUploadFile, formData, config)
+        .then(res => {
+          if (res.data.code === 0) {
+            const type = fileType === 'mp4' ? 'video' : 'img'
+            this.sendCaseMessage(
+              type,
+              globalApi.headImg + res.data.data.filePath
+            )
+          }
+        })
+        .catch(err => {
+          console.log('chatUploadFile Err : ' + err)
+        })
     },
 
     // 获取组织树
@@ -770,13 +794,16 @@ export default {
         .then(res => {
           if (res.data.code === 0) {
             this.talks = []
-            const chats = res.data.data.records
+            const chats = res.data.data.records.reverse()
             chats.forEach(c => {
               const message = JSON.parse(c.msgContent)
               this.talks.push({
-                person: message.userid === this.userDetail.id ? '我' : message.username,
+                person:
+                  message.userid === this.userDetail.id
+                    ? '我'
+                    : message.username,
                 messages: [message.msg],
-                time: message.sendTime,
+                time: parseInt(message.sendTime),
                 type: message.type,
                 isRight: message.userid === this.userDetail.id
               })
@@ -801,10 +828,10 @@ export default {
       this.chatBoxToBottom()
     },
     /**
-     *  发送消息
+     *  发送案件消息
      */
-    sendMessage () {
-      if (stringIsNullOrEmpty(this.msg)) return
+    sendCaseMessage (type, msg) {
+      if (stringIsNullOrEmpty(msg)) return
       const time = new Date().getTime()
       new MqttService().client.send(
         'web/river/caseHandling',
@@ -812,22 +839,31 @@ export default {
           sendTime: time,
           userid: this.userDetail.id,
           username: this.username,
-          type: 'txt', // type：txt img video
-          msg: this.msg // 如果type是img、video , msg就是图片和video的地址
+          type: type, // type：txt img video
+          msg: msg // 如果type是img、video , msg就是图片和video的地址
         })
       )
       this.talks.push({
         person: '我',
         isRight: true,
-        messages: [this.msg],
+        messages: [msg],
+        type: type,
         time: time
       })
       this.msg = ''
       this.chatBoxToBottom()
     },
+    /**
+     *  发送消息
+     */
+    sendMessage () {
+      this.sendCaseMessage('txt', this.msg)
+    },
     chatBoxToBottom () {
       this.$nextTick(() => {
-        if (this.$refs.chatBox) { this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight }
+        if (this.$refs.chatBox) {
+          this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight
+        }
       })
     }
   }
@@ -988,6 +1024,9 @@ export default {
           width: 148px;
           height: 78px;
           position: relative;
+        }
+        .videoRight {
+          float: right;
         }
       }
       .left_talk {
