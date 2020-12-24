@@ -653,7 +653,7 @@ export default {
     },
     dispatchBoxShow (item) {
       this.curDispatchItem = item
-      this.dispatchList.forEach(r => r.isChecked = false)
+      this.dispatchList.forEach(r => { r.isChecked = false })
       this.dispatchBoxVisible = true
     },
     closeDispatchBox () {
