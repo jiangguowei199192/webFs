@@ -473,7 +473,7 @@ export default {
         .then(res => {
           const tempData = res.data.data.filter(r => {
             r.isChecked = false
-            r.name = r.username + ' - ' + r.deptName
+            r.name = r.username + ' ' + r.deptName
             return (r.deptName !== null)
           })
           this.dispatchList = tempData
