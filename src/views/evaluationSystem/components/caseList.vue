@@ -46,13 +46,6 @@
             >
               <p class="fl">{{ case_item.belong }}</p>
             </el-tooltip>
-            <!-- <img
-              style="cursor: pointer"
-              class="fr"
-              :src="chatImg"
-              alt=""
-              @click.stop="chatBoxShowOrHide"
-            />-->
           </div>
           <div class="item_center">
             <div class="left fl" v-if="case_item.img || case_item.img !== null">
@@ -94,10 +87,8 @@
       </div>
       <div ref="chatBox" class="case_content webFsScroll">
         <div v-for="(talk,index) in talks" :key="index" class="talk_box">
-          <div class="name_box">
-            <span>{{timeFormat2(talk.time)}}</span>
-            <span :class="[talk.isRight === true ? 'right':'left']">{{talk.person}}</span>
-          </div>
+          <span class="time">{{timeFormat2(talk.time)}}</span>
+          <span class="name" :class="[talk.isRight === true ? 'right':'left']">{{talk.person}}</span>
           <div
             v-for="(msg,index2) in talk.messages"
             :key="index2"
@@ -123,26 +114,6 @@
             <span v-else class="msg">{{msg}}</span>
           </div>
         </div>
-        <!-- <div>
-          <span>2020-12-15 13:24:36</span>
-          <span>武汉渔政 刘明涛</span>
-          <p>将非法捕捞预警指派给王军</p>
-        </div>
-        <div>
-          <div style="height: 20px">
-            <span>王家湾渔政 黄宏伟</span>
-            <span>2020-12-15 13:24:36</span>
-          </div>
-          <div style="margin: 10px 0 0 10px; width: 170px">
-            <p>已收到指令</p>
-            <p style="margin-top: 10px">正在前往案发中心处置</p>
-          </div>
-        </div>
-        <div>
-          <span style="background: transparent"></span>
-          <span>武汉渔政 刘明涛</span>
-          <p>限时上报处置时间</p>
-        </div>-->
       </div>
       <div class="case_bottom">
         <el-input
@@ -445,6 +416,7 @@ export default {
 
   mounted () {
     this.getTodayCase()
+    this.getChatList()
     this.userDetail = JSON.parse(localStorage.getItem('userDetail'))
     this.username = this.userDetail.deptName + ' ' + this.userDetail.username
     const me = this
@@ -467,7 +439,9 @@ export default {
       const param = {
         deptName: this.dispatchInput
       }
-      const config = { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
+      const config = {
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+      }
       this.$axios
         .post(caseListApi.queryDesignateUserList, param, config)
         .then(res => {
@@ -605,7 +579,9 @@ export default {
         caseId: this.curDispatchItem.id,
         userIds: tmpIds
       }
-      const config = { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
+      const config = {
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+      }
       this.$axios
         .post(caseListApi.designateCaseToUsers, param, config)
         .then(res => {
@@ -653,7 +629,9 @@ export default {
     },
     dispatchBoxShow (item) {
       this.curDispatchItem = item
-      this.dispatchList.forEach(r => { r.isChecked = false })
+      this.dispatchList.forEach(r => {
+        r.isChecked = false
+      })
       this.dispatchBoxVisible = true
     },
     closeDispatchBox () {
@@ -773,6 +751,35 @@ export default {
       } else {
         return [tmpMap.lon, tmpMap.lat]
       }
+    },
+    /**
+     *  获取聊天历史
+     */
+    getChatList () {
+      this.$axios
+        .get(caseListApi.chatListPage, {
+          params: { currentPage: 0, pageSize: 10 }
+        })
+        .then(res => {
+          if (res.data.code === 0) {
+            this.talks = []
+            const chats = res.data.data.records
+            chats.forEach(c => {
+              const message = JSON.parse(c.msgContent)
+              this.talks.push({
+                person: message.userid === this.userDetail.id ? '我' : message.username,
+                messages: [message.msg],
+                time: message.sendTime,
+                type: message.type,
+                isRight: message.userid === this.userDetail.id
+              })
+            })
+            this.chatBoxToBottom()
+          }
+        })
+        .catch(err => {
+          console.log('chatListPage Err : ' + err)
+        })
     },
     /**
      *  接收案件消息
@@ -928,27 +935,25 @@ export default {
     .talk_box {
       display: flex;
       flex-direction: column;
-      .name_box {
-        position: relative;
+      font-size: 12px;
+      .time {
+        margin: auto;
         margin-top: 12px;
-        font-size: 12px;
-        span:nth-child(1) {
-          background: rgba($color: #fff, $alpha: 0.1);
-          font-size: 12px;
-          border-radius: 4px;
-          padding: 2px 10px;
-        }
-        span:nth-child(2) {
-          position: absolute;
-          color: #10e73f;
-          float: right;
-        }
-        .left {
-          left: 8px;
-        }
-        .right {
-          right: 8px;
-        }
+        background: rgba($color: #fff, $alpha: 0.1);
+        border-radius: 4px;
+        padding: 2px 10px;
+        color: #d1d1d1;
+      }
+      .name {
+        margin-top: 12px;
+      }
+      .left {
+        text-align: left;
+        color: #fff;
+      }
+      .right {
+        text-align: right;
+        color: #10e73f;
       }
       .msg-box {
         .msg {
@@ -985,49 +990,6 @@ export default {
         text-align: right;
       }
     }
-    // div {
-    //   margin-top: 12px;
-    //   font-size: 12px;
-    //   span:nth-child(1) {
-    //     background: rgba($color: #fff, $alpha: 0.1);
-    //     font-size: 12px;
-    //     border-radius: 4px;
-    //     padding: 2px 10px;
-    //     margin-left: 125px;
-    //   }
-    //   span:nth-child(2) {
-    //     color: #10e73f;
-    //     float: right;
-    //     margin-right: 8px;
-    //   }
-    //   p {
-    //     width: 170px;
-    //     height: 30px;
-    //     line-height: 30px;
-    //     border: 1px solid#1eb0fc;
-    //     border-radius: 4px;
-    //     margin: 10px 0 0 260px;
-    //   }
-    // }
-    // div:nth-child(2) {
-    //   margin-top: 20px;
-    //   span:nth-child(1) {
-    //     background: transparent;
-    //     float: left;
-    //     margin: 0 50px 0 0;
-    //   }
-    //   span:nth-child(2) {
-    //     background: rgba($color: #fff, $alpha: 0.1);
-    //     color: #fff;
-    //     border-radius: 4px;
-    //     padding: 2px 10px;
-    //     margin-bottom: 10px;
-    //     float: left;
-    //   }
-    //   p {
-    //     margin: 0;
-    //   }
-    // }
   }
   .case_bottom {
     position: relative;
@@ -1218,10 +1180,10 @@ export default {
             border-bottom: 1px solid #1eb0fc;
             color: #eee;
             margin-bottom: 20px;
-            word-break:keep-all;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
           div > img {
             margin: 0 25px 0 30px;
