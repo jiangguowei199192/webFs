@@ -820,7 +820,7 @@ export default {
     },
     chatBoxToBottom () {
       this.$nextTick(() => {
-        this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight
+        if (this.$refs.chatBox) { this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight }
       })
     }
   }
