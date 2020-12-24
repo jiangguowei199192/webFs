@@ -207,7 +207,14 @@
           <div v-for="(dispatch_item, dispatch_index) in dispatchList" :key="dispatch_index">
             <el-checkbox v-model="dispatch_item.isChecked"></el-checkbox>
             <img :src="personImg" alt />
-            <span :title="dispatch_item.name">{{dispatch_item.name}}</span>
+            <el-tooltip
+              popper-class="gTooltip plotTooltip"
+              :content="dispatch_item.name"
+              placement="top"
+              :open-delay="500"
+            >
+              <span>{{dispatch_item.name}}</span>
+            </el-tooltip>
           </div>
         </div>
       </div>
