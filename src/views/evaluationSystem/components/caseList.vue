@@ -672,6 +672,7 @@ export default {
           title: '警告',
           message: '只能上传图片或者视频'
         })
+        return
       }
 
       const config = { headers: { 'Content-Type': 'multipart/form-data' } }
