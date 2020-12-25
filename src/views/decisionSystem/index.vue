@@ -211,7 +211,7 @@ export default {
     // this.$refs.gduMap.map2D.zoomToCenter(114.65511872631607, 30.68961010828556)
     // this.$refs.gduMap.map2D.setZoom(16)
     // Test Code
-    {
+    /* {
       const tmpShips = {
         realRadarInfos: [{
           type: 'RP_Ship',
@@ -268,7 +268,7 @@ export default {
       setTimeout(() => {
         new MqttService().client.send('radar/realTimeInfo', JSON.stringify(tmpShips2))
       }, 10000)
-    }
+    } */
 
     this.$refs.gduMap.map2D.riverProtectionManager.addRpRegions(this.rpRegions)
     this.$refs.gduMap.map2D.riverProtectionManager.popupJumpToDetailsClickEvent.addEventListener(tmpData => {
