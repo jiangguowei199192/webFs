@@ -2124,6 +2124,7 @@ export default {
         right: 40px;
         width: 306px;
         height: 568px;
+        z-index:10;
         cursor: text;
         background: url(../../../assets/images/AR/police_info.png) no-repeat;
         div.title {
