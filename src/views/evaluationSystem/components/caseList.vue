@@ -95,8 +95,9 @@
             class="msg-box"
             :class="[talk.isRight === true ? 'right_talk' :'left_talk']"
           >
-            <img class="img" :src="msg" v-if="talk.type ==='img'" />
+            <img class="img" :src="msg" v-if="talk.type ==='img'" @click.stop="showDlg('img',msg)" />
             <div
+              @click.stop="showDlg('video',msg)"
               class="playerBox"
               :class="{videoRight:talk.isRight === true}"
               v-else-if="talk.type ==='video'"
@@ -125,7 +126,7 @@
           placeholder="请在此输入文字...."
           type="textarea"
           resize="none"
-          v-model.trim="msg"
+          v-model="msg"
           maxlength="100"
           @keyup.enter.native="sendMessage"
         ></el-input>
@@ -316,6 +317,32 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog
+      custom-class="el-dialog-custom"
+      :visible.sync="imgDlgVis"
+      :show-close="false"
+      center
+      :append-to-body="true"
+      @close="dlgData.type =''"
+    >
+      <!-- <div> -->
+      <img :src="dlgData.msg" v-if="dlgData.type ==='img'" style="height:100%;width:100%" />
+      <LivePlayer
+        v-else-if="dlgData.type ==='video'"
+        :videoUrl="dlgData.msg"
+        :show-custom-button="false"
+        :muted="false"
+        :controls="false"
+        :autoplay="true"
+        oncontextmenu="return false"
+        fluent
+        :stretch="true"
+        :live="false"
+        aspect="fullscreen"
+        :poster="poster"
+      ></LivePlayer>
+      <!-- </div> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -336,6 +363,8 @@ export default {
 
   data () {
     return {
+      imgDlgVis: false,
+      dlgData: { type: '', msg: '' },
       poster: require('../../../assets/images/loading.gif'),
       msg: '',
       fileTypes: ['mp4', 'png', 'jpg', 'jpeg'],
@@ -817,6 +846,14 @@ export default {
         })
     },
     /**
+     *  显示图片/视频放大对话框
+     */
+    showDlg (type, msg) {
+      this.dlgData.type = type
+      this.dlgData.msg = msg
+      this.imgDlgVis = true
+    },
+    /**
      *  接收案件消息
      */
     caseHandling (info) {
@@ -832,7 +869,7 @@ export default {
      *  发送案件消息
      */
     sendCaseMessage (type, msg) {
-      if (stringIsNullOrEmpty(msg)) return
+      if (stringIsNullOrEmpty(msg) || msg.trim().length === 0) return
       const time = new Date().getTime()
       new MqttService().client.send(
         'web/river/caseHandling',
@@ -841,7 +878,7 @@ export default {
           userid: this.userDetail.id,
           username: this.username,
           type: type, // type：txt img video
-          msg: msg // 如果type是img、video , msg就是图片和video的地址
+          msg: msg.trim() // 如果type是img、video , msg就是图片和video的地址
         })
       )
       this.talks.push({
@@ -1019,12 +1056,14 @@ export default {
           display: inline-block;
           width: 148px;
           height: 78px;
+          cursor: pointer;
         }
         .playerBox {
           margin-top: 10px;
           width: 148px;
           height: 78px;
           position: relative;
+          cursor: pointer;
         }
         .videoRight {
           float: right;
