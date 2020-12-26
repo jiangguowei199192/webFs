@@ -147,6 +147,15 @@
           <div class="detailText1 detailText2">处置时间：{{ detailDlg.handleTime }}</div>
           <div class="detailText1">处置人：{{ detailDlg.handlePeople }}</div>
         </div>
+        <div class="imgScroll imgBox">
+          <img
+            class="img"
+            :src="serverUrl+img"
+            v-for="(img,index2) in detailDlg.images"
+            :key="index2"
+            @click.stop="imgDlgVis=true;imgSrc=img"
+          />
+        </div>
 
         <div class="npdCancel" @click="detailCancelClick">关闭</div>
       </div>
@@ -235,6 +244,16 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog
+      custom-class="el-dialog-custom"
+      :visible.sync="imgDlgVis"
+      :show-close="false"
+      type="primary"
+      @click.native="imgDlgVis = false"
+      center
+    >
+      <img class="dialogImg" :src="serverUrl+imgSrc" />
+    </el-dialog>
   </div>
 </template>
 
@@ -243,6 +262,7 @@ import { policeApi } from '@/api/police.js'
 import { Notification } from 'element-ui'
 import qs from 'qs'
 import { loginApi } from '@/api/login'
+import globalApi from '@/utils/globalApi'
 
 export default {
   name: 'individual',
@@ -252,6 +272,9 @@ export default {
   },
   data () {
     return {
+      imgDlgVis: false,
+      imgSrc: '',
+      serverUrl: globalApi.headImg,
       uploadFiles: [], // 要上传的文件对象
       uploadList: [],
       searchImg: require('../../assets/images/policeHistory/search.png'),
@@ -344,6 +367,9 @@ export default {
                 handleTime: item.dispositionTime,
                 handlePeople: item.dispositionMan
               }
+              if (item.dispositionImgUrl) {
+                dict.images = item.dispositionImgUrl.split(',')
+              } else dict.images = []
               tempArr.push(dict)
             })
             this.policeList = tempArr
@@ -406,6 +432,7 @@ export default {
       this.detailDlg.handleResult = this.policeList[index].handleResult
       this.detailDlg.handleTime = this.policeList[index].handleTime
       this.detailDlg.handlePeople = this.policeList[index].handlePeople
+      this.detailDlg.images = this.policeList[index].images
 
       this.showDetail = true
     },
@@ -722,18 +749,52 @@ export default {
     }
     background: transparent;
     .el-dialog__body {
+      box-sizing: border-box;
       display: inline-block;
       // padding: 0px;
-      padding: 45px 54px 41px 59px;
+      padding: 45px 54px 0px 59px;
       width: 100%;
-      height: 569px;
+      height: 619px;
       background: url(../../assets/images/policeHistory/detailBox.png) no-repeat;
       background-size: 100% 100%;
     }
   }
 }
+.imgScroll::-webkit-scrollbar {
+  height: 4px;
+}
+.imgScroll::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 2px;
+  background: #1eb0fc;
+}
+.imgScroll::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  background: transparent;
+}
+.imgBox {
+  margin-top: 10px;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  width: 100%;
+  height: 76px;
+  display: flex;
+  .img {
+    display: inline-block;
+    width: 120px;
+    height: 68px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+}
+.dialogImg {
+  width: 100%;
+  height: 100%;
+}
 .npdCancel {
-  float: right;
+  position: absolute;
+  right: 54px;
+  bottom: 21px;
   width: 87px;
   height: 32px;
   background: transparent;
@@ -744,7 +805,6 @@ export default {
   border-radius: 4px;
   border: solid 1px #1eb0fc;
   cursor: pointer;
-  margin-top: 24px;
 }
 
 .detailTitle {
@@ -761,7 +821,7 @@ export default {
   display: inline-block;
   color: white;
   font-size: 16px;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 .detailText2 {
   width: 450px;
@@ -769,7 +829,7 @@ export default {
 .detailText3 {
   color: white;
   font-size: 16px;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 .npdConfirm1 {
   float: right;
