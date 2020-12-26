@@ -142,7 +142,7 @@
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="handleBoxVisible"
-      width="960px"
+      width="871px"
       class="handel_box"
     >
       <div>
@@ -155,16 +155,20 @@
           label-width="90px"
           :inline="true"
           :rules="handleRules"
-          style="margin: 30px 50px 0 46px"
+          style="margin: 40px 37px 0 34px"
         >
           <el-form-item label="处置结果" prop="record" class="textarea">
-            <el-input placeholder="请输入...." type="textarea" v-model="handleForm.record"></el-input>
+            <el-input
+              placeholder="请输入...."
+              type="textarea"
+              v-model="handleForm.record"
+              resize="none"
+            ></el-input>
           </el-form-item>
           <div
             style="
               display: flex;
               justify-content: space-between;
-              margin-top: 10px;
             "
           >
             <el-form-item label="处置时间" prop="time" class="input">
@@ -180,7 +184,22 @@
             </el-form-item>
           </div>
         </el-form>
-        <div class="handle_bottom" style="margin-top: 20px">
+        <div class="upload">
+          <el-upload
+            multiple
+            :limit="10"
+            :file-list="uploadList"
+            name="flies"
+            :auto-upload="false"
+            :on-change="onUploadChange"
+            :on-remove="onRemoveFile"
+            action
+          >
+            <el-button type="primary" class="btn">选择图片</el-button>
+            <span slot="tip" class="tip">最多只能上传10张图片</span>
+          </el-upload>
+        </div>
+        <div class="handle_bottom btns">
           <div class="btn_cancel" @click.stop="closeHandleBox">取消</div>
           <div class="btn_confirm" @click.stop="submitHandleAdd">确定</div>
         </div>
@@ -363,6 +382,8 @@ export default {
 
   data () {
     return {
+      uploadFiles: [], // 要上传的文件对象
+      uploadList: [],
       imgDlgVis: false,
       dlgData: { type: '', msg: '' },
       poster: require('../../../assets/images/loading.gif'),
@@ -554,25 +575,51 @@ export default {
           console.log('接口错误: ' + err)
         })
     },
-
+    // 移除上传文件
+    onRemoveFile (file, fileList) {
+      const index = this.uploadFiles.indexOf(file.raw)
+      if (index !== -1) {
+        this.uploadFiles.splice(index, 1)
+      }
+    },
+    // 上传图片前的处理
+    onUploadChange (file) {
+      const isJPG =
+        file.raw.type === 'image/jpeg' ||
+        file.raw.type === 'image/png' ||
+        file.raw.type === 'image/jpg'
+      if (!isJPG) {
+        this.uploadList.splice(this.uploadList.length - 1, 1)
+        Notification({
+          title: '提示',
+          message: '只能上传图片',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        return false
+      }
+      this.uploadFiles.push(file.raw)
+    },
     // 案件处置
     submitHandleAdd () {
       this.$refs.handleRef.validate(valid => {
         if (!valid) return
-
-        var param = {
-          id: this.curHandleItem.id,
-          dispositionMan: this.handleForm.people,
-          dispositionRecord: this.handleForm.record,
-          dispositionTime: this.handleForm.time
-        }
+        const formData = new FormData()
+        formData.append('id', this.curHandleItem.id)
+        formData.append('dispositionMan', this.handleForm.people)
+        formData.append('dispositionRecord', this.handleForm.record)
+        formData.append('dispositionTime', this.handleForm.time)
+        this.uploadFiles.forEach(f => {
+          formData.append('flies', f)
+        })
+        const config = { headers: { 'Content-Type': 'multipart/form-data' } }
         this.$axios
-          .post(policeApi.dispose, param, {
-            headers: { 'Content-Type': 'application/json;charset=UTF-8' }
-          })
+          .post(policeApi.dispose, formData, config)
           .then(res => {
             if (res && res.data && res.data.code === 0) {
               this.handleBoxVisible = false
+              this.uploadFiles = []
+              this.uploadList = []
               this.getTodayCase()
               Notification({
                 title: '提示',
@@ -663,6 +710,8 @@ export default {
       this.handleBoxVisible = true
     },
     closeHandleBox () {
+      this.uploadFiles = []
+      this.uploadList = []
       this.handleBoxVisible = false
       this.handleForm = {}
       this.curHandleItem = {}
@@ -1139,7 +1188,7 @@ export default {
       display: inline-block;
       padding: 0px;
       width: 100%;
-      height: 360px;
+      height: 438px;
       background: url(../../../assets/images/policeHistory/handleBox.png)
         no-repeat center/100% 100%;
       .handel_header {
@@ -1156,8 +1205,8 @@ export default {
       }
       .textarea {
         .el-textarea__inner {
-          width: 760px;
-          height: 106px;
+          width: 700px;
+          height: 80px;
           border: 1px solid #0fbfe0;
           background-color: transparent;
           color: rgb(243, 243, 243);
@@ -1165,7 +1214,9 @@ export default {
       }
       .input {
         .el-input__inner {
-          width: 320px;
+          box-sizing: border-box;
+          height: 30px;
+          width: 280px;
           color: white;
           border: solid 1px #0fbfe0;
           background-color: transparent;
@@ -1174,6 +1225,63 @@ export default {
       .el-form-item__label {
         color: #0fbfe0;
         font-size: 15px;
+      }
+      .btns {
+        position: absolute;
+        bottom: 30px;
+        right: 37px;
+        padding: 0px;
+      }
+    }
+  }
+}
+.upload {
+  padding: 0px 37px 20px 34px;
+  .btn {
+    width: 120px;
+    height: 34px;
+    background: #1eb0fc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 0px;
+  }
+  .tip {
+    margin-left: 8px;
+    font-size: 12px;
+    color: #999999;
+  }
+  /deep/.el-upload-list {
+    margin-top: 5px;
+    .el-upload-list__item {
+      float: left;
+      margin-top: 10px;
+      width: auto;
+      border-radius: 0px;
+      margin-right: 30px;
+      .el-upload-list__item-name {
+        color: #999999;
+        margin-right: 6px;
+      }
+      .el-icon-close {
+        color: #ffffff;
+        background: url(../../../assets/images/x.png) no-repeat;
+        width: 12px;
+        height: 12px;
+        top: -6px;
+        right: -6px;
+      }
+    }
+    .el-upload-list__item:focus {
+      outline: none;
+    }
+    .el-upload-list__item:hover {
+      background: #828388;
+      .el-upload-list__item-name,
+      .el-icon-document:before {
+        color: #ffffff;
+      }
+      .el-icon-close:before {
+        display: none;
       }
     }
   }
