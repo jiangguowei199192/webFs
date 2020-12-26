@@ -199,7 +199,7 @@
             <span slot="tip" class="tip">最多只能上传10张图片</span>
           </el-upload>
         </div>
-        <div class="handle_bottom btns">
+        <div class="handle_bottom">
           <div class="btn_cancel" @click.stop="closeHandleBox">取消</div>
           <div class="btn_confirm" @click.stop="submitHandleAdd">确定</div>
         </div>
@@ -243,7 +243,7 @@
           </div>
         </div>
       </div>
-      <div class="handle_bottom" style="padding: 12px 0">
+      <div class="dispatch_bottom">
         <div class="btn_cancel" @click.stop="closeDispatchBox">取消</div>
         <div class="btn_confirm" @click.stop="submitDispatchAdd">确定</div>
       </div>
@@ -1176,118 +1176,9 @@ export default {
     }
   }
 }
-// 处置结果弹框
-.handel_box.el-dialog__wrapper {
-  background-color: rgba($color: #040404, $alpha: 0.76);
-  /deep/.el-dialog {
-    .el-dialog__header {
-      display: none;
-    }
-    background: transparent;
-    .el-dialog__body {
-      display: inline-block;
-      padding: 0px;
-      width: 100%;
-      height: 438px;
-      background: url(../../../assets/images/policeHistory/handleBox.png)
-        no-repeat center/100% 100%;
-      .handel_header {
-        width: 165px;
-        height: 34px;
-        line-height: 34px;
-        background: url(../../../assets/images/header-bg.png) no-repeat
-          center/100%;
-        padding-left: 15px;
-        margin: 15px 0 0 15px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #fff;
-      }
-      .textarea {
-        .el-textarea__inner {
-          width: 700px;
-          height: 80px;
-          border: 1px solid #0fbfe0;
-          background-color: transparent;
-          color: rgb(243, 243, 243);
-        }
-      }
-      .input {
-        .el-input__inner {
-          box-sizing: border-box;
-          height: 30px;
-          width: 280px;
-          color: white;
-          border: solid 1px #0fbfe0;
-          background-color: transparent;
-        }
-      }
-      .el-form-item__label {
-        color: #0fbfe0;
-        font-size: 15px;
-      }
-      .btns {
-        position: absolute;
-        bottom: 30px;
-        right: 37px;
-        padding: 0px;
-      }
-    }
-  }
-}
-.upload {
-  padding: 0px 37px 20px 34px;
-  .btn {
-    width: 120px;
-    height: 34px;
-    background: #1eb0fc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    padding: 0px;
-  }
-  .tip {
-    margin-left: 8px;
-    font-size: 12px;
-    color: #999999;
-  }
-  /deep/.el-upload-list {
-    margin-top: 5px;
-    .el-upload-list__item {
-      float: left;
-      margin-top: 10px;
-      width: auto;
-      border-radius: 0px;
-      margin-right: 30px;
-      .el-upload-list__item-name {
-        color: #999999;
-        margin-right: 6px;
-      }
-      .el-icon-close {
-        color: #ffffff;
-        background: url(../../../assets/images/x.png) no-repeat;
-        width: 12px;
-        height: 12px;
-        top: -6px;
-        right: -6px;
-      }
-    }
-    .el-upload-list__item:focus {
-      outline: none;
-    }
-    .el-upload-list__item:hover {
-      background: #828388;
-      .el-upload-list__item-name,
-      .el-icon-document:before {
-        color: #ffffff;
-      }
-      .el-icon-close:before {
-        display: none;
-      }
-    }
-  }
-}
-.handle_bottom {
-  padding: 0 40px;
+
+.dispatch_bottom {
+  padding: 12px 0;
   display: flex;
   justify-content: flex-end;
   .btn_confirm,

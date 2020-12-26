@@ -2,12 +2,7 @@
   <div class="individual">
     <div class="container">
       <div style="height: 40px">
-        <el-select
-          placeholder="案件所属"
-          v-model="search.belong"
-          class="belongSel"
-          clearable
-        >
+        <el-select placeholder="案件所属" v-model="search.belong" class="belongSel" clearable>
           <el-option
             v-for="(item, index) in deptTree"
             :key="index"
@@ -27,11 +22,7 @@
           value-format="yyyyMMdd"
         ></el-date-picker>
 
-        <el-input
-          placeholder="请输入举报人/举报地点/简要描述进行搜索"
-          v-model="search.other"
-          class="otherInput"
-        ></el-input>
+        <el-input placeholder="请输入举报人/举报地点/简要描述进行搜索" v-model="search.other" class="otherInput"></el-input>
 
         <div class="searchBtn" @click="searchClick">
           <img
@@ -51,15 +42,14 @@
               line-height: 40px;
               vertical-align: top;
             "
-            >搜索</span
-          >
+          >搜索</span>
         </div>
 
         <div class="deleteBtn" @click="deleteClick">批量删除</div>
         <!-- <div class="clearBtn">清空</div> -->
         <div class="chooseCount">
-          已选<span style="color: #ff0000">{{ selectedItem.length }}</span
-          >项
+          已选
+          <span style="color: #ff0000">{{ selectedItem.length }}</span>项
         </div>
       </div>
 
@@ -73,18 +63,8 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column
-            width="60"
-            align="center"
-            label="序号"
-            prop="xuHao"
-          ></el-table-column>
-          <el-table-column
-            width="200"
-            align="center"
-            label="案件编号"
-            prop="bianHao"
-          >
+          <el-table-column width="60" align="center" label="序号" prop="xuHao"></el-table-column>
+          <el-table-column width="200" align="center" label="案件编号" prop="bianHao">
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -97,53 +77,18 @@
                   font-size: 16px;
                   color: #1eb0fc;
                 "
-              >
-                {{ scope.row.bianHao }}
-              </el-button>
+              >{{ scope.row.bianHao }}</el-button>
             </template>
           </el-table-column>
-          <el-table-column
-            align="center"
-            label="信息来源"
-            prop="source"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="举报人"
-            prop="people"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="举报电话"
-            prop="phone"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="举报地点"
-            prop="address"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="举报时间"
-            prop="time"
-            width="170"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="案件所属"
-            prop="belong"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="简要描述"
-            prop="description"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="状态"
-            prop="status"
-          ></el-table-column>
-          <el-table-column align="center" label="操作" prop="">
+          <el-table-column align="center" label="信息来源" prop="source"></el-table-column>
+          <el-table-column align="center" label="举报人" prop="people"></el-table-column>
+          <el-table-column align="center" label="举报电话" prop="phone"></el-table-column>
+          <el-table-column align="center" label="举报地点" prop="address"></el-table-column>
+          <el-table-column align="center" label="举报时间" prop="time" width="170"></el-table-column>
+          <el-table-column align="center" label="案件所属" prop="belong"></el-table-column>
+          <el-table-column align="center" label="简要描述" prop="description"></el-table-column>
+          <el-table-column align="center" label="状态" prop="status"></el-table-column>
+          <el-table-column align="center" label="操作" prop>
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -151,11 +96,8 @@
                 @click="resolve(scope.$index, scope.row)"
                 class="unHandleBtn"
                 v-if="scope.row.status === '未处置'"
-                >未处置</el-button
-              >
-              <el-button size="mini" type="danger" v-else class="handleBtn"
-                >已处置</el-button
-              >
+              >未处置</el-button>
+              <el-button size="mini" type="danger" v-else class="handleBtn">已处置</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -183,22 +125,16 @@
         <div class="detailTitle">案件信息</div>
         <div class="detailTitleLine"></div>
         <div>
-          <div class="detailText1 detailText2">
-            案件编号：{{ detailDlg.bianHao }}
-          </div>
+          <div class="detailText1 detailText2">案件编号：{{ detailDlg.bianHao }}</div>
           <div class="detailText1">信息来源：{{ detailDlg.source }}</div>
         </div>
         <div>
-          <div class="detailText1 detailText2">
-            举报人：{{ detailDlg.people }}
-          </div>
+          <div class="detailText1 detailText2">举报人：{{ detailDlg.people }}</div>
           <div class="detailText1">举报电话：{{ detailDlg.phone }}</div>
         </div>
         <div class="detailText3">举报地址：{{ detailDlg.address }}</div>
         <div>
-          <div class="detailText1 detailText2">
-            举报时间：{{ detailDlg.time }}
-          </div>
+          <div class="detailText1 detailText2">举报时间：{{ detailDlg.time }}</div>
           <div class="detailText1">案件所属：{{ detailDlg.belong }}</div>
         </div>
         <div class="detailText3">简要描述：{{ detailDlg.description }}</div>
@@ -208,9 +144,7 @@
         <div class="detailTitleLine"></div>
         <div class="detailText3">处置结果：{{ detailDlg.handleResult }}</div>
         <div>
-          <div class="detailText1 detailText2">
-            处置时间：{{ detailDlg.handleTime }}
-          </div>
+          <div class="detailText1 detailText2">处置时间：{{ detailDlg.handleTime }}</div>
           <div class="detailText1">处置人：{{ detailDlg.handlePeople }}</div>
         </div>
 
@@ -221,44 +155,64 @@
     <el-dialog
       :close-on-click-modal="false"
       :visible.sync="showHandle"
-      width="960px"
-      class="newPoliceDlg"
+      width="871px"
+      class="handel_box"
     >
       <div>
-        <div class="npdTitleSty">处置记录</div>
+        <div class="handel_header">处置记录</div>
         <el-form
           ref="handleRef"
           :model="handleForm"
           label-width="90px"
           :inline="true"
           :rules="handleRules"
-          style="margin-top: 30px; margin-left: 46px; margin-right: 50px"
+          style="margin: 40px 37px 0 34px"
         >
-          <el-form-item label="处置记录" prop="record" class="input2">
+          <el-form-item label="处置结果" prop="record" class="textarea">
             <el-input
-              placeholder="请输入"
+              placeholder="请输入...."
+              type="textarea"
               v-model="handleForm.record"
+              resize="none"
             ></el-input>
           </el-form-item>
-          <el-form-item label="处置时间" prop="time" class="input1">
-            <el-date-picker
-              v-model="handleForm.time"
-              type="datetime"
-              placeholder="请选择"
-              class="timeStyle"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item label="处置人" prop="people" class="input2">
-            <el-input
-              placeholder="请输入"
-              v-model="handleForm.people"
-            ></el-input>
-          </el-form-item>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <el-form-item label="处置时间" prop="time" class="input">
+              <el-date-picker
+                v-model="handleForm.time"
+                type="datetime"
+                placeholder="请选择"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="处置人" prop="people" class="input">
+              <el-input placeholder="请输入" v-model="handleForm.people"></el-input>
+            </el-form-item>
+          </div>
         </el-form>
-        <div style="height: 32px">
-          <div class="npdConfirm1" @click="handelConfirmClick">确定</div>
-          <div class="npdCancel1" @click="handelCancelClick">取消</div>
+        <div class="upload">
+          <el-upload
+            multiple
+            :limit="10"
+            :file-list="uploadList"
+            name="flies"
+            :auto-upload="false"
+            :on-change="onUploadChange"
+            :on-remove="onRemoveFile"
+            action
+          >
+            <el-button type="primary" class="btn">选择图片</el-button>
+            <span slot="tip" class="tip">最多只能上传10张图片</span>
+          </el-upload>
+        </div>
+        <div class="handle_bottom">
+          <div class="btn_cancel" @click.stop="handelCancelClick">取消</div>
+          <div class="btn_confirm" @click.stop="handelConfirmClick">确定</div>
         </div>
       </div>
     </el-dialog>
@@ -270,9 +224,7 @@
       class="deleteTipDlg"
     >
       <div>
-        <div style="color: white; margin-left: 30px; margin-top: 30px">
-          您确认删除这些数据吗？
-        </div>
+        <div style="color: white; margin-left: 30px; margin-top: 30px">您确认删除这些数据吗？</div>
         <div style="color: white; margin-left: 30px; margin-top: 10px">
           <span style="color: red;">删除后无法撤销</span>
           <span style="color: gray;">，您还要继续吗？</span>
@@ -300,6 +252,8 @@ export default {
   },
   data () {
     return {
+      uploadFiles: [], // 要上传的文件对象
+      uploadList: [],
       searchImg: require('../../assets/images/policeHistory/search.png'),
       deptTree: [],
       search: {
@@ -366,7 +320,7 @@ export default {
         .post(policeApi.selectPage, param, {
           headers: { 'Content-Type': 'application/json;charset=UTF-8' }
         })
-        .then((res) => {
+        .then(res => {
           if (res && res.data && res.data.code === 0) {
             var tempData = res.data.data
             this.pageData.total = tempData.total
@@ -399,7 +353,7 @@ export default {
 
     // 获取组织树
     async getDeptTree () {
-      this.$axios.post(loginApi.getDeptTree).then((res) => {
+      this.$axios.post(loginApi.getDeptTree).then(res => {
         if (res && res.data && res.data.code === 0) {
           this.deptTree = res.data.data[0].children
         }
@@ -467,27 +421,54 @@ export default {
         this.$refs.handleRef.resetFields()
       }
     },
+    // 移除上传文件
+    onRemoveFile (file, fileList) {
+      const index = this.uploadFiles.indexOf(file.raw)
+      if (index !== -1) {
+        this.uploadFiles.splice(index, 1)
+      }
+    },
+    // 上传图片前的处理
+    onUploadChange (file) {
+      const isJPG =
+        file.raw.type === 'image/jpeg' ||
+        file.raw.type === 'image/png' ||
+        file.raw.type === 'image/jpg'
+      if (!isJPG) {
+        this.uploadList.splice(this.uploadList.length - 1, 1)
+        Notification({
+          title: '提示',
+          message: '只能上传图片',
+          type: 'warning',
+          duration: 5 * 1000
+        })
+        return false
+      }
+      this.uploadFiles.push(file.raw)
+    },
     // 处置弹窗-确定
     handelConfirmClick () {
-      this.$refs.handleRef.validate((valid) => {
+      this.$refs.handleRef.validate(valid => {
         if (!valid) {
           return
         }
 
-        this.showHandle = false
-
-        var param = {
-          id: this.handleItem.id,
-          dispositionMan: this.handleForm.people,
-          dispositionRecord: this.handleForm.record,
-          dispositionTime: this.handleForm.time
-        }
+        const formData = new FormData()
+        formData.append('id', this.handleItem.id)
+        formData.append('dispositionMan', this.handleForm.people)
+        formData.append('dispositionRecord', this.handleForm.record)
+        formData.append('dispositionTime', this.handleForm.time)
+        this.uploadFiles.forEach(f => {
+          formData.append('flies', f)
+        })
+        const config = { headers: { 'Content-Type': 'multipart/form-data' } }
         this.$axios
-          .post(policeApi.dispose, param, {
-            headers: { 'Content-Type': 'application/json;charset=UTF-8' }
-          })
-          .then((res) => {
+          .post(policeApi.dispose, formData, config)
+          .then(res => {
             if (res && res.data && res.data.code === 0) {
+              this.showHandle = false
+              this.uploadFiles = []
+              this.uploadList = []
               this.getList()
               Notification({
                 title: '提示',
@@ -495,20 +476,41 @@ export default {
                 type: 'success',
                 duration: 5 * 1000
               })
+            } else {
+              Notification({
+                title: '提示',
+                message: '处置失败',
+                type: 'warning',
+                duration: 5 * 1000
+              })
             }
+          })
+          .catch(err => {
+            Notification({
+              title: '提示',
+              message: '处置异常',
+              type: 'error',
+              duration: 5 * 1000
+            })
+            console.log('handle exception:', err)
           })
       })
     },
     // 处置弹窗-取消
     handelCancelClick () {
       this.showHandle = false
+      this.uploadFiles = []
+      this.uploadList = []
+      this.handleForm = {}
+      this.handleItem = {}
+      this.$refs.handleRef.resetFields()
     },
 
     deleteConfirmClick () {
       this.showDeleteTip = false
 
       var ids = []
-      this.selectedItem.forEach((item) => {
+      this.selectedItem.forEach(item => {
         ids.push(item.id)
       })
 
@@ -517,7 +519,7 @@ export default {
           policeApi.deleteBatch,
           qs.stringify({ ids: ids }, { arrayFormat: 'comma' })
         )
-        .then((res) => {
+        .then(res => {
           if (res && res.data && res.data.code === 0) {
             this.getList()
             Notification({
@@ -768,61 +770,6 @@ export default {
   color: white;
   font-size: 16px;
   margin-top: 25px;
-}
-
-.newPoliceDlg.el-dialog__wrapper {
-  /deep/.el-dialog {
-    .el-dialog__header {
-      display: none;
-    }
-    background: transparent;
-    .el-dialog__body {
-      display: inline-block;
-      padding: 0px;
-      width: 100%;
-      height: 329px;
-      background: url(../../assets/images/policeHistory/handleBox.png) no-repeat;
-      background-size: 100% 100%;
-      .npdTitleSty {
-        width: 166px;
-        height: 34px;
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        line-height: 42px;
-        background: url(../../assets/images/header-bg.png) no-repeat;
-        background-size: 100% 100%;
-        padding-left: 30px;
-        margin: 20px 0 0 24px;
-      }
-      .input1 {
-        .el-input__inner {
-          color: white;
-          width: 310px;
-          border: solid 1px #0fbfe0;
-          background-color: transparent;
-        }
-      }
-      .input2 {
-        .el-input__inner {
-          width: 760px;
-          color: white;
-          border: solid 1px #0fbfe0;
-          background-color: transparent;
-        }
-      }
-      .el-form-item__label {
-        color: #0fbfe0;
-        font-size: 16px;
-      }
-      .label1 {
-        margin-left: 40px;
-      }
-      .timeStyle {
-        width: 310px;
-      }
-    }
-  }
 }
 .npdConfirm1 {
   float: right;

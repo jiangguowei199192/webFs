@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import { EventBus } from '@/utils/eventBus.js'
-import MqttService from '@/utils/mqttService'
+// import { EventBus } from '@/utils/eventBus.js'
+// import MqttService from '@/utils/mqttService'
 import videoMixin from '../videoSystem/mixins/videoMixin'
 import regionMixin from './regionMixin'
 import riverMixin from './riverMixin'
