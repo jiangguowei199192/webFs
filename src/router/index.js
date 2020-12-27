@@ -116,6 +116,12 @@ const routes = [
         component: () => import('../views/aboutUs')
       }
     ]
+  },
+  // 演示首页
+  {
+    path: '/tempHome',
+    name: 'tempHome',
+    component: () => import('../views/tempHome')
   }
 ]
 

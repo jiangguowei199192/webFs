@@ -2,7 +2,7 @@
   <div>
     <div class="login">
       <div class="content">
-        <div class="title">{{loginTitle}}</div>
+        <div class="title">{{ loginTitle }}</div>
         <el-input
           placeholder="用户名"
           auto-complete="new-password"
@@ -27,11 +27,22 @@
         ></el-input>
         <div class="checkDiv">
           <el-checkbox v-model="checked" class="check">记住密码</el-checkbox>
-          <el-button type="text" size="mini" class="forgot" @click="dialogVisible = true">忘记密码？</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            class="forgot"
+            @click="dialogVisible = true"
+            >忘记密码？</el-button
+          >
         </div>
         <el-button class="loginBtn" @click="jumpToMain">登 录</el-button>
       </div>
-      <el-dialog title="忘记密码" :visible.sync="dialogVisible" width="30%" class="dialogStyle">
+      <el-dialog
+        title="忘记密码"
+        :visible.sync="dialogVisible"
+        width="30%"
+        class="dialogStyle"
+      >
         <p>
           <span>普通用户请联系管理员重置密码。</span>
         </p>
@@ -43,7 +54,12 @@
       </p>
         <p><span>文件内容为新密码。密码6-16个字符，区分大小写。</span></p>-->
         <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="dialogVisible = false" class="trueBtn">确 定</el-button>
+          <el-button
+            type="primary"
+            @click="dialogVisible = false"
+            class="trueBtn"
+            >确 定</el-button
+          >
         </span>
       </el-dialog>
     </div>
@@ -113,7 +129,8 @@ export default {
             'token',
             'Bearer ' + res.data.data.access_token
           )
-          this.$router.push({ path: '/videoSystem' })
+          // this.$router.push({ path: '/videoSystem' })
+          this.$router.push({ path: '/tempHome' })
         }
       })
     },
@@ -123,7 +140,10 @@ export default {
           if (res.data.status === '1') {
             localStorage.location_city_adcode = res.data.adcode
             localStorage.bNetWorkConn = 'true'
-            console.log('localStorage.bNetWorkConn:', localStorage.bNetWorkConn)
+            console.log(
+              'localStorage.bNetWorkConn:',
+              localStorage.bNetWorkConn
+            )
           }
         })
         .catch((err) => {
