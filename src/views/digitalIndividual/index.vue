@@ -260,7 +260,6 @@
 <script>
 import { policeApi } from '@/api/police.js'
 import { Notification } from 'element-ui'
-import qs from 'qs'
 import { loginApi } from '@/api/login'
 import globalApi from '@/utils/globalApi'
 
@@ -540,23 +539,22 @@ export default {
       this.selectedItem.forEach(item => {
         ids.push(item.id)
       })
-
-      this.$axios
-        .post(
-          policeApi.deleteBatch,
-          qs.stringify({ ids: ids }, { arrayFormat: 'comma' })
-        )
-        .then(res => {
-          if (res && res.data && res.data.code === 0) {
-            this.getList()
-            Notification({
-              title: '提示',
-              message: '删除成功',
-              type: 'success',
-              duration: 5 * 1000
-            })
-          }
-        })
+      const formData = new FormData()
+      ids.forEach(f => {
+        formData.append('ids', f)
+      })
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } }
+      this.$axios.post(policeApi.deleteBatch, formData, config).then(res => {
+        if (res && res.data && res.data.code === 0) {
+          this.getList()
+          Notification({
+            title: '提示',
+            message: '删除成功',
+            type: 'success',
+            duration: 5 * 1000
+          })
+        }
+      })
     },
 
     deleteCancelClick () {

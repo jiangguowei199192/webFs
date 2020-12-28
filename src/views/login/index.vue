@@ -130,7 +130,7 @@ export default {
             'Bearer ' + res.data.data.access_token
           )
           // this.$router.push({ path: '/videoSystem' })
-          this.$router.push({ path: '/tempHome' })
+          this.$router.push({ path: '/videoSystem' })
         }
       })
     },
