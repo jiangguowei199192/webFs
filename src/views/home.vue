@@ -80,7 +80,7 @@ export default {
       isActive: 2, // 默认激活视频侦查系统
       systems: [
         {
-          content: '可视化调度'
+          content: '常态管控'
         },
         {
           content: '调度中心'
