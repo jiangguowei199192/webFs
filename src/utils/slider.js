@@ -154,7 +154,9 @@ ZoomPic.prototype =
     }, 30)
   }
 }
-window.onload = function () {
-  // eslint-disable-next-line no-new
-  new ZoomPic('box')
-}
+// window.onload = function () {
+//   // eslint-disable-next-line no-new
+//   new ZoomPic('box')
+// }
+
+export default ZoomPic

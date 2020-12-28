@@ -10,7 +10,9 @@
   <div class="temp_home">
     <el-container>
       <el-header>
-        <div class="header"><h2>长江禁捕实战应用平台</h2></div>
+        <div class="header">
+          <h2>长江禁捕实战应用平台</h2>
+        </div>
         <div class="content">
           <!-- <swiper ref="mySwiper" :options="swiperOption" class="show-swiper">
             <template v-for="(banner_item, banner_index) in bannerList">
@@ -20,7 +22,7 @@
                 </div>
               </swiper-slide>
             </template>
-          </swiper> -->
+          </swiper>-->
           <div class="banner" id="box">
             <pre class="prev">prev</pre>
             <pre class="next">next</pre>
@@ -62,8 +64,8 @@
         <keep-alive>
           <router-view v-if="$route.meta.keepAlive"></router-view>
         </keep-alive>
-        <router-view v-if="!$route.meta.keepAlive"></router-view
-      ></el-main>
+        <router-view v-if="!$route.meta.keepAlive"></router-view>
+      </el-main>
       <!-- 粒子漂浮物 -->
       <vue-particles
         style="height: 1020px"
@@ -82,15 +84,15 @@
         hoverMode="grab"
         :clickEffect="true"
         clickMode="push"
-      ></vue-particles
-    ></el-container>
+      ></vue-particles>
+    </el-container>
   </div>
 </template>
 
 <script>
 // import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 // import "swiper/swiper.min.css";
-import '@/utils/slider.js'
+import ZoomPic from '@/utils/slider.js'
 import VueParticles from 'vue-particles'
 import Vue from 'vue'
 Vue.use(VueParticles)
@@ -145,6 +147,8 @@ export default {
   mounted () {
     // console.log(this.swiper)
     // this.initSwiper();
+    // eslint-disable-next-line no-new
+    new ZoomPic('box')
     this.goToRealHome()
   },
 
