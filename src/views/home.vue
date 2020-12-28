@@ -149,6 +149,10 @@ export default {
     EventBus.$on('web/river/caseHandling', info => {
       EventBus.$emit('caseHandling', info)
     })
+    // 警力gps汇报
+    EventBus.$on('riverProtection/positionReport', info => {
+      EventBus.$emit('positionReport', info)
+    })
   },
   destroyed () {
     EventBus.$off('video/device/online')
@@ -161,6 +165,7 @@ export default {
     EventBus.$off('video/aRAiResult')
     EventBus.$off('video/deviceIid/channleID/datalink/firewarning')
     EventBus.$off('web/river/caseHandling')
+    EventBus.$off('riverProtection/positionReport')
     // 退出时，关闭mqtt连接
     if (this.mqtt) {
       this.mqtt.needReconnect = false

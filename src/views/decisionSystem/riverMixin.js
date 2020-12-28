@@ -25,6 +25,11 @@ const riverMixin = {
     this.getPoliceList()
   },
 
+  beforeDestroy () {
+    EventBus.$off('radar/realTimeInfo')
+    EventBus.$off('addNewWarningSuccess')
+  },
+
   methods: {
     handerWarningData (data) {
       data.type = 'RP_Warning'

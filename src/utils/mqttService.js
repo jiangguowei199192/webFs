@@ -79,7 +79,11 @@ var mqttService;
       // console.log('onMessageArrived---------topic:' + message.topic + '----------' + message.payloadString)
       var object = JSON.parse(message.payloadString)
       EventBus.$emit(message.topic, object)
-      if (message.topic.substr(0, 4) === 'gdu/') {
+      // 警力gps汇报
+      if (message.topic === 'gdu/riverProtection/positionReport') {
+        EventBus.$emit('riverProtection/positionReport', object)
+        // console.log('onMessageArrived---------topic:' + message.topic + '----------' + message.payloadString)
+      } else if (message.topic.substr(0, 4) === 'gdu/') {
         EventBus.$emit('droneInfos', message)
       } else {
         console.log('onMessageArrived---------topic:' + message.topic + '----------' + message.payloadString)

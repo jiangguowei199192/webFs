@@ -12,6 +12,7 @@ import riverMixin from '../decisionSystem/riverMixin'
 import createVueCompFunc from '@/utils/createVueComp'
 import droneInfo from './droneBox'
 import CaseList from './components/caseList'
+import { EventBus } from '@/utils/eventBus.js'
 
 export default {
   name: 'evaluation',
@@ -99,6 +100,13 @@ export default {
       if (!this.$refs.gduMap) return
       this.$refs.gduMap.map2D._dispatchCenterManager.removeAllWarning()
       this.showRpDatas(files)
+    },
+    /**
+     *  更新警员位置
+     */
+    updatePoliceCoor (id, lat, lon) {
+      if (!this.$refs.gduMap) return
+      this.$refs.gduMap.map2D._dispatchCenterManager.updateFeatureCoord(id, lat, lon, 'RP_Police')
     }
   },
   created () {
@@ -113,21 +121,15 @@ export default {
       me.setMapHeight()
     }
     this.setMapHeight()
-    // const tmpWarn = {
-    //   id: '6dddef0f25758f86db0b7281b0c2efa8',
-    //   caseNo: '2020092922678',
-    //   reportTel: '15672675664',
-    //   reportAddr: '汉口江滩',
-    //   reportTime: '2020-10-06 11:00:00',
-    //   caseDesc: null,
-    //   longitude: 114.316317,
-    //   latitude: 30.606778
-    // }
-    // setTimeout(() => {
-    //   EventBus.$emit('addNewWarningSuccess', tmpWarn)
-    // }, 5000)
+    EventBus.$on('positionReport', data => {
+      const id = parseInt(data.User_ID)
+      const lat = parseFloat(data.GPS_Lat)
+      const lon = parseFloat(data.GPS_Lon)
+      me.updatePoliceCoor(id, lat, lon)
+    })
   },
   beforeDestroy () {
+    EventBus.$off('positionReport')
     window.onresize = null
     // 销毁时，清空图层数据
     this.$refs.gduMap.map2D._dispatchCenterManager.removeAll()

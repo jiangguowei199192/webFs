@@ -394,7 +394,7 @@ export default {
       chatImg: require('../../../assets/images/control/speak.png'),
       timeImg: require('../../../assets/images/control/time.png'),
       placeImg: require('../../../assets/images/control/place.png'),
-      caseImage: require('../../../assets/images/control/case.png'),
+      caseImage: require('../../../assets/images/control/noimg.png'),
       searchImg: require('../../../assets/images/policeHistory/search.png'),
       personImg: require('../../../assets/images/control/person.png'),
       checkImg: require('../../../assets/images/control/check.png'),
@@ -513,7 +513,7 @@ export default {
             return r.deptName !== null
           })
           this.dispatchList = tempData
-          console.log('getDesignateUserList:', tempData)
+          // console.log('getDesignateUserList:', tempData)
         })
         .catch(err => {
           console.log('getDesignateUserList.Excp:' + err)

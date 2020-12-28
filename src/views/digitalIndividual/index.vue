@@ -140,7 +140,7 @@
         <div class="detailText3">简要描述：{{ detailDlg.description }}</div>
         <div class="detailText3">重点记录：{{ detailDlg.mainRecord }}</div>
 
-        <div class="detailTitle" style="margin-top: 33px">处置信息</div>
+        <div class="detailTitle" style="margin-top: 20px">处置信息</div>
         <div class="detailTitleLine"></div>
         <div class="detailText3">处置结果：{{ detailDlg.handleResult }}</div>
         <div>
@@ -822,7 +822,7 @@ export default {
   margin-top: 20px;
 }
 .detailText2 {
-  width: 450px;
+  width: 300px;
 }
 .detailText3 {
   color: white;
