@@ -60,7 +60,7 @@ export default {
   methods: {
     filterNode (value, data) {
       if (!value) return true
-      return data.label.indexOf(value) !== -1
+      return data.label && data.label.indexOf(value) !== -1
     },
     // 点击树节点
     handleNodeClick (data, $event) {

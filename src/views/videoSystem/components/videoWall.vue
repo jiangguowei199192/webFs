@@ -359,7 +359,7 @@
         </div>
       </div>
       <!-- 自动巡航 -->
-      <div class="cruise" v-show="videoInfo.isShowOperate||false">
+      <div class="cruise" v-show="videoInfo.deviceTypeCode==='GDJK'&&videoInfo.isShowOperate||false">
         <template v-if="!showAR">
           <img :src="cruiseOpen?cruiseClosePic:cruiseOpenPic" @click.stop="changeCruise" :title="cruiseOpen?'关闭巡航':'开启巡航'"/>
         </template>
